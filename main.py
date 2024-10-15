@@ -77,3 +77,17 @@ posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
 posicio_estat = [5, 11]
+
+#region FuncionesInteraccionConsola
+def clearScreen():
+    if os.name == 'nt':     # Si estàs a Windows
+        os.system('cls')
+    else:                   # Si estàs a Linux o macOS
+        os.system('clear')
+
+def mou_cursor(x, y):
+    # Escapamos y nos movemos a la posición indicada
+    sys.stdout.write(f"\033[{y};{x}H")
+    # Forzamos un aplicado del buffer
+    sys.stdout.flush()
+#endregion FuncionesInteraccionConsola

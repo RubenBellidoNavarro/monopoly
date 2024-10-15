@@ -5,6 +5,9 @@
 
 import sys
 import os
+from colorama import just_fix_windows_console # Paquete para que la terminal de Windows entienda los caràcteres ANSI y podamos mover el cursor a la posición que deseemos 
+
+just_fix_windows_console()
 
 #region VARIABLESYCONSTANTES
 MIN_DINERS_BANCA = 500000

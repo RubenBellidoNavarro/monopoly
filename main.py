@@ -50,6 +50,32 @@ caselles_ordenades = ("Sortida",
                       "Pg. de Gràcia"
                       )
 
+caselles_ordenades_nom_acortat = ("Sortida",
+                      "Lauria",
+                      "Rossell",
+                      "Sort",
+                      "Marina",
+                      "Consell",
+                      "Presó",
+                      "Muntan",
+                      "Aribau",
+                      "Caixa",
+                      "S.Joan",
+                      "Aragó",
+                      "Parking",
+                      "Urqinoa",
+                      "Fontan",
+                      "Sort",
+                      "Rambles",
+                      "Pl.Cat",
+                      "Anr pró",
+                      "Angel",
+                      "Augusta",
+                      "Caixa",
+                      "Balmes",
+                      "Gracia"
+                      )
+
 
 #Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
 caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
@@ -138,7 +164,23 @@ def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselle
 
     return dict_preus_caselles
 
-def genera_tauler():
+def crea_casella(nom, nom_acortat, jugadors, posicio, es_especial, opcions_especials, preu_casa, preu_hotel):
+    # Genera una estructura de casilla
+    casella = {
+        "nom": f"{nom}",
+        "acortado": f"{nom_acortat}",
+        "cases": 0,
+        "hotels": 0,
+        "jugadors": f"{jugadors}",
+        "posicio": posicio,
+        "es_especial": es_especial,
+        "opcions_especials": opcions_especials,
+        "preu_casa": preu_casa,
+        "preu_hotel": preu_hotel,
+        "propietari": ""
+    }
+
+def genera_tauler(caselles_ordenades, caselles_especials):
     pass
 
 def afegir_diners_banca():
@@ -181,25 +223,6 @@ def primer_pagament(jugadors):
     Retorna: No retorna nada'''
     for jugador in jugadors:
         jugadors[jugador]["diners"] = 2000
-
-def crea_casella(nom, nom_acortat, jugadors, posicio, es_especial, opcions_especials, preu_casa, preu_hotel):
-    # Genera una estructura de casilla
-    casella = {
-        "nom": f"{nom}",
-        "acortado": f"{nom_acortat}",
-        "cases": 0,
-        "hotels": 0,
-        "jugadors": f"{jugadors}",
-        "posicio": posicio,
-        "es_especial": es_especial,
-        "opcions_especials": opcions_especials,
-        "preu_casa": preu_casa,
-        "preu_hotel": preu_hotel,
-        "propietari": ""
-    }
-    
-    # Añadimos la casilla generada al tablero
-    #tauler[nom] = casella
 
 def imprimeix_casella(nom, cases, hotels, jugadors):
     # Imprimimos por pantalla la casilla 

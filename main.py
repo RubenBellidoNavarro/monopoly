@@ -11,6 +11,7 @@ just_fix_windows_console()
 
 #region VARIABLESYCONSTANTES
 MIN_DINERS_BANCA = 500000
+MAX_LINIES_JUGADES = 13
 
 tauler = {}
 banca = 0
@@ -80,7 +81,7 @@ posicions_caselles_files = [1, 5, 8, 11, 14, 17, 19]
 posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
-posicio_estat = [5, 11]
+posicio_jugades = [5, 11]
 #endregion VARIABLESYCONSTANTES
 
 #region FuncionesInteraccionConsola
@@ -265,6 +266,38 @@ def imprimeix_informacio(banca, jugadors):
         imprimeix_informacio_jugador(index + 1, jugador)
 #endregion ImprimirInformacion
 
+#region ImprimirJugadas
+def imprimeix_jugades(accions):
+    # Imprimimos en el espacio central del tablero 13 líneas de acciones realizadas por los jugadores
+    amplada = tauler_mesures["ampla_total"] - (tauler_mesures["ampla_partida"] * 2)
+    posicio_x = posicio_jugades[1]
+    posicio_y = posicio_jugades[0]
+    text_inici_accio = "Juga"
+    simbol_inici_accio = ">"
+
+    if len(accions) > MAX_LINIES_JUGADES:
+        min = len(accions) - MAX_LINIES_JUGADES
+        accions = accions[min:]
+    
+    for accio in accions:
+        # Recortamos el string en caso que no nos vaya a caber en el espacio establecido
+        if len(accio) > amplada:
+            min = len(accio) - amplada
+            accio = accio[min:]
+
+        # Movemos el cursor a la posición deseada e imprimimos la línea
+        # En caso que empecemos turno, deberemos añadir el carácter '>' al inicio
+        mou_cursor(posicio_x, posicio_y)
+        if text_inici_accio in accio:
+            print(f"{simbol_inici_accio} ", end="")
+            print(accio)
+        else:
+            print(f"  {accio}")
+        
+        # Aumentamos en 1 la línea
+        posicio_y += 1
+#endregion ImprimirJugadas
+
 #region MAIN
 clearScreen()
 caselles = [
@@ -319,8 +352,27 @@ caselles = [
     },
 ]
 
+jugades = [
+    "Juga \"B\", ha sortit 4 i 3",
+    "\"B\" avança fins \"Aribau\"",
+    "\"B\" compra el terreny",
+    "Torn del jugador \"T\"",
+    "Juga \"T\", ha sortit 2 i 2",
+    "\"T\" surt de la pressó",
+    "\"T\" avança fins \"S.Joan\"",
+    "\"T\" paga ??€ de lloguer a \"V\"",
+    "Juga \"G\", ha sortit 1 i 1"
+    "Sort: Anar tres espais enrrera",
+    "\"G\" guanya 200€",
+    "Juga \"B\", ha sortit 4 i 2",
+    "\"B\" és a la pressó, 3 torns sense tirar",
+    "Juga \"B\", ha sortit 2 i 1",
+    "\"B\" avança fins \"Gracia\"",
+]
+
 clearScreen()
 imprimeix_taula(caselles)
 imprimeix_informacio(banca, jugadors)
+imprimeix_jugades(jugades)
 mou_cursor(0, 25)
 #endregion MAIN

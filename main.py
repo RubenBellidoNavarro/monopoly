@@ -211,3 +211,116 @@ def imprimeix_taula(tauler):
     imprimeix_separador()
 #endregion ImpresionTablero
 
+#region ImprimirInformacion
+def imprimeix_informacio_banca(banca):
+    # Imprimimos la información de la banca
+    #   Banca:
+    #   Diners: 1838734
+    mou_cursor(posicions_informacio[0][0], posicions_informacio[0][1])
+    print("Banca: ")
+    mou_cursor(posicions_informacio[0][0], posicions_informacio[0][1] + 1)
+    print(f"Diners: {banca}")
+
+def imprimeix_informacio_jugador(index, jugador):
+    # Imprimimos la información de la banca
+    #   Jugador Groc:
+    #   Carrers: 2834
+    #   Diners: 1838734
+    #   Especial: (res) "Nombre de las cartas especiales"
+    mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1])
+    print(f"Jugador {jugador["nom"]}: ")
+
+    mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 1)
+    print(f"Carrers: ", end="")
+    longitud = len(jugador["propietats"])
+    if longitud != 0:
+        for index_, propietat in enumerate(jugador["propietats"]):
+            print(f"{propietat}", end="")
+            if index_ != longitud - 1:
+                print(", ", end="")
+
+    else:
+        print("(res)")
+
+    mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 2)
+    print(f"Diners: {jugador["diners"]} ")
+
+    mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 3)
+    print(f"Especial: ", end="")
+    longitud = len(jugador["cartes"])
+    if longitud != 0:
+        for index_, carta in enumerate(jugador["cartes"]):
+            print(f"{carta}", end="")
+            if index_ != longitud - 1:
+                print(", ", end="")
+    else:
+        print("(res)")  
+
+def imprimeix_informacio(banca, jugadors):
+    # Gestiona la impresión a la izquierda del tablero
+    # ¡MIRAR COMO CAMBIAR LA POSICIÓN DEL PUNTERO DE CONSOLA!
+    imprimeix_informacio_banca(banca)
+
+    for index, jugador in enumerate(jugadors.values()):
+        imprimeix_informacio_jugador(index + 1, jugador)
+#endregion ImprimirInformacion
+
+#region MAIN
+clearScreen()
+caselles = [
+    {
+        "nom_acortat": "Gracia",
+        "cases": 2,
+        "hotels": 0,
+        "jugadors": ["V"],
+        "posicio": [19, 10]
+    },
+    {
+        "nom_acortat": "Marina",
+        "cases": 1,
+        "hotels": 1,
+        "jugadors": [],
+        "posicio": [19, 0]
+    },
+    {
+        "nom_acortat": "Aribau",
+        "cases": 0,
+        "hotels": 2,
+        "jugadors": ["VGB"],
+        "posicio": [17, 0]
+    },
+    {
+        "nom_acortat": "Mallorca",
+        "cases": 0,
+        "hotels": 0,
+        "jugadors": ["B"],
+        "posicio": [5, 0]
+    },
+    {
+        "nom_acortat": "Arago",
+        "cases": 1,
+        "hotels": 1,
+        "jugadors": ["T"],
+        "posicio": [1, 0]
+    },
+    {
+        "nom_acortat": "Pl Cat",
+        "cases": 4,
+        "hotels": 2,
+        "jugadors": ["TB"],
+        "posicio": [1, 55]
+    },
+    {
+        "nom_acortat": "Sants",
+        "cases": 2,
+        "hotels": 0,
+        "jugadors": [""],
+        "posicio": [5, 55]
+    },
+]
+
+clearScreen()
+imprimeix_taula(caselles)
+imprimeix_informacio(banca, jugadors)
+mou_cursor(0, 25)
+#endregion MAIN

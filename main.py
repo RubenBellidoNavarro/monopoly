@@ -6,6 +6,7 @@
 import sys
 import os
 
+#region VARIABLESYCONSTANTES
 MIN_DINERS_BANCA = 500000
 
 tauler = {}
@@ -77,6 +78,7 @@ posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
 posicio_estat = [5, 11]
+#endregion VARIABLESYCONSTANTES
 
 #region FuncionesInteraccionConsola
 def clearScreen():

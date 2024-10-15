@@ -96,3 +96,118 @@ def mou_cursor(x, y):
     # Forzamos un aplicado del buffer
     sys.stdout.flush()
 #endregion FuncionesInteraccionConsola
+
+#region ImpresionTablero
+def imprimeix_separador():
+    amplada = casella_mesures["ampla"]
+    print(f"+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+")
+
+def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
+    amplada = casella_mesures["ampla"]
+    final_linia = "|"
+    separador = f"+{"".ljust(amplada, "-")}+"
+
+    string_final = f"{final_linia}"
+    if cases > 0:
+        amplada -= 1
+        final_linia = f"{cases}C"
+
+    string_final += f"{nom.ljust(amplada)}{final_linia}"
+    mou_cursor(posicio[1], posicio[0])
+    print(string_final)
+
+    amplada = casella_mesures["ampla"]
+    final_linia = "|"
+    if hotels > 0:
+        amplada -= 1
+        final_linia = f"{hotels}H"
+    string_final = "|"
+    if len(jugadors) != 0:
+        string_jugadors = ""
+        for jugador in jugadors:
+            string_jugadors += jugador
+        string_final += f"{string_jugadors.ljust(amplada)}"
+    else:
+        string_final += f"{"".ljust(amplada)}"
+    string_final += f"{final_linia}"
+    mou_cursor(posicio[1], posicio[0] + 1)
+    print(string_final)
+    
+    if posicio[0] != 17:
+        string_final = f"{separador}"
+        mou_cursor(posicio[1], posicio[0] + 2)
+        print(string_final)
+
+def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
+    primera_linia = "+"
+    if cases > 0:
+        primera_linia += f"{"".ljust(4, "-")}{cases}C"
+    else:
+        primera_linia += f"".ljust(6, "-")
+
+    if hotels > 0:
+        primera_linia += f"{hotels}H+"
+    else:
+        primera_linia += f"".ljust(2, "-") + "+"
+    
+    amplada = casella_mesures["ampla"]
+    final_linia = "|"
+    if len(jugadors) != 0:
+            string_jugadors = ""
+            for jugador in jugadors:
+                string_jugadors += jugador
+            string_jugadors = string_jugadors.ljust(amplada)
+    else:
+        string_jugadors = "".ljust(amplada)
+
+    if posicio[0] == 19:
+        mou_cursor(posicio[1], posicio[0])
+        print(primera_linia)
+
+        mou_cursor(posicio[1], posicio[0] + 1)
+        print(f"{final_linia}{string_jugadors}{final_linia}")
+
+        mou_cursor(posicio[1], posicio[0] + 2)
+        print(f"{final_linia}{nom.ljust(amplada)}{final_linia}")
+
+    elif posicio[0] == 1:
+        mou_cursor(posicio[1], posicio[0])
+        print(primera_linia)
+
+        mou_cursor(posicio[1], posicio[0] + 1)
+        print(f"{final_linia}{nom.ljust(amplada)}{final_linia}")
+
+        mou_cursor(posicio[1], posicio[0] + 2)
+        print(f"{final_linia}{string_jugadors}{final_linia}")
+
+
+def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
+    # Imprimimos por pantalla la casilla 
+    # Gestionamos:
+    #   - Impresión del nombre
+    #   - Impresión del número de casas y hoteles
+    #   - Impresión de los jugadores en la casilla
+    # Miramos si la casilla debe tener la información en horizontal o en vertical
+    if posicio[0] != 1 and posicio[0] != 19:
+        imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio)
+    else:
+        imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio)
+
+def imprimeix_fila(fila_caselles):
+    # Recibimos una fila del tablero.
+    # Iteramos por la fila e imprimimos cada una de las casillas de la fila
+    for casella in fila_caselles:
+            imprimeix_casella(casella["nom_acortat"], casella["cases"], casella["hotels"], casella["jugadors"], casella["posicio"])
+
+def imprimeix_taula(tauler):
+    # Imprimimos del tablero, llamando cada de las fila con los separadores
+    for index in posicions_caselles_files:
+        fila = list(filter(lambda casella: casella["posicio"][0] == index, tauler))
+        imprimeix_fila(fila)
+    
+    mou_cursor(posicions_separadors[0][0], posicions_separadors[0][1])
+    imprimeix_separador()
+    mou_cursor(posicions_separadors[1][0], posicions_separadors[1][1])
+    imprimeix_separador()
+#endregion ImpresionTablero
+

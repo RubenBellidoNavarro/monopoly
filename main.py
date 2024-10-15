@@ -166,6 +166,8 @@ def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselle
 
 def crea_casella(nom, nom_acortat, jugadors, posicio, es_especial, opcions_especials, preu_casa, preu_hotel):
     # Genera una estructura de casilla
+
+    #Estructura inicial casilla
     casella = {
         "nom": f"{nom}",
         "acortado": f"{nom_acortat}",
@@ -178,6 +180,15 @@ def crea_casella(nom, nom_acortat, jugadors, posicio, es_especial, opcions_espec
         "preu_casa": preu_casa,
         "preu_hotel": preu_hotel,
         "propietari": ""
+    }
+
+    #Estructura actual casilla 
+    {
+        "nom_acortat": "Gracia",
+        "cases": 2,
+        "hotels": 0,
+        "jugadors": ["V"],
+        "posicio": [19, 10]
     }
 
 def genera_tauler(caselles_ordenades, caselles_especials):

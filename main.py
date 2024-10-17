@@ -196,6 +196,25 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         }
     return dict_jugadors
 
+# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
+#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
+def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
+    '''Genera, a partir de la variable 'caselles_ordenades', una tupla con el mismo contenido, pero omitiendo las casillas
+    que realizan funciones especiales en el tablero.
+    
+    Input:
+        -caselles_ordenades(tuple): Tupla que contiene todos los nombres completo de las casillas del tablero,
+        en el orden de juego.
+        
+    Retorna:
+        -noms_complets(tuple): Tupla que contiene los nombres de 'caselles_ordenades', omitiendo los valores que
+        corresponden a casillas especiales.'''
+    noms_complets = []
+    for casella in caselles_ordenades:
+        if casella not in caselles_especials:
+            noms_complets.append(casella)
+    noms_complets = tuple(noms_complets)
+
 def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselles):
     '''Genera un diccionario que contiene los precios de cada casilla.
     
@@ -598,13 +617,7 @@ mou_cursor(0, 25)
 ################################################RUBÉN
 
 
-# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
-#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
-noms_complets = []
-for casella in caselles_ordenades:
-    if casella not in caselles_especials:
-        noms_complets.append(casella)
-noms_complets = tuple(noms_complets)
+
 
 def main():
     # Generar la partida

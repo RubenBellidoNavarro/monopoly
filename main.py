@@ -243,14 +243,14 @@ def genera_tauler(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_e
 
     return tauler
 
-def afegir_diners_banca():
+def afegir_diners_banca(banca):
     '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
     
     Inputs: No tiene
     
     Retorna: No retorna ningún valor. Modifica el valor de la varialbe "banca"'''
-    global banca
     banca += 500000
+    return banca
 
 def gestiona_diners_banca(banca:int):
     '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()

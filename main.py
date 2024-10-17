@@ -196,8 +196,6 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         }
     return dict_jugadors
 
-# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
-#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
 def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
     '''Genera, a partir de la variable 'caselles_ordenades', una tupla con el mismo contenido, pero omitiendo las casillas
     que realizan funciones especiales en el tablero.

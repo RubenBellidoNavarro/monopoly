@@ -602,6 +602,14 @@ def main():
                 time.sleep(1)
                 contador_jugador += 1
                 continue
+
+            elif casilla_jugador == "Anr pró":
+                #Actualizar posicion tauler (mandar a casilla Presso)
+                #Actualizar posicion jugadors (mandar a casila Presso)
+
+                #Actualizar clave "es_preso" del jugador a 'True'
+                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
+                
             
             
         calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)

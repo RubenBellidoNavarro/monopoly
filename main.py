@@ -553,15 +553,6 @@ def genera_partida():
     imprimeix_informacio(banca, jugadors)
 
 def main():
-    # Generar la partida
-    #   - Generamos el tablero
-    #       · Generamos las casillas y las metemos en el tablero
-    #   - Determinamos el orden de los jugadores
-    #   - Generamos los jugadores con los datos iniciales
-    #       · Les damos el primer ingreso
-    #   - Añandimos a la casilla 'Salida' todos los jugadores
-
-    # Iniciar bucle de juego:
     genera_partida()
 
     contador_jugador = 0    

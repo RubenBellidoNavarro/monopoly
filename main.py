@@ -17,6 +17,7 @@ MAX_LINIES_JUGADES = 13
 
 import random
 import json
+import time
 
 banca = 1000000
 
@@ -592,10 +593,12 @@ def main():
 
 
     #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        if casilla == parking: #en esta casilla, el jugador sólo puede pasar
-            timear 1 segundo para que el usuario vea que ha ocuriido
+        if jugador_actual["posicio"] == "Parking": #en esta casilla, el jugador sólo puede pasar
+            imprimeix_taula()
+            imprimeix_informacio()
+            time.sleep(1)
             contador_jugador += 1
-            continue #pasa al siguiente jugador
+            continue
         calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
         mostra_jugadas() #imprime por pantalla las posibles jugadas
         input_jugador() #Pide y gestiona el input que ponga el jugador (pedir input hasta que la jugada sea correcta)

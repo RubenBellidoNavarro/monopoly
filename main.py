@@ -223,8 +223,17 @@ def crea_casella(nom_casella, caselles_ordenades, caselles_ordeandes_nom_acortat
 
     return dict_casella
 
-def genera_tauler(caselles_ordenades, caselles_especials):
-    pass
+def genera_tauler(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions):
+    '''Genera una lista de diccionarios, donde cada diccionario contiene la información de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
+    
+    Input:
+        -caselles_ordenades(tuple): Tupla que contiene los nombres completos de las casillas, en el orden del tablero.
+        -caselles_ordeandes_nom_acortat(tuple): Tupla que contiene los nombres acortados de las casillas, en el orden del tablero.
+        -caselles_especials(tuple): Tupla que contiene los nombres de las casillas que no pueden tener propietario y realizan funciones especiales dentro de la partida.
+        -caselles_posicions(tuple): Matriz de tuplas que relaciona el nombre de una casilla y su posición en el tablero.
+        
+    Retorna:
+        -tauler(list): Lista de diccionarios, donde cada diccionario contiene la información de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).'''
 
 def afegir_diners_banca():
     '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).

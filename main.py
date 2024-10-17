@@ -5,7 +5,8 @@
 
 import sys
 import os
-from colorama import just_fix_windows_console # Paquete para que la terminal de Windows entienda los caràcteres ANSI y podamos mover el cursor a la posición que deseemos 
+import re # Usado para poder cambiar el nombre de las casillas de 'Sort' i 'Caixa', ya que necesitan un 1 o 2 al final para identificarlas correctamente
+from colorama import just_fix_windows_console # Paquete para que la terminal de Windows entienda los caràcteres ANSI y podamos mover el cursor a la posición que deseemos
 
 just_fix_windows_console()
 
@@ -38,51 +39,51 @@ noms_jugadors = ["Vermell","Groc","Taronja","Blau"]
 caselles_ordenades = ("Sortida",
                       "Lauria",
                       "Rosselló",
-                      "Sort",
+                      "Sort1",
                       "Marina",
                       "C. de cent",
                       "Presó",
                       "Muntaner",
                       "Aribau",
-                      "Caixa",
+                      "Caixa1",
                       "Sant Joan",
                       "Aragó",
                       "Parking",
                       "Urquinaona",
                       "Fontana",
-                      "Sort",
+                      "Sort2",
                       "Les Rambles",
                       "Pl. Catalunya",
                       "Anr pró",
                       "P.Àngel",
                       "Via Augusta",
-                      "Caixa",
+                      "Caixa2",
                       "Balmes",
                       "Pg. de Gràcia"
                       )
 
 caselles_posicions = (("Sortida",[19,55]),
-                      ("Lauria",[19,45]),
+                      ("Lauria",[19,46]),
                       ("Rosselló",[19,37]),
-                      ("Sort",[19,28]),
+                      ("Sort1",[19,28]),
                       ("Marina",[19,19]),
                       ("C. de cent",[19,10]),
                       ("Presó",[19,0]),
                       ("Muntaner",[17,0]),
                       ("Aribau",[14,0]),
-                      ("Caixa",[11,0]),
+                      ("Caixa1",[11,0]),
                       ("Sant Joan",[8,0]),
                       ("Aragó",[5,0]),
                       ("Parking",[1,0]),
                       ("Urquinaona",[1,10]),
                       ("Fontana",[1,19]),
-                      ("Sort",[1,28]),
+                      ("Sort2",[1,28]),
                       ("Les Rambles",[1,37]),
-                      ("Pl. Catalunya",[1,45]),
+                      ("Pl. Catalunya",[1,46]),
                       ("Anr pró",[1,55]),
                       ("P.Àngel",[5,55]),
                       ("Via Augusta",[8,55]),
-                      ("Caixa",[11,55]),
+                      ("Caixa2",[11,55]),
                       ("Balmes",[14,55]),
                       ("Pg. de Gràcia",[17,55])
                       )
@@ -231,6 +232,7 @@ def crea_casella(nom_casella, caselles_ordenades, caselles_ordeandes_nom_acortat
 
     #Buscamos el índice a partir del nombre de la casilla (este indice coincidirá en todos los arrays que utilizamos):
     index = caselles_ordenades.index(nom_casella)
+    nom_casella = re.sub(r'\d+', '', nom_casella)
     
     dict_casella = {    "nom_complet": nom_casella,
                         "nom_acortat": caselles_ordeandes_nom_acortat[index],
@@ -455,7 +457,7 @@ def imprimeix_informacio_jugador(index, jugador):
                 print(", ", end="")
 
     else:
-        print("(res)")
+        print("(cap)")
 
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 2)
     print(f"Diners: {jugador["diners"]} ")
@@ -513,90 +515,34 @@ def imprimeix_jugades(accions):
 #endregion ImprimirJugadas
 
 #region Joc
+def afegeix_jugadors_sortida(jugadors: dict, ordre: list, tauler: list) -> None:
+    casella_sortida = list(filter(lambda casella: casella["nom_complet"] == "Sortida", tauler))
+    for jugador in ordre:
+        jugadors[jugador]["posicio"] = casella_sortida[0]["posicio"]
+        casella_sortida[0]["jugadors"].append(jugadors[jugador]["icona"])
+
+def genera_partida():
+    tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
+    jugadors = genera_jugadors(noms_jugadors)
+    ordre_jugadors = ordre_tirada(jugadors)
+    gestiona_diners_banca(banca)
+    primer_pagament(jugadors)
+    afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
+    mou_cursor(0,24)
+    print(ordre_jugadors)
+
+def monopoly():
+    genera_partida()
 
 #endregion Joc
 
 #region MAIN
 clearScreen()
-caselles = [
-    {
-        "nom_acortat": "Gracia",
-        "cases": 2,
-        "hotels": 0,
-        "jugadors": ["V"],
-        "posicio": [19, 10]
-    },
-    {
-        "nom_acortat": "Marina",
-        "cases": 1,
-        "hotels": 1,
-        "jugadors": [],
-        "posicio": [19, 0]
-    },
-    {
-        "nom_acortat": "Aribau",
-        "cases": 0,
-        "hotels": 2,
-        "jugadors": ["VGB"],
-        "posicio": [17, 0]
-    },
-    {
-        "nom_acortat": "Mallorca",
-        "cases": 0,
-        "hotels": 0,
-        "jugadors": ["B"],
-        "posicio": [5, 0]
-    },
-    {
-        "nom_acortat": "Arago",
-        "cases": 1,
-        "hotels": 1,
-        "jugadors": ["T"],
-        "posicio": [1, 0]
-    },
-    {
-        "nom_acortat": "Pl Cat",
-        "cases": 4,
-        "hotels": 2,
-        "jugadors": ["TB"],
-        "posicio": [1, 55]
-    },
-    {
-        "nom_acortat": "Sants",
-        "cases": 2,
-        "hotels": 0,
-        "jugadors": [""],
-        "posicio": [5, 55]
-    },
-]
-
-jugades = [
-    "Juga \"B\", ha sortit 4 i 3",
-    "\"B\" avança fins \"Aribau\"",
-    "\"B\" compra el terreny",
-    "Torn del jugador \"T\"",
-    "Juga \"T\", ha sortit 2 i 2",
-    "\"T\" surt de la pressó",
-    "\"T\" avança fins \"S.Joan\"",
-    "\"T\" paga ??€ de lloguer a \"V\"",
-    "Juga \"G\", ha sortit 1 i 1"
-    "Sort: Anar tres espais enrrera",
-    "\"G\" guanya 200€",
-    "Juga \"B\", ha sortit 4 i 2",
-    "\"B\" és a la pressó, 3 torns sense tirar",
-    "Juga \"B\", ha sortit 2 i 1",
-    "\"B\" avança fins \"Gracia\"",
-]
-
-clearScreen()
-imprimeix_taula(caselles)
-imprimeix_informacio(banca, jugadors)
-imprimeix_jugades(jugades)
+monopoly()
 mou_cursor(0, 25)
 #endregion MAIN
-
-################################################RUBÉN
-
 
 # MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
 #Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:

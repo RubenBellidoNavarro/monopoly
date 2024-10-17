@@ -541,7 +541,7 @@ def afegeix_jugadors_sortida(jugadors: dict, ordre: list, tauler: list) -> None:
         jugadors[jugador]["posicio"] = casella_sortida[0]["posicio"]
         casella_sortida[0]["jugadors"].append(jugadors[jugador]["icona"])
 
-def genera_partida():
+def genera_partida() -> tuple:
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
@@ -550,6 +550,8 @@ def genera_partida():
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
+
+    return tauler, jugadors, ordre_jugadors
 
 def main():
     # Generar la partida
@@ -561,7 +563,7 @@ def main():
     #   - Añandimos a la casilla 'Salida' todos los jugadores
 
     # Iniciar bucle de juego:
-    genera_partida()
+    tauler, jugadors, ordre_jugadors = genera_partida()
 
     contador_jugador = 0    
 
@@ -576,11 +578,14 @@ def main():
     while True:
 
         #Miramos al principio de cada jugada si el contador rebasa la lista de jugadores. Si es así, se reinicia a 0.
-        if contador_jugador > len(lista_jugadores):
+        if contador_jugador >= len(ordre_jugadors):
             contador_jugador = 0
 
+        # Recogemos la información del jugador actual
+        jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
+
     #   - Tiramos dados del jugador
-        if jugador_a_la_presio(dict_jugadores): #devuelve un booleano diciendo si el jugador está en la prisión
+        if jugador_a_la_presio(jugador): #devuelve un booleano diciendo si el jugador está en la prisión
             actualizar_jugador_preso(dict_jugadors) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
             contador_jugador += 1
             continue #pasamos al siguiente jugador
@@ -611,6 +616,8 @@ def main():
     
         if len(lista_jugadores) == 1: #Si solo queda un jugador en la partida === Si hay un ganador
             break
+
+        contador_jugador += 1
 
     mostrar_ganador()
     pass

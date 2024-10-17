@@ -235,6 +235,14 @@ def genera_tauler(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_e
     Retorna:
         -tauler(list): Lista de diccionarios, donde cada diccionario contiene la información de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).'''
 
+    tauler = []
+
+    for casella in caselles_ordenades:
+        dict_casella = crea_casella(casella, caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions)
+        tauler.append(dict_casella)
+
+    return tauler
+
 def afegir_diners_banca():
     '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
     

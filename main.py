@@ -197,7 +197,24 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         }
     return dict_jugadors
 
-def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselles):
+def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
+    '''Genera, a partir de la variable 'caselles_ordenades', una tupla con el mismo contenido, pero omitiendo las casillas
+    que realizan funciones especiales en el tablero.
+    
+    Input:
+        -caselles_ordenades(tuple): Tupla que contiene todos los nombres completo de las casillas del tablero,
+        en el orden de juego.
+        
+    Retorna:
+        -noms_complets(tuple): Tupla que contiene los nombres de 'caselles_ordenades', omitiendo los valores que
+        corresponden a casillas especiales.'''
+    noms_complets = []
+    for casella in caselles_ordenades:
+        if casella not in caselles_especials:
+            noms_complets.append(casella)
+    noms_complets = tuple(noms_complets)
+
+def genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles):
     '''Genera un diccionario que contiene los precios de cada casilla.
     
     Input:
@@ -212,7 +229,9 @@ def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselle
 
     dict_preus_caselles = {}
 
-    for index, casella in enumerate(noms_complets):
+    noms_complets_sense_especials = genera_noms_complets_sense_especials(caselles_ordenades)
+
+    for index, casella in enumerate(noms_complets_sense_especials):
         dict_preus_caselles[casella] = dict(zip(etiquetes_preus_caselles, preus_caselles[index]))
 
     return dict_preus_caselles
@@ -457,6 +476,7 @@ def imprimeix_informacio_jugador(index, jugador):
                 print(", ", end="")
 
     else:
+
         print("(cap)")
 
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 2)
@@ -550,6 +570,7 @@ for casella in caselles_ordenades:
         noms_complets.append(casella)
 noms_complets = tuple(noms_complets)
 
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -558,17 +579,57 @@ def main():
     #   - Generamos los jugadores con los datos iniciales
     #       · Les damos el primer ingreso
     #   - Añandimos a la casilla 'Salida' todos los jugadores
-    # Iniciar bucle de juego
-    #   - Imprimir el tablero y la información
+
+    # Iniciar bucle de juego:
+
+    contador_jugador = 0    
+
+    '''
+    Contador que sirve para marcar el índice a mirar dentro de la lista de jugadores dentro del bucle
+
+    Utilizamos esta solución porque la otra opción para recorrer la lista de jugadores sería hacer un bucle 'for' (dentro del bucle 'while True')
+    y esto nos causarñia problemas cuando queramos modificar la lista de jugadores (a la vez que se realiza el bucle 'for'), como por ejemplo
+    cuando eliminemos un jugador de la lista que ha perdido la partida.
+    '''
+
+    while True:
+
+        #Miramos al principio de cada jugada si el contador rebasa la lista de jugadores. Si es así, se reinicia a 0.
+        if contador_jugador > len(lista_jugadores):
+            contador_jugador = 0
+
     #   - Tiramos dados del jugador
+        if jugador_a_la_presio(dict_jugadores): #devuelve un booleano diciendo si el jugador está en la prisión
+            actualizar_jugador_preso(dict_jugadors) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
+            contador_jugador += 1
+            continue #pasamos al siguiente jugador
+        tirar_dados() #Se retornan una tupla con los valores de los 2 dados
+
     #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-    #   - Añadimos jugada a la lista de juagdas
-    #   - Volvemos a imprimir tablero e información con la nueva jugada
+        actualitza_posicion(tauler, dict_jugadores, tirada_dados)
+
+    #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
+        afegir_jugada(jugada, lista_jugadas)
+
     #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-    #       · En caso que no tenga opción (sólo puede pasar) saltar a siguiente jugador
-    #   - Gestionamos Input del jugador y realizamos las acciones correspondientes
-    #   - Revisar si jugador está quebrado (Dinero menor o igual a 0) y quitarlo de la lista de jugadores
-    #       · Eliminar de la lista de jugadores
-    #       · Eliminar del tablero
-    #   - Revisar si hay ganador para finalizar partida
+        if casilla == parking: #en esta casilla, el jugador sólo puede pasar
+            timear 1 segundo para que el usuario vea que ha ocuriido
+            contador_jugador += 1
+            continue #pasa al siguiente jugador
+        calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
+        mostra_jugadas() #imprime por pantalla las posibles jugadas
+        input_jugador() #Pide y gestiona el input que ponga el jugador (pedir input hasta que la jugada sea correcta)
+        
+        funciones especificas en funcion de imput de jugador (jugada1(), jugada2(), etc.)
+        if jugador_perd(): #comprueba si el jugador ha perdido (no tiene dinero)
+            borrar_jugador_partida() #Se elimina del diccionario de jugadores y del tablero
+
+        #   - Volvemos a imprimir tablero e información con la nueva jugada
+        clearScreen()
+        IMPRIMIR TABLERO
+    
+        if len(lista_jugadores) == 1: #Si solo queda un jugador en la partida === Si hay un ganador
+            break
+
+    mostrar_ganador()
     pass

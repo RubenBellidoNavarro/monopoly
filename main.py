@@ -50,6 +50,33 @@ caselles_ordenades = ("Sortida",
                       "Pg. de Gràcia"
                       )
 
+caselles_posicions = (("Sortida",[19,55]),
+                      ("Lauria",[19,45]),
+                      ("Rosselló",[19,37]),
+                      ("Sort",[19,28]),
+                      ("Marina",[19,19]),
+                      ("C. de cent",[19,10]),
+                      ("Presó",[19,0]),
+                      ("Muntaner",[17,0]),
+                      ("Aribau",[14,0]),
+                      ("Caixa",[11,0]),
+                      ("Sant Joan",[8,0]),
+                      ("Aragó",[5,0]),
+                      ("Parking",[1,0]),
+                      ("Urquinaona",[1,10]),
+                      ("Fontana",[1,19]),
+                      ("Sort",[1,28]),
+                      ("Les Rambles",[1,37]),
+                      ("Pl. Catalunya",[1,45]),
+                      ("Anr pró",[1,55]),
+                      ("P.Àngel",[5,55]),
+                      ("Via Augusta",[8,55]),
+                      ("Caixa",[11,55]),
+                      ("Balmes",[14,55]),
+                      ("Pg. de Gràcia",[17,55])
+                      )
+
+
 caselles_ordenades_nom_acortat = ("Sortida",
                       "Lauria",
                       "Rossell",

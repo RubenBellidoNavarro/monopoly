@@ -536,6 +536,7 @@ def imprimeix_jugades(accions):
 #endregion Joc
 
 #region MAIN
+'''
 clearScreen()
 caselles = [
     {
@@ -612,12 +613,8 @@ imprimeix_taula(caselles)
 imprimeix_informacio(banca, jugadors)
 imprimeix_jugades(jugades)
 mou_cursor(0, 25)
+'''
 #endregion MAIN
-
-################################################RUBÉN
-
-
-
 
 def main():
     # Generar la partida

@@ -213,7 +213,7 @@ def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
             noms_complets.append(casella)
     noms_complets = tuple(noms_complets)
 
-def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselles):
+def genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles):
     '''Genera un diccionario que contiene los precios de cada casilla.
     
     Input:
@@ -228,7 +228,9 @@ def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselle
 
     dict_preus_caselles = {}
 
-    for index, casella in enumerate(noms_complets):
+    noms_complets_sense_especials = genera_noms_complets_sense_especials(caselles_ordenades)
+
+    for index, casella in enumerate(noms_complets_sense_especials):
         dict_preus_caselles[casella] = dict(zip(etiquetes_preus_caselles, preus_caselles[index]))
 
     return dict_preus_caselles

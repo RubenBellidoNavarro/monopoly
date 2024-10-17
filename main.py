@@ -593,16 +593,16 @@ def main():
 
 
     #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        posicio_jugador = jugador_actual["posicio"]
-        if posicio_jugador in caselles_especials:
+        casilla_jugador = jugador_actual["posicio"]
+        if casilla_jugador in caselles_especials:
         
-            if jugador_actual["posicio"] == "Parking": #en esta casilla, el jugador sólo puede pasar
+            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
                 imprimeix_taula()
                 imprimeix_informacio()
                 time.sleep(1)
                 contador_jugador += 1
                 continue
-
+            
             
         calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
         mostra_jugadas() #imprime por pantalla las posibles jugadas

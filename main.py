@@ -13,8 +13,12 @@ just_fix_windows_console()
 MIN_DINERS_BANCA = 500000
 MAX_LINIES_JUGADES = 13
 
-tauler = {}
-banca = 0
+
+import random
+import json
+
+banca = 1000000
+
 casella_mesures = {
     "alt": 2,
     "ampla": 8
@@ -27,55 +31,123 @@ tauler_mesures = {
     "columnes": 7
 }
 
-jugadors = {
-    "Vermell": {
-        "nom": "Vermell",
-        "icona": "V",
-        "diners": 0,
-        "posicio": [],
-        "propietats": [],
-        "es_preso": False,
-        "cartes": []
-    },
-    "Groc": {
-        "nom": "Groc",
-        "icona": "G",
-        "diners": 0,
-        "posicio": [],
-        "propietats": ["Gracia", "Pl Cat"],
-        "es_preso": False,
-        "cartes": []
-    },
-    "Taronja": {
-        "nom": "Taronja",
-        "icona": "T",
-        "diners": 0,
-        "posicio": [],
-        "propietats": ["Aribau"],
-        "es_preso": False,
-        "cartes": []
-    },
-    "Blau": {
-        "nom": "Blau",
-        "icona": "B",
-        "diners": 0,
-        "posicio": [],
-        "propietats": [],
-        "es_preso": False,
-        "cartes": ["Sortir preso"]
-    }
-}
+#Array que utilizaremos para generar un orden de tiradas, y el diccionario de jugadores:
+noms_jugadors = ["Vermell","Groc","Taronja","Blau"]
 
-caselles = {
-    "Lauria": {
-        "nom_acortat": "Lauria",
-        "lloguer_casa": 10,
-        "lloguer_hotel": 15,
-        "preu_terreny": 50,
-        "comprar_casa": 300,
-        "comprar_hotel": 250
-    },
-}
+#Tupla que utilizaremos para recorrerla con las tiradas de dados, de forma ordenada:
+caselles_ordenades = ("Sortida",
+                      "Lauria",
+                      "Rosselló",
+                      "Sort",
+                      "Marina",
+                      "C. de cent",
+                      "Presó",
+                      "Muntaner",
+                      "Aribau",
+                      "Caixa",
+                      "Sant Joan",
+                      "Aragó",
+                      "Parking",
+                      "Urquinaona",
+                      "Fontana",
+                      "Sort",
+                      "Les Rambles",
+                      "Pl. Catalunya",
+                      "Anr pró",
+                      "P.Àngel",
+                      "Via Augusta",
+                      "Caixa",
+                      "Balmes",
+                      "Pg. de Gràcia"
+                      )
+
+caselles_posicions = (("Sortida",[19,55]),
+                      ("Lauria",[19,45]),
+                      ("Rosselló",[19,37]),
+                      ("Sort",[19,28]),
+                      ("Marina",[19,19]),
+                      ("C. de cent",[19,10]),
+                      ("Presó",[19,0]),
+                      ("Muntaner",[17,0]),
+                      ("Aribau",[14,0]),
+                      ("Caixa",[11,0]),
+                      ("Sant Joan",[8,0]),
+                      ("Aragó",[5,0]),
+                      ("Parking",[1,0]),
+                      ("Urquinaona",[1,10]),
+                      ("Fontana",[1,19]),
+                      ("Sort",[1,28]),
+                      ("Les Rambles",[1,37]),
+                      ("Pl. Catalunya",[1,45]),
+                      ("Anr pró",[1,55]),
+                      ("P.Àngel",[5,55]),
+                      ("Via Augusta",[8,55]),
+                      ("Caixa",[11,55]),
+                      ("Balmes",[14,55]),
+                      ("Pg. de Gràcia",[17,55])
+                      )
+
+
+caselles_ordenades_nom_acortat = ("Sortida",
+                      "Lauria",
+                      "Rossell",
+                      "Sort",
+                      "Marina",
+                      "Consell",
+                      "Presó",
+                      "Muntan",
+                      "Aribau",
+                      "Caixa",
+                      "S.Joan",
+                      "Aragó",
+                      "Parking",
+                      "Urqinoa",
+                      "Fontan",
+                      "Sort",
+                      "Rambles",
+                      "Pl.Cat",
+                      "Anr pró",
+                      "Angel",
+                      "Augusta",
+                      "Caixa",
+                      "Balmes",
+                      "Gracia"
+                      )
+
+#Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
+caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
+
+#Tupla que contiene la utilización de los precios para cada casilla junto a su nombre acortado.
+#Las posiciones de cada tupla corresponden a:
+### [0] = Nombre acortado casilla
+### [1] = Precio Llogar casa
+### [2] = Precio Llogar hotel
+### [3] = Precio Comprar Terreny
+### [4] = Precio Comprar casa
+### [5] = Precio Comprar hotel
+preus_caselles = (("Lauria",10,15,50,200,250),
+                  ("Rosell",10,15,50,225,255),
+                  ("Marina",15,15,50,250,260),
+                  ("Consell",15,20,50,275,265),
+                  ("Muntan",20,20,60,300,270),
+                  ("Aribau",20,20,60,300,270),
+                  ("S.Joan",25,25,60,350,280),
+                  ("Aragó",25,25,60,375,285),
+                  ("Urqinoa",30,25,70,400,290),
+                  ("Fontan",30,30,70,425,300),
+                  ("Rambles",35,30,70,450,310),
+                  ("Pl.Cat",35,30,70,475,320),
+                  ("Angel",40,35,80,500,330),
+                  ("Augusta",40,35,80,525,340),
+                  ("Balmes",50,40,80,550,350),
+                  ("Gracia",50,40,80,550,350))
+
+etiquetes_preus_caselles = ("nom_acortat",
+                            "lloguer_casa",
+                            "lloguer_hotel",
+                            "preu_terreny",
+                            "comprar_casa",
+                            "comprar_hotel")
 
 posicions_caselles_files = [1, 5, 8, 11, 14, 17, 19]
 posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
@@ -97,6 +169,148 @@ def mou_cursor(x, y):
     # Forzamos un aplicado del buffer
     sys.stdout.flush()
 #endregion FuncionesInteraccionConsola
+
+#region GeneracionPartida             
+def genera_jugadors(noms_jugadors:list) -> dict:
+    '''Genera un diccionario de jugadores, donde cada clave será el nombre 
+    del jugador (Ex. "Vermell") y su valor será un diccionario con información 
+    sobre el jugador (icona, diners, posicio, propietats, es_preso, cartes).
+    
+    Inputs:
+        -noms_jugadors(list): Lista con los nombres de los 
+        jugadores ["Vermell","Groc","Taronja","Blau"]
+        
+    Retorna:
+        -dict_jugadors(dict): Diccionario que contiene la información de cada jugador, asociando 
+        a cada clave "Nombre jugador" un diccionario con la información necesaria.'''
+    dict_jugadors = {}
+    for clau_jugador in noms_jugadors:
+        dict_jugadors[clau_jugador] = {
+                                        "nom":clau_jugador,
+                                        "icona":clau_jugador[0],
+                                        "diners":0,
+                                        "posicio":[],
+                                        "propietats":[],
+                                        "es_preso":False,
+                                        "cartes":[]
+                                        }
+    return dict_jugadors
+
+def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselles):
+    '''Genera un diccionario que contiene los precios de cada casilla.
+    
+    Input:
+        -noms_complets(tuple): Una tupla con los nombres completos de las casillas.
+        -preus_caselles(tuple): Una matriz de tuplas que contiene en cada tupla:
+        s(NombreAcortado, PrecioAlquilarCasa, PrecioAlquilarHotel, PrecioComprarTerreno, PrecioComprarCasa, PrecioComprarHotel).
+        -etiquetes_preus_caselles(tuple): Etiquetas correspondientes a cada valor de cada tupla de la matriz "preus_caselles".
+        
+    Retorna:
+        -dict_preus_caselles(dict): Diccionario que tiene para cada casilla (clave) asociado un diccionario 
+        con información sobre los precios de dicha casilla.'''
+
+    dict_preus_caselles = {}
+
+    for index, casella in enumerate(noms_complets):
+        dict_preus_caselles[casella] = dict(zip(etiquetes_preus_caselles, preus_caselles[index]))
+
+    return dict_preus_caselles
+
+def crea_casella(nom_casella, caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions):
+    '''Genera y retorna un diccionario que contiene la información de la casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
+    
+    Input:
+        -nom_casella(str): Nombre de la casilla a definir.
+        -caselles_ordenades(tuple): Tupla que contiene los nombres completos de las casillas, en el orden del tablero.
+        -caselles_ordeandes_nom_acortat(tuple): Tupla que contiene los nombres acortados de las casillas, en el orden del tablero.
+        -caselles_especials(tuple): Tupla que contiene los nombres de las casillas que no pueden tener propietario y realizan funciones especiales dentro de la partida.
+        -caselles_posicions(tuple): Matriz de tuplas que relaciona el nombre de una casilla y su posición en el tablero.
+        
+    Retorna:
+        -casella(dict): Diccionario que contiene la información de la casilla.'''
+
+    #Buscamos el índice a partir del nombre de la casilla (este indice coincidirá en todos los arrays que utilizamos):
+    index = caselles_ordenades.index(nom_casella)
+    
+    dict_casella = {    "nom_complet": nom_casella,
+                        "nom_acortat": caselles_ordeandes_nom_acortat[index],
+                        "cases": 0,
+                        "hotels": 0,
+                        "jugadors": [""],
+                        "posicio": caselles_posicions[index][1],
+                        "es_especial": False,
+                        "propietari": "banca"
+                    }
+    
+    if nom_casella in caselles_especials:
+        dict_casella["es_especial"] = True
+        dict_casella["propietari"] = None
+
+    return dict_casella
+
+def genera_tauler(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions):
+    '''Genera una lista de diccionarios, donde cada diccionario contiene la información de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
+    
+    Input:
+        -caselles_ordenades(tuple): Tupla que contiene los nombres completos de las casillas, en el orden del tablero.
+        -caselles_ordeandes_nom_acortat(tuple): Tupla que contiene los nombres acortados de las casillas, en el orden del tablero.
+        -caselles_especials(tuple): Tupla que contiene los nombres de las casillas que no pueden tener propietario y realizan funciones especiales dentro de la partida.
+        -caselles_posicions(tuple): Matriz de tuplas que relaciona el nombre de una casilla y su posición en el tablero.
+        
+    Retorna:
+        -tauler(list): Lista de diccionarios, donde cada diccionario contiene la información de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).'''
+
+    tauler = []
+
+    for casella in caselles_ordenades:
+        dict_casella = crea_casella(casella, caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions)
+        tauler.append(dict_casella)
+
+    return tauler
+
+def primer_pagament(jugadors):
+    '''Añadimos a todos los jugadores 2000€ en sus cuentas.
+
+    Input:
+        -jugadors(dict): Diccionario en el que cada clave es un jugador, y su valor asociado es un diccionario con información del jugador (icona, diners, posicio, propietats, es_preso, cartes)
+        
+    Retorna: No retorna nada'''
+    for jugador in jugadors:
+        jugadors[jugador]["diners"] = 2000
+
+def ordre_tirada(jugadors):
+    '''Mezaclamos el diccionario de jugadores para que tengan un orden aleatorio
+    
+    Input:
+        -jugadors(dict): Diccionario en el que cada clave es un jugador, y su valor asociado es un diccionario con información del jugador (icona, diners, posicio, propietats, es_preso, cartes)
+        
+    Retorna:
+        -ordre_jugadors(list): Lista que contiene los nombres de los jugadores mezclados aleatoriamente. Esta lista marcará el orden de tiradas durante la partida.'''
+    ordre_jugadors = list(jugadors.keys())
+    random.shuffle(ordre_jugadors)
+    return ordre_jugadors
+#endregion GeneracionPartida
+
+#region GestioBanca
+def afegir_diners_banca(banca):
+    '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
+    
+    Inputs: No tiene
+    
+    Retorna: No retorna ningún valor. Modifica el valor de la varialbe "banca"'''
+    banca += 500000
+    return banca
+
+def gestiona_diners_banca(banca:int):
+    '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()
+    
+    Input:
+        -banca (int): Cantidad de dinero que tiene la banca
+        
+    Retorna: No retorna nada'''
+    if banca < MIN_DINERS_BANCA:
+        afegir_diners_banca()
+#endregion GestioBanca
 
 #region ImpresionTablero
 def imprimeix_separador():
@@ -298,6 +512,10 @@ def imprimeix_jugades(accions):
         posicio_y += 1
 #endregion ImprimirJugadas
 
+#region Joc
+
+#endregion Joc
+
 #region MAIN
 clearScreen()
 caselles = [
@@ -376,3 +594,37 @@ imprimeix_informacio(banca, jugadors)
 imprimeix_jugades(jugades)
 mou_cursor(0, 25)
 #endregion MAIN
+
+################################################RUBÉN
+
+
+# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
+#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
+noms_complets = []
+for casella in caselles_ordenades:
+    if casella not in caselles_especials:
+        noms_complets.append(casella)
+noms_complets = tuple(noms_complets)
+
+def main():
+    # Generar la partida
+    #   - Generamos el tablero
+    #       · Generamos las casillas y las metemos en el tablero
+    #   - Determinamos el orden de los jugadores
+    #   - Generamos los jugadores con los datos iniciales
+    #       · Les damos el primer ingreso
+    #   - Añandimos a la casilla 'Salida' todos los jugadores
+    # Iniciar bucle de juego
+    #   - Imprimir el tablero y la información
+    #   - Tiramos dados del jugador
+    #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+    #   - Añadimos jugada a la lista de juagdas
+    #   - Volvemos a imprimir tablero e información con la nueva jugada
+    #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
+    #       · En caso que no tenga opción (sólo puede pasar) saltar a siguiente jugador
+    #   - Gestionamos Input del jugador y realizamos las acciones correspondientes
+    #   - Revisar si jugador está quebrado (Dinero menor o igual a 0) y quitarlo de la lista de jugadores
+    #       · Eliminar de la lista de jugadores
+    #       · Eliminar del tablero
+    #   - Revisar si hay ganador para finalizar partida
+    pass

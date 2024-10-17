@@ -530,8 +530,6 @@ def genera_partida():
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
-    mou_cursor(0,24)
-    print(ordre_jugadors)
 
 def monopoly():
     genera_partida()

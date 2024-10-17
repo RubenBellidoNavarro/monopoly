@@ -551,9 +551,10 @@ def genera_partida():
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
+    return tauler, jugadors, ordre_jugadors
 
 def main():
-    genera_partida()
+    tauler, jugadors, ordre_jugadors = genera_partida()
 
     contador_jugador = 0    
 
@@ -583,6 +584,10 @@ def main():
 
     #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
         afegir_jugada(jugada, lista_jugadas)
+
+
+
+
 
     #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
         if casilla == parking: #en esta casilla, el jugador sólo puede pasar

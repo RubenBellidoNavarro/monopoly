@@ -680,11 +680,3 @@ clearScreen()
 main()
 mou_cursor(0, 25)
 #endregion MAIN
-
-# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
-#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
-noms_complets = []
-for casella in caselles_ordenades:
-    if casella not in caselles_especials:
-        noms_complets.append(casella)
-noms_complets = tuple(noms_complets)

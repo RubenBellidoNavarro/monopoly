@@ -572,6 +572,8 @@ def main():
         if contador_jugador > len(lista_jugadores):
             contador_jugador = 0
 
+        jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
+
     #   - Tiramos dados del jugador
         if jugador_a_la_presio(dict_jugadores): #devuelve un booleano diciendo si el jugador está en la prisión
             actualizar_jugador_preso(dict_jugadors) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False

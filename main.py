@@ -13,6 +13,7 @@ just_fix_windows_console()
 #region VARIABLESYCONSTANTES
 MIN_DINERS_BANCA = 500000
 MAX_LINIES_JUGADES = 13
+MAX_CASELLES = 24
 
 
 import random
@@ -155,6 +156,8 @@ posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
 posicio_jugades = [5, 11]
+
+jugades = []
 #endregion VARIABLESYCONSTANTES
 
 #region FuncionesInteraccionConsola
@@ -553,6 +556,46 @@ def genera_partida() -> tuple:
 
     return tauler, jugadors, ordre_jugadors
 
+def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
+    return posicio_1[0] == posicio_2[0] and posicio_1[1] == posicio_2[1]
+
+def jugador_a_la_preso(tauler:list, jugador: dict) -> bool:
+    posicio_jugador = jugador["posicio"]
+    posicio_preso = list(map(lambda casella: casella["posicio"], filter(lambda casella: casella["nom_complet"] == "Presó", tauler)))
+    
+    return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso[0])
+
+def actualitzar_jugador_preso(jugador:dict):
+    jugador["torns_preso"] += 1
+
+    if jugador["torns_preso"] == 3:
+        jugador["torns_preso"] = 0
+        jugador["es_preso"] = False
+
+def tirar_daus() -> tuple:
+    dau_1 = random.randint(1, 6)
+    dau_2 = random.randint(1, 6)
+    total = dau_1 + dau_2
+
+    return dau_1, dau_2, total
+
+def surt_preso_daus(dau_1:int, dau_2:int) -> bool:
+    return dau_1 == dau_2
+
+def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
+    casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
+    index = caselles_ordenades.index(casella[0]["nom_complet"])
+    casella[0]["jugadors"].remove(jugador["icona"])
+
+    nou_index = (index + suma_daus) % MAX_CASELLES
+    nom_casella = caselles_ordenades[nou_index]
+    casella = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] == nom_casella, tauler)))
+    casella[0]["jugadors"].append(jugador["icona"])
+    jugador["posicio"] = casella[0]["posicio"]
+
+def afegir_jugada(accio: str) -> None:
+    jugades.append(accio)
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -585,18 +628,30 @@ def main():
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
 
     #   - Tiramos dados del jugador
-        if jugador_a_la_presio(jugador): #devuelve un booleano diciendo si el jugador está en la prisión
-            actualizar_jugador_preso(dict_jugadors) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
-            contador_jugador += 1
-            continue #pasamos al siguiente jugador
-        tirar_dados() #Se retornan una tupla con los valores de los 2 dados
+        if jugador_a_la_preso(tauler, jugador_actual): #devuelve un booleano diciendo si el jugador está en la prisión
+            # Lanzamos los dados del jugador. En caso que no se haya sacado un doble dígito (2, 2) o (4, 4), el jugador continuará en la cárcel
+            dau_1, dau_2, total = tirar_daus()
+            surt_preso = surt_preso_daus(dau_1, dau_2)
 
-    #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-        actualitza_posicion(tauler, dict_jugadores, tirada_dados)
+            if not surt_preso:
+                actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
+                contador_jugador += 1
+                continue #pasamos al siguiente jugador
+            else:
+                jugador_actual["torns_preso"] = 3
+                actualitzar_jugador_preso(jugador_actual)
+        else:   
+            dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
-    #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
-        afegir_jugada(jugada, lista_jugadas)
+        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+            actualitza_posicio(tauler, jugador_actual, total)
 
+        #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
+            afegir_jugada("Jugada X")
+        
+        imprimeix_taula(tauler)
+            
+"""
     #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
         if casilla == parking: #en esta casilla, el jugador sólo puede pasar
             timear 1 segundo para que el usuario vea que ha ocuriido
@@ -620,7 +675,7 @@ def main():
         contador_jugador += 1
 
     mostrar_ganador()
-    pass
+    """
 #endregion Joc
 
 #region MAIN

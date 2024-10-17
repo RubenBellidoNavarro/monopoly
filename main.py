@@ -191,10 +191,11 @@ def genera_preus_caselles(noms_complets, preus_caselles, etiquetes_preus_caselle
 
     return dict_preus_caselles
 
-def crea_casella(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions):
+def crea_casella(nom_casella, caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_especials, caselles_posicions):
     '''Genera y retorna un diccionario que contiene la información de la casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
     
     Input:
+        -nom_casella(str): Nombre de la casilla a definir.
         -caselles_ordenades(tuple): Tupla que contiene los nombres completos de las casillas, en el orden del tablero.
         -caselles_ordeandes_nom_acortat(tuple): Tupla que contiene los nombres acortados de las casillas, en el orden del tablero.
         -caselles_especials(tuple): Tupla que contiene los nombres de las casillas que no pueden tener propietario y realizan funciones especiales dentro de la partida.
@@ -203,32 +204,24 @@ def crea_casella(caselles_ordenades, caselles_ordeandes_nom_acortat, caselles_es
     Retorna:
         -casella(dict): Diccionario que contiene la información de la casilla.'''
 
+    #Buscamos el índice a partir del nombre de la casilla (este indice coincidirá en todos los arrays que utilizamos):
+    index = caselles_ordenades.index(nom_casella)
+    
+    dict_casella = {    "nom_complet": nom_casella,
+                        "nom_acortat": caselles_ordeandes_nom_acortat[index],
+                        "cases": 0,
+                        "hotels": 0,
+                        "jugadors": [""],
+                        "posicio": caselles_posicions[index][1],
+                        "es_especial": False,
+                        "propietari": "banca"
+                    }
+    
+    if nom_casella in caselles_especials:
+        dict_casella["es_especial"] = True
+        dict_casella["propietari"] = None
 
-    #Estructura inicial casilla
-    '''casella = {
-        "nom": f"{nom}",
-        "acortado": f"{nom_acortat}",
-        "cases": 0,
-        "hotels": 0,
-        "jugadors": f"{jugadors}",
-        "posicio": posicio,
-        "es_especial": es_especial,
-        "opcions_especials": opcions_especials,
-        "preu_casa": preu_casa,
-        "preu_hotel": preu_hotel,
-        "propietari": ""
-    }'''
-
-    #Estructura actual casilla 
-    {   "nom_complet": "",
-        "nom_acortat": "",
-        "cases": 0,
-        "hotels": 0,
-        "jugadors": ["V"],
-        "posicio": [19, 10],
-        "es_especial": False,
-        "propietari": "banca"
-    }
+    return dict_casella
 
 def genera_tauler(caselles_ordenades, caselles_especials):
     pass

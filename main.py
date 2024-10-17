@@ -634,6 +634,10 @@ def main():
             elif casilla_jugador == "Sort":
                 resultat = escollir_opcio_sort() #Escoge de forma aleatoria una opción posible al caer en esta casilla
                 executar_resultat(resultat, jugador_actual, tauler, jugadors) #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+
+            elif casilla_jugador == "Caixa":
+                resultat = escollir_opcio_caixa() #Escoge de forma aleatoria una opción posible al caer en esta casilla
+                executar_resultat(resultat, jugador_actual, tauler, jugadors) #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
             
         calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
         mostra_jugadas() #imprime por pantalla las posibles jugadas

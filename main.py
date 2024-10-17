@@ -626,16 +626,19 @@ def main():
                 continue
 
             elif casilla_jugador == "Presó":
+                pass
                 '''
                 #Actualizar clave "es_preso" del jugador a 'True'
                 #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
                 '''
 
             elif casilla_jugador == "Sort":
+                pass
                 resultat = escollir_opcio_sort() #Escoge de forma aleatoria una opción posible al caer en esta casilla
                 executar_resultat(resultat, jugador_actual, tauler, jugadors) #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
 
             elif casilla_jugador == "Caixa":
+                pass
                 resultat = escollir_opcio_caixa() #Escoge de forma aleatoria una opción posible al caer en esta casilla
                 executar_resultat(resultat, jugador_actual, tauler, jugadors) #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
             

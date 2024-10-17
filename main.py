@@ -604,13 +604,26 @@ def main():
                 continue
 
             elif casilla_jugador == "Anr pró":
+                pass
+                '''
                 #Actualizar posicion tauler (mandar a casilla Presso)
                 #Actualizar posicion jugadors (mandar a casila Presso)
 
                 #Actualizar clave "es_preso" del jugador a 'True'
                 #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
-                
-            
+                '''
+
+            elif casilla_jugador == "Sortida":
+                #Añadimos 200€ al jugador
+                nom_jugador = jugador_actual["nom"]
+                jugadors["nom"]["diners"] += 200
+
+                #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido
+                imprimeix_taula()
+                imprimeix_informacio()
+                time.sleep(1)
+                contador_jugador += 1
+                continue
             
         calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
         mostra_jugadas() #imprime por pantalla las posibles jugadas

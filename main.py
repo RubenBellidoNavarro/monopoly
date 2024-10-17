@@ -193,6 +193,7 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         "posicio":[],
                                         "propietats":[],
                                         "es_preso":False,
+                                        "torns_preso":0,
                                         "cartes":[]
                                         }
     return dict_jugadors

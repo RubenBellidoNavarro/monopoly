@@ -577,12 +577,9 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
         -ordre_jugadors(list): Lista de jugadores que participan en la partida.
         -jugador_actual(dict): Diccionario con información del jugador actual de la partida.
         
-    Retorna:
-        -ordre_jugadors(list): Lista actualizada de jugadores que participan en la partida,
-        en la que se ha eliminado el jugador actual.'''
+    Retorna: None'''
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
-    return ordre_jugadors
 
 def main():
     tauler, jugadors, ordre_jugadors = genera_partida()

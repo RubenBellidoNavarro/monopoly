@@ -593,8 +593,11 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
     casella[0]["jugadors"].append(jugador["icona"])
     jugador["posicio"] = casella[0]["posicio"]
 
+    afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
+
 def afegir_jugada(accio: str) -> None:
     jugades.append(accio)
+    imprimeix_jugades(jugades)
 
 def main():
     # Generar la partida
@@ -635,6 +638,7 @@ def main():
 
             if not surt_preso:
                 actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
+                afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}. Continua a la presó")
                 contador_jugador += 1
                 continue #pasamos al siguiente jugador
             else:
@@ -643,11 +647,11 @@ def main():
         else:   
             dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
-        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            actualitza_posicio(tauler, jugador_actual, total)
-
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
-            afegir_jugada("Jugada X")
+        afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
+
+        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+        actualitza_posicio(tauler, jugador_actual, total)
         
         imprimeix_taula(tauler)
             
@@ -683,11 +687,3 @@ clearScreen()
 main()
 mou_cursor(0, 25)
 #endregion MAIN
-
-# MONTAR DENTRO DE UNA FUNCIÓN (SE LLAMA AL INICIAR EL PROGRAMA)
-#Tupla con los nombres completos de cada casilla, sin contar las casillas especiales:
-noms_complets = []
-for casella in caselles_ordenades:
-    if casella not in caselles_especials:
-        noms_complets.append(casella)
-noms_complets = tuple(noms_complets)

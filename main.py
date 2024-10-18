@@ -195,6 +195,7 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         "posicio":[],
                                         "propietats":[],
                                         "es_preso":False,
+                                        "torns_preso":0,
                                         "cartes":[]
                                         }
     return dict_jugadors
@@ -552,7 +553,6 @@ def genera_partida() -> tuple:
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
-
     return tauler, jugadors, ordre_jugadors
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
@@ -665,6 +665,8 @@ def main():
         else:   
             dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
+        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+            actualitza_posicio(tauler, jugador_actual, total)
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
         afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
 
@@ -675,6 +677,58 @@ def main():
 
         time.sleep(10)
             
+#   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
+        casilla_jugador = jugador_actual["posicio"]
+        if casilla_jugador in caselles_especials:
+        
+            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
+                clearScreen()
+                imprimeix_taula()
+                imprimeix_informacio()
+                time.sleep(1)
+                contador_jugador += 1
+                continue
+
+            elif casilla_jugador == "Anr pró":
+                pass
+                '''
+                #Actualizar posicion tauler (mandar a casilla Presso)
+                #Actualizar posicion jugadors (mandar a casila Presso)
+
+                #Actualizar clave "es_preso" del jugador a 'True'
+                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
+                '''
+
+            elif casilla_jugador == "Sortida":
+                #Añadimos 200€ al jugador:
+                nom_jugador = jugador_actual["nom"]
+                jugadors["nom"]["diners"] += 200
+
+                #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
+                clearScreen
+                imprimeix_taula()
+                imprimeix_informacio()
+                time.sleep(1)
+                contador_jugador += 1
+                continue
+
+            elif casilla_jugador == "Presó":
+                pass
+                '''
+                #Actualizar clave "es_preso" del jugador a 'True'
+                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
+                '''
+
+            elif casilla_jugador == "Sort":
+                pass
+                '''resultat = escollir_opcio_sort()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
+                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+
+            elif casilla_jugador == "Caixa":
+                pass
+                '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
+                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
         casilla_jugador = jugador_actual["posicio"]
         if casilla_jugador in caselles_especials:

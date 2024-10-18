@@ -699,7 +699,6 @@ def main():
             '''mostrar_ganador(ordre_jugadors)'''
             break
 
-    pass
 #endregion Joc
 
 #region MAIN

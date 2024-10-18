@@ -554,6 +554,18 @@ def genera_partida():
     imprimeix_informacio(banca, jugadors)
     return tauler, jugadors, ordre_jugadors
 
+def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
+    '''Comprueba si un jugador ha perdido la partida (tiene <= 0 en dinero), y devuelve
+    un booleano en función de esta comprobación.
+    
+    Input:
+        -jugador_actual(dict): Diccionario que contiene la información del jugador que está realizando el turno.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores de la partida.
+        
+    Retorna:
+        -ha_perdut(bool): Variable que confirma o no si el jugador ha perdido la partida.'''
+    pass
+
 def main():
     tauler, jugadors, ordre_jugadors = genera_partida()
 

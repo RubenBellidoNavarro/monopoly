@@ -686,7 +686,7 @@ def main():
         #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Se elimina de la lista de jugadores:
-            ordre_jugadors = borrar_jugador_partida(ordre_jugadors, jugador_actual)
+            borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
         #Volvemos a imprimir tablero e información con la nueva jugada
         clearScreen()

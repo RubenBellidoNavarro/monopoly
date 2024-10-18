@@ -6,6 +6,9 @@
 import sys
 import os
 import re # Usado para poder cambiar el nombre de las casillas de 'Sort' i 'Caixa', ya que necesitan un 1 o 2 al final para identificarlas correctamente
+import time
+import random
+import json
 from colorama import just_fix_windows_console # Paquete para que la terminal de Windows entienda los caràcteres ANSI y podamos mover el cursor a la posición que deseemos
 
 just_fix_windows_console()
@@ -14,10 +17,6 @@ just_fix_windows_console()
 MIN_DINERS_BANCA = 500000
 MAX_LINIES_JUGADES = 13
 MAX_CASELLES = 24
-
-
-import random
-import json
 
 banca = 1000000
 
@@ -582,16 +581,35 @@ def tirar_daus() -> tuple:
 def surt_preso_daus(dau_1:int, dau_2:int) -> bool:
     return dau_1 == dau_2
 
+def gestiona_caixa_i_sort_afegir_numero(nom_casella: str, posicio_jugador: list) -> str:
+    caselles = list(filter(lambda casella: "Sort" in casella[0] or "Caixa" in casella[0], caselles_posicions))
+
+    for casella in caselles:
+        if mateixa_posicio(casella[1], posicio_jugador):
+            return casella[0]
+    
+    return nom_casella
+
+def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
+    index = caselles_ordenades.index(nom_casella)
+    posicio = caselles_posicions[index][1]
+    if "Sort" in nom_casella or "Caixa" in nom_casella:
+        return re.sub(r'\d+', '', nom_casella), posicio
+
+    return nom_casella, posicio
+
 def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
     casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
-    index = caselles_ordenades.index(casella[0]["nom_complet"])
+    nom_casella = gestiona_caixa_i_sort_afegir_numero(casella[0]["nom_complet"], jugador["posicio"])
+    index = caselles_ordenades.index(nom_casella)
     casella[0]["jugadors"].remove(jugador["icona"])
 
     nou_index = (index + suma_daus) % MAX_CASELLES
     nom_casella = caselles_ordenades[nou_index]
-    casella = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] == nom_casella, tauler)))
+    nom_casella, posicio = gestiona_caixa_i_sort_retirar_numero(nom_casella)
+    casella = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] == nom_casella and mateixa_posicio(casella["posicio"], posicio), tauler)))
     casella[0]["jugadors"].append(jugador["icona"])
-    jugador["posicio"] = casella[0]["posicio"]
+    jugador["posicio"] = posicio
 
     afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
 
@@ -651,9 +669,11 @@ def main():
         afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
 
         #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-        actualitza_posicio(tauler, jugador_actual, total)
+        actualitza_posicio(tauler, jugador_actual, 25)
         
         imprimeix_taula(tauler)
+
+        time.sleep(10)
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
         casilla_jugador = jugador_actual["posicio"]

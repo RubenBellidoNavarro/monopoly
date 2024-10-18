@@ -672,7 +672,7 @@ def main():
         '''input_jugador(jugador_actual, jugadors, tauler)'''
         
         #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
-        if '''jugador_perd(jugador_actual)''': 
+        if jugador_perd(jugador_actual, jugadors): 
             #Se elimina de la lista de jugadores:
             '''borrar_jugador_partida(jugador_actual, ordre_jugadors)'''
 

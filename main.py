@@ -564,7 +564,10 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
         
     Retorna:
         -ha_perdut(bool): Variable que confirma o no si el jugador ha perdido la partida.'''
-    pass
+    nom_jugador = jugador_actual["nom"]
+    diners_jugador = jugadors[nom_jugador]["diners"]
+    ha_perdut = (diners_jugador <= 0)
+    return ha_perdut
 
 def main():
     tauler, jugadors, ordre_jugadors = genera_partida()

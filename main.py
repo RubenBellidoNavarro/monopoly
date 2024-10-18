@@ -581,6 +581,39 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
 
+def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
+    y cambia el valor de la clave 'es_preso' de 'jugadors' como 'True'.
+    
+    Input:
+        -jugador_actual(dict): Diccionario que contiene la información del jugador que está realizando el turno.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores de la partida.
+        -tauler(list): Lista de diccionarios, donde cada diccionario contiene la información 
+        de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
+        
+    Retorna: None'''
+    nom_jugador = jugador_actual["nom"]
+
+    #Modificamos los datos de 'jugadors':
+    jugadors[nom_jugador]["es_preso"] = True
+    jugadors[nom_jugador]["torns_preso"] = 0
+    jugadors[nom_jugador]["posicio"] = "Presó"
+
+    #Modificamos los datos de 'tauler':
+    for casella in tauler:
+        #Si el jugador está en esta casilla, que es distina de "Presó":
+        if (nom_jugador[0] in casella["jugadors"][0]) and (casella["nom"] != "Presó"):
+            pass
+
+        if casella["nom_complet"] == "Presó":
+            casella[jugadors][0] += nom_jugador[0]
+
+    #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False':
+    if "Sortir de la presó" in jugadors[nom_jugador]["cartes"]:
+        jugadors[nom_jugador]["es_preso"] = False
+        jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
+
+
 def main():
     tauler, jugadors, ordre_jugadors = genera_partida()
 
@@ -634,8 +667,7 @@ def main():
             elif casilla_jugador == "Anr pró":
                 pass
                 '''
-                #Actualizar posicion tauler (mandar a casilla Presso)
-                #Actualizar posicion jugadors (mandar a casila Presso)
+                enviar_jugador_preso(jugador_actual, jugadors, tauler)
 
                 #Actualizar clave "es_preso" del jugador a 'True'
                 #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.

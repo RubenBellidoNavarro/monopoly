@@ -665,17 +665,17 @@ def main():
         else:   
             dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
-        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            actualitza_posicio(tauler, jugador_actual, total)
+        
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
-        afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
-
-        #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-        actualitza_posicio(tauler, jugador_actual, 25)
+            afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
+            #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+            actualitza_posicio(tauler, jugador_actual, total)
         
         imprimeix_taula(tauler)
 
-        time.sleep(10)
+        time.sleep(5)
+        contador_jugador += 1
+        continue
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
         casilla_jugador = jugador_actual["posicio"]

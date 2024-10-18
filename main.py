@@ -655,31 +655,85 @@ def main():
         
         imprimeix_taula(tauler)
             
-"""
-    #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        if casilla == parking: #en esta casilla, el jugador sólo puede pasar
-            timear 1 segundo para que el usuario vea que ha ocuriido
-            contador_jugador += 1
-            continue #pasa al siguiente jugador
-        calcula_jugadas() #Decide qué jugadas puede realizar el jugador (retorna lista de jugadas)
-        mostra_jugadas() #imprime por pantalla las posibles jugadas
-        input_jugador() #Pide y gestiona el input que ponga el jugador (pedir input hasta que la jugada sea correcta)
+#   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
+        casilla_jugador = jugador_actual["posicio"]
+        if casilla_jugador in caselles_especials:
         
-        funciones especificas en funcion de imput de jugador (jugada1(), jugada2(), etc.)
-        if jugador_perd(): #comprueba si el jugador ha perdido (no tiene dinero)
-            borrar_jugador_partida() #Se elimina del diccionario de jugadores y del tablero
+            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
+                clearScreen()
+                imprimeix_taula()
+                imprimeix_informacio()
+                time.sleep(1)
+                contador_jugador += 1
+                continue
 
-        #   - Volvemos a imprimir tablero e información con la nueva jugada
+            elif casilla_jugador == "Anr pró":
+                pass
+                '''
+                #Actualizar posicion tauler (mandar a casilla Presso)
+                #Actualizar posicion jugadors (mandar a casila Presso)
+
+                #Actualizar clave "es_preso" del jugador a 'True'
+                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
+                '''
+
+            elif casilla_jugador == "Sortida":
+                #Añadimos 200€ al jugador:
+                nom_jugador = jugador_actual["nom"]
+                jugadors["nom"]["diners"] += 200
+
+                #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
+                clearScreen
+                imprimeix_taula()
+                imprimeix_informacio()
+                time.sleep(1)
+                contador_jugador += 1
+                continue
+
+            elif casilla_jugador == "Presó":
+                pass
+                '''
+                #Actualizar clave "es_preso" del jugador a 'True'
+                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
+                '''
+
+            elif casilla_jugador == "Sort":
+                pass
+                '''resultat = escollir_opcio_sort()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
+                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+
+            elif casilla_jugador == "Caixa":
+                pass
+                '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
+                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+            
+        #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+        '''calcula_possibles_jugadas(jugador_actual, jugadors, tauler)'''
+
+        #Actualiza la información del juego:
         clearScreen()
-        IMPRIMIR TABLERO
+        imprimeix_taula()
+        imprimeix_informacio()
+        '''imprimeis_possibles_jugades()''' #Retorna un 'str' con información de quién juega y qué jugadas puede hacer
+
+        #Demanda el input del usuario (pedir input hasta que la jugada sea correcta) y gestiona la realización del mismo:
+        '''input_jugador(jugador_actual, jugadors, tauler)'''
+        
+        #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
+        if '''jugador_perd(jugador_actual)''': 
+            #Se elimina de la lista de jugadores:
+            '''borrar_jugador_partida(jugador_actual, ordre_jugadors)'''
+
+        #Volvemos a imprimir tablero e información con la nueva jugada
+        clearScreen()
+        imprimeix_taula()
+        imprimeix_informacio()
     
-        if len(lista_jugadores) == 1: #Si solo queda un jugador en la partida === Si hay un ganador
+        #Si solo queda un jugador en la partida === Si hay un ganador (len(ordre_jugadors) == 1):
+        if '''hi_ha_guanyador(ordre_jugadors)''':
+            #Se realiza la impresión final por pantalla de la partida:
+            '''mostrar_ganador(ordre_jugadors)'''
             break
-
-        contador_jugador += 1
-
-    mostrar_ganador()
-    """
 #endregion Joc
 
 #region MAIN

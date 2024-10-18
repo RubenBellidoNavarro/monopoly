@@ -569,6 +569,21 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     ha_perdut = (diners_jugador <= 0)
     return ha_perdut
 
+def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
+    '''Retorna la lista actualizada de jugadores que siguen en la partida, eliminando de la lista previa
+    al jugador actual.
+    
+    Input:
+        -ordre_jugadors(list): Lista de jugadores que participan en la partida.
+        -jugador_actual(dict): Diccionario con información del jugador actual de la partida.
+        
+    Retorna:
+        -ordre_jugadors(list): Lista actualizada de jugadores que participan en la partida,
+        en la que se ha eliminado el jugador actual.'''
+    nom_jugador = jugador_actual["nom"]
+    ordre_jugadors.remove(nom_jugador)
+    return ordre_jugadors
+
 def main():
     tauler, jugadors, ordre_jugadors = genera_partida()
 
@@ -674,7 +689,7 @@ def main():
         #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Se elimina de la lista de jugadores:
-            '''borrar_jugador_partida(jugador_actual, ordre_jugadors)'''
+            ordre_jugadors = borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
         #Volvemos a imprimir tablero e información con la nueva jugada
         clearScreen()

@@ -1217,7 +1217,7 @@ def main():
         if '''hi_ha_guanyador(ordre_jugadors)''':
             #Se realiza la impresión final por pantalla de la partida:
             '''mostrar_ganador(ordre_jugadors)'''
-            break"""
+            break
 
 #endregion Joc
 

@@ -1066,6 +1066,18 @@ def preu_casa(casella:str, preu_caselles:dict) -> int:
     preu_casa = preu_caselles[casella]["comprar_casa"]
     return preu_casa
 
+def preu_hotel(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de compra de un hotel en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_hotel(int): Integer que representa el precio de un hotel en una determinada casilla.'''
+    preu_hotel = preu_caselles[casella]["comprar_hotel"]
+    return preu_hotel
+
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
     realizar el jugador actual.

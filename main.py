@@ -1352,7 +1352,6 @@ def main():
         time.sleep(2)
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        #casilla_jugador = jugador_actual["posicio"]
         if nom_casella in caselles_especials:
         
             if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
@@ -1394,21 +1393,24 @@ def main():
             
         else:
             contador_jugador += 1
-        #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
-        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors)
 
-        #Actualiza la información del juego:
+        #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors)
+        str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
+
+        #Actualizamos la información del juego:
         clearScreen()
         imprimeix_taula()
         imprimeix_informacio()
-        str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
+        #Imprimimos las posibles jugadas que puede hacer el jugador:
+        '''imprimeix_possibles_jugades(str_jugades)'''
 
-        #Demanda el input del usuario (pedir input hasta que la jugada sea correcta) y gestiona la realización del mismo:
+        #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
         '''input_jugador(jugador_actual, jugadors, tauler)'''
         
-        #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
+        #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
-            #Se elimina de la lista de jugadores:
+            #Eliminamos al jugador de la lista de jugadores:
             borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
         #Volvemos a imprimir tablero e información con la nueva jugada
@@ -1416,9 +1418,9 @@ def main():
         imprimeix_taula()
         imprimeix_informacio()
     
-        #Si solo queda un jugador en la partida === Si hay un ganador (len(ordre_jugadors) == 1):
+        #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):
-            #Se realiza la impresión final por pantalla de la partida:
+            #Realizamos la impresión final por pantalla de la partida, y rompemos el bucle de juego:
             '''mostrar_ganador(ordre_jugadors)'''
             break
 

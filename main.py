@@ -1078,6 +1078,26 @@ def preu_hotel(casella:str, preu_caselles:dict) -> int:
     preu_hotel = preu_caselles[casella]["comprar_hotel"]
     return preu_hotel
 
+def import_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total a pagar por estar en la casilla de un jugador, dependiendo de la cantidad de casas y hoteles.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -import_casella(int): Integer que representa la cantidad a pagar al jugador propietario por estar en una casilla.'''
+    #Buscamos la casilla en el tablero para saber cuántas casas y hoteles hay:
+    n_cases = num_cases(casella, tauler)
+    preu_cases = preu_casa(casella, preu_caselles)
+
+    n_hotels = num_hotels(casella, tauler)
+    preu_hotels = preu_hotel(casella, preu_caselles)
+
+    import_casella = n_cases*preu_cases + n_hotels*preu_hotels
+    return import_casella
+
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
     realizar el jugador actual.
@@ -1125,7 +1145,7 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
         possibles_jugades.append("preus")
 
     #Si el jugador no puede pagar el importe de estar en la casilla:
-    no_pot_pagar = (diners_jugador < importe_casella(casella_jugador, preus_caselles)) and (propietari_casella(casella_jugador, tauler) != nom_jugador)
+    no_pot_pagar = (diners_jugador < importe_casella(casella_jugador, preus_caselles, tauler)) and (propietari_casella(casella_jugador, tauler) != nom_jugador)
     if no_pot_pagar:
         possibles_jugades.append("preu banc")
         possibles_jugades.append("preu jugador")

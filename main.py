@@ -1259,6 +1259,27 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
                 if pot_pagar:
                     possibles_jugades.append(f"vendre a {potencial_comprador[0]}")
 
+def str_possibles_jugades(jugador:dict, possibles_jugades:list) -> str:
+    '''Retorna el string que se utilizará para imprimir las posibles opciones que
+    puede realizar el jugador en su turno.
+    
+    Input:
+        -jugador(dict): Diccionario que contiene la información del jugador actual.
+        -possibles_jugades(list): Lista que contiene strings con todas las opciones que puede ejecutar el jugador.
+        
+    Retorna:
+        -str_jugades(str): String que contiene información de quién juega y qué jugadas puede hacer.'''
+    icona_jugador = jugador["icona"]
+    qui_juga = f"Juga \"{icona_jugador}\", opcions: "
+
+    jugades_possibles = ""
+    for jugada in possibles_jugades:
+        jugades_possibles += f"{jugada}, "
+    
+    #En 'jugades_possibles', indexamos [:-2] para omitir el final del string ", ":
+    str_jugades = qui_juga + jugades_possibles[:-2]
+    return str_jugades
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1367,7 +1388,7 @@ def main():
         clearScreen()
         imprimeix_taula()
         imprimeix_informacio()
-        '''imprimeis_possibles_jugades()''' #Retorna un 'str' con información de quién juega y qué jugadas puede hacer
+        str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
 
         #Demanda el input del usuario (pedir input hasta que la jugada sea correcta) y gestiona la realización del mismo:
         '''input_jugador(jugador_actual, jugadors, tauler)'''

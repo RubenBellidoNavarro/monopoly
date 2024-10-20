@@ -948,6 +948,70 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
 
+def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
+    '''Comprueba si un jugador ha perdido la partida (tiene <= 0 en dinero), y devuelve
+    un booleano en función de esta comprobación.
+    
+    Input:
+        -jugador_actual(dict): Diccionario que contiene la información del jugador que está realizando el turno.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores de la partida.
+        
+    Retorna:
+        -ha_perdut(bool): Variable que confirma o no si el jugador ha perdido la partida.'''
+    nom_jugador = jugador_actual["nom"]
+    diners_jugador = jugadors[nom_jugador]["diners"]
+    ha_perdut = (diners_jugador <= 0)
+    return ha_perdut
+
+def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
+    '''Retorna la lista actualizada de jugadores que siguen en la partida, eliminando de la lista previa
+    al jugador actual.
+    
+    Input:
+        -ordre_jugadors(list): Lista de jugadores que participan en la partida.
+        -jugador_actual(dict): Diccionario con información del jugador actual de la partida.
+        
+    Retorna: None'''
+    nom_jugador = jugador_actual["nom"]
+    ordre_jugadors.remove(nom_jugador)
+
+def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
+    y cambia el valor de la clave 'es_preso' de 'jugadors' como 'True'.
+    
+    Input:
+        -jugador_actual(dict): Diccionario que contiene la información del jugador que está realizando el turno.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores de la partida.
+        -tauler(list): Lista de diccionarios, donde cada diccionario contiene la información 
+        de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
+        
+    Retorna: None'''
+    nom_jugador = jugador_actual["nom"]
+
+    #Modificamos los datos de 'jugadors':
+    jugadors[nom_jugador]["es_preso"] = True
+    jugadors[nom_jugador]["torns_preso"] = 0
+    jugadors[nom_jugador]["posicio"] = "Presó"
+
+    #Modificamos los datos de 'tauler':
+    for casella in tauler:
+        #Si el jugador está en esta casilla, que es distina de "Presó", lo eliminamos de la casilla:
+        if (nom_jugador[0] in casella["jugadors"][0]) and (casella["nom"] != "Presó"):
+            jugadores_casilla_actualizados = ""
+            #Recorremos los jugadores en la casilla. Los guardamos en una variable obviando al jugador actual:
+            for char in casella["jugadors"][0]:
+                if char != nom_jugador[0]:
+                    jugadores_casilla_actualizados += char
+            casella["jugadors"][0] = jugadores_casilla_actualizados
+        #Si el jugador está en la casilla "Presó", y no lo hemos añadido aún a la clave "jugadors":
+        if (casella["nom_complet"] == "Presó") and (nom_jugador[0] not in casella["jugadors"][0]):
+            casella["jugadors"][0] += nom_jugador[0]
+
+    #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False' y retiramos la carta:
+    if "Sortir de la presó" in jugadors[nom_jugador]["cartes"]:
+        jugadors[nom_jugador]["es_preso"] = False
+        jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1019,14 +1083,7 @@ def main():
                 continue
 
             elif nom_casella == "Anr pró":
-                pass
-                '''
-                #Actualizar posicion tauler (mandar a casilla Presso)
-                #Actualizar posicion jugadors (mandar a casila Presso)
-
-                #Actualizar clave "es_preso" del jugador a 'True'
-                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
-                '''
+                enviar_jugador_preso(jugador_actual, jugadors, tauler)
 
             elif nom_casella == "Sortida":
                 #Añadimos 200€ al jugador:
@@ -1042,11 +1099,7 @@ def main():
                 continue
 
             elif nom_casella == "Presó":
-                pass
-                '''
-                #Actualizar clave "es_preso" del jugador a 'True'
-                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
-                '''
+                enviar_jugador_preso(jugador_actual, jugadors, tauler)
 
             elif nom_casella == "Sort":
                 gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
@@ -1073,9 +1126,9 @@ def main():
         '''input_jugador(jugador_actual, jugadors, tauler)'''
         
         #Comprueba si el jugador ha perdido (no tiene dinero), retornando un 'bool':
-        if '''jugador_perd(jugador_actual)''': 
+        if jugador_perd(jugador_actual, jugadors): 
             #Se elimina de la lista de jugadores:
-            '''borrar_jugador_partida(jugador_actual, ordre_jugadors)'''
+            borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
         #Volvemos a imprimir tablero e información con la nueva jugada
         clearScreen()
@@ -1087,6 +1140,7 @@ def main():
             #Se realiza la impresión final por pantalla de la partida:
             '''mostrar_ganador(ordre_jugadors)'''
             break"""
+
 #endregion Joc
 
 #region MAIN

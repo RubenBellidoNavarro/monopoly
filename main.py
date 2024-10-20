@@ -1303,7 +1303,7 @@ def main():
     #   - Añandimos a la casilla 'Salida' todos los jugadores
 
     # Iniciar bucle de juego:
-    tauler, jugadors, ordre_jugadors = genera_partida()
+    tauler, jugadors, ordre_jugadors, preus_caselles = genera_partida()
 
     contador_jugador = 0    
 
@@ -1395,7 +1395,7 @@ def main():
         else:
             contador_jugador += 1
         #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
-        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler)
+        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors)
 
         #Actualiza la información del juego:
         clearScreen()

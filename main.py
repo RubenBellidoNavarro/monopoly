@@ -1069,7 +1069,7 @@ def preu_terreny(casella:str, preu_caselles:dict) -> int:
     preu_terreny = preu_caselles[casella]["preu_terreny"]
     return preu_terreny
 
-def preu_casa(casella:str, preu_caselles:dict) -> int:
+def preu_comprar_casa(casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una casa en una determinada casilla.
     
     Input:
@@ -1081,7 +1081,7 @@ def preu_casa(casella:str, preu_caselles:dict) -> int:
     preu_casa = preu_caselles[casella]["comprar_casa"]
     return preu_casa
 
-def preu_hotel(casella:str, preu_caselles:dict) -> int:
+def preu_comprar_hotel(casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de un hotel en una determinada casilla.
     
     Input:
@@ -1105,10 +1105,10 @@ def import_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
         -import_casella(int): Integer que representa la cantidad a pagar al jugador propietario por estar en una casilla.'''
     #Buscamos la casilla en el tablero para saber cuántas casas y hoteles hay:
     n_cases = num_cases(casella, tauler)
-    preu_cases = preu_casa(casella, preu_caselles)
+    preu_cases = preu_comprar_casa(casella, preu_caselles)
 
     n_hotels = num_hotels(casella, tauler)
-    preu_hotels = preu_hotel(casella, preu_caselles)
+    preu_hotels = preu_comprar_hotel(casella, preu_caselles)
 
     import_casella = n_cases*preu_cases + n_hotels*preu_hotels
     return import_casella
@@ -1164,14 +1164,14 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
     #Si el jugador puede comprar una casa:
     jugador_es_propietari = (propietari_casella(casella_jugador, tauler) == nom_jugador)
     menys_de_4_cases = (num_cases(casella_jugador, tauler) < 4)
-    pot_pagar_casa = (diners_jugador > preu_casa(casella_jugador, preus_caselles))
+    pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador, preus_caselles))
     if jugador_es_propietari and menys_de_4_cases and pot_pagar_casa:
         possibles_jugades.append("comprar casa")
 
     #Si el jugador puede comprar un hotel:
     jugador_es_propietari = (propietari_casella(casella_jugador, tauler) == nom_jugador)
     minim_2_cases = (num_cases(casella_jugador, preus_caselles) >= 2)
-    pot_pagar_hotel = (diners_jugador > preu_hotel(casella_jugador, preus_caselles))
+    pot_pagar_hotel = (diners_jugador > preu_comprar_hotel(casella_jugador, preus_caselles))
     if jugador_es_propietari and minim_2_cases and pot_pagar_hotel:
         possibles_jugades.append("comprar hotel")
 

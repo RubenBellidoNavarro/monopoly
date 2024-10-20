@@ -1012,6 +1012,69 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
         jugadors[nom_jugador]["es_preso"] = False
         jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
 
+def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
+    '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
+    realizar el jugador actual.
+    
+    Input:
+        -jugador_actual(dict): Diccionario que contiene la información sobre el jugador actual
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores (inluido el actual)
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        -ordre_jugadors(list): Lista de los jugadores que están participando en la partida
+        
+    Retorna:
+        -possibles_jugades(list): Lista de strings que representan cada una de las posibles jugadas
+        que puede realizar el jugador durante su turno.'''
+    nom_jugador = jugador_actual["nom"]
+    casella_jugador = jugador_actual["posicio"][0]
+    diners_jugador = jugador_actual["diners"]
+
+    #Iniciamos la variable resultante con la opción "passar" incluida, que siempre estará disponible:
+    possibles_jugades = ["passar"]
+
+    #Si el jugador puede comprar un terreno:
+    terreny_lliure = (propietari_casella(casella_jugador) == "banca")
+    pot_pagar_terreny = (diners_jugador > preu_terreny(casella_jugador))
+    casella_no_es_especial = casella_jugador not in caselles_especials
+    if terreny_lliure and pot_pagar_terreny and casella_no_es_especial:
+        possibles_jugades.append("comprar terreny")
+
+    #Si el jugador puede comprar una casa:
+    jugador_es_propietari = (propietari_casella(casella_jugador) == nom_jugador)
+    menys_de_4_cases = (num_cases(casella_jugador) < 4)
+    pot_pagar_casa = (diners_jugador > preu_casa(casella_jugador))
+    if jugador_es_propietari and menys_de_4_cases and pot_pagar_casa:
+        possibles_jugades.append("comprar casa")
+
+    #Si el jugador puede comprar un hotel:
+    jugador_es_propietari = (propietari_casella(casella_jugador) == nom_jugador)
+    minim_2_cases = (num_cases(casella_jugador) >= 2)
+    pot_pagar_hotel = (diners_jugador > preu_hotel(casella_jugador))
+    if jugador_es_propietari and minim_2_cases and pot_pagar_hotel:
+        possibles_jugades.append("comprar hotel")
+
+    #Si el jugador es propietario de la casilla (y quiere consultar precios):
+    jugador_es_propietari = (propietari_casella(casella_jugador) == nom_jugador)
+    if jugador_es_propietari:
+        possibles_jugades.append("preus")
+
+    #Si el jugador no puede pagar el importe de estar en la casilla:
+    no_pot_pagar = (diners_jugador < importe_casella(casella_jugador)) and (propietari_casella(casella_jugador) != nom_jugador)
+    if no_pot_pagar:
+        possibles_jugades.append("preu banc")
+        possibles_jugades.append("preu jugador")
+        possibles_jugades.append("vendre al banc")
+
+        #Comprobamos si podemos vender a algún otro jugador:
+        for potencial_comprador in ordre_jugadors:
+            jugador_iterat_no_es_el_actual = (nom_jugador != potencial_comprador)
+            if jugador_iterat_no_es_el_actual:
+                diners_potencial_comprador = jugadors[potencial_comprador]["diners"]
+                #El potencial comprador ha de poder pagar el 90% del precio de las propiedades del jugador:
+                pot_pagar = (diners_potencial_comprador > (preu_total_propietats(nom_jugador) * 0.9))
+                if pot_pagar:
+                    possibles_jugades.append(f"vendre a {potencial_comprador[0]}")
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1113,8 +1176,8 @@ def main():
             
         else:
             contador_jugador += 1
-        """#Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
-        '''calcula_possibles_jugadas(jugador_actual, jugadors, tauler)'''
+        #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler)
 
         #Actualiza la información del juego:
         clearScreen()

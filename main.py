@@ -1150,6 +1150,27 @@ def import_lloguer_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
     import_casella = (n_cases * preu_lloguer_cases) + (n_hotels * preu_lloguer_hotels)
     return import_casella
 
+def preu_total_casella(casella:str, preus_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total que ha pagado el propietario por una casilla (terreno, casas y hoteles).
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -preu_total_casella'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            preu_terreny = preu_terreny(casella, preus_caselles)
+            n_cases = num_cases(casella, tauler)
+            preu_comprar_cases = preu_comprar_casa(casella, preus_caselles)
+            n_hotels = num_hotels(casella, preus_caselles)
+            preu_comprar_hotels = preu_comprar_hotel(casella, preus_caselles)
+
+            preu_total_casella = preu_terreny + (n_cases * preu_comprar_cases) + (n_hotels * preu_comprar_hotels)
+            return preu_total_casella
+
 def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> int:
     '''Retorna el precio total que ha pagado el jugador por cada terreno, casa y hotel que posea.
     
@@ -1166,7 +1187,7 @@ def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> 
     for dict_casella in tauler:
         nom_casella = dict_casella["nom_complet"]
         if jugador_es_propietari(nom_jugador, nom_casella, tauler):
-            preu_casella_propietats = preu_venta_casella(nom_casella, preus_caselles, tauler)
+            preu_casella_propietats = preu_total_casella(nom_casella, preus_caselles, tauler)
             preu_total_propietats += preu_casella_propietats
     
     return preu_total_propietats

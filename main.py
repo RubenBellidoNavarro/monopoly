@@ -1012,6 +1012,21 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
         jugadors[nom_jugador]["es_preso"] = False
         jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
 
+def propietari_casella(casella:str, tauler:list) -> str:
+    '''Retorna un string con el propietario de la casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -propietari_casella(str): String que contiene el nombre el jugador que posee la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            propietari_casella = dict_casella["propietari"]
+            return propietari_casella
+
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
     realizar el jugador actual.

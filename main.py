@@ -1057,6 +1057,18 @@ def num_hotels(casella:str, tauler:list) -> int:
             num_hotels = dict_casella["hotels"]
             return num_hotels
         
+def preu_lloguer_casa(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de alquiler de una casa en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_lloguer_casa(int): Integer que representa el precio de alquilar una casa en una determinada casilla.'''
+    preu_lloguer_casa = preu_caselles[casella]["lloguer_casa"]
+    return preu_lloguer_casa
+        
 def preu_terreny(casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una determinada casilla.
     

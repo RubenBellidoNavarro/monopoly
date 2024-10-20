@@ -793,7 +793,7 @@ def afegir_jugada(accio: str) -> None:
     jugades.append(accio)
     imprimeix_jugades(jugades)
 
-def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict) -> None:
+def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Sort'.
         1. Escogemos una carta al azar de suerte.
         2. Realizamos las acciones correspondientes.
@@ -836,7 +836,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict) -> None:
     elif carta == "Anar sortida":
         afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
         jugador["diners"] += 200
-        afegir_jugada(f"\"{jugador["icona"]}\" rep 200€")
+        afegir_jugada(f"+$\"{jugador["icona"]}\" rep 200€")
         casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
         index_actual = caselles_ordenades.index(casella_actual[0])
         tirada = 24 - index_actual
@@ -851,12 +851,12 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict) -> None:
         actualitza_posicio(tauler, jugador, tirada)
     elif carta == "Fer reparacions a les propietats":
         cases = sum(list(map(lambda casella: casella["cases"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 25
-        afegir_jugada(f"\"{jugador["icona"]}\" paga {cases}€ per les seves cases")
+        afegir_jugada(f"-$\"{jugador["icona"]}\" paga {cases}€ per les seves cases")
         hotels = sum(list(map(lambda casella: casella["hotels"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 100
-        afegir_jugada(f"\"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
+        afegir_jugada(f"-$\"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
         jugador["diners"] -= (cases + hotels)
     elif carta == "Ets escollit alcalde":
-        afegir_jugada(f"\"{jugador["icona"]}\" rep 50€ de cada jugador")
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 50€ de cada jugador")
         total = 0
         for nom_jugador in ordre:
             if nom_jugador == jugador["nom"]:
@@ -969,7 +969,7 @@ def main():
                 '''
 
             elif nom_casella == "Sort":
-                gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors)
+                gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
                 time.sleep(5)
                 contador_jugador += 1
 

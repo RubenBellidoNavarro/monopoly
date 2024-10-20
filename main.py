@@ -344,6 +344,190 @@ def ordre_tirada(jugadors):
     return ordre_jugadors
 #endregion GeneracionPartida
 
+#region ConsultarDatos
+
+def propietari_casella(casella:str, tauler:list) -> str:
+    '''Retorna un string con el propietario de la casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -propietari_casella(str): String que contiene el nombre el jugador que posee la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            propietari_casella = dict_casella["propietari"]
+            return propietari_casella
+        
+def jugador_es_propietari(nom_jugador:str, casella:str, tauler:list) -> bool:
+    '''Retorna un booleano True en caso de que el jugador sea el propietario de la casilla.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador.
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -jugador_es_propietari(bool): Booleano que informa sobre si el jugador es el propietario de la casilla.'''
+    jugador_es_propietari = (propietari_casella(casella, tauler) == nom_jugador)
+    return jugador_es_propietari
+        
+def num_cases(casella:str, tauler:list) -> int:
+    '''Retorna el número de casas que hay en una determinada casilla del tablero.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -num_cases(int): Integer que representa el número de casas que hay en la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            num_cases = dict_casella["cases"]
+            return num_cases
+        
+def num_hotels(casella:str, tauler:list) -> int:
+    '''Retorna el número de hoteles que hay en una determinada casilla del tablero.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -num_hotels(int): Integer que representa el número de hoteles que hay en la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            num_hotels = dict_casella["hotels"]
+            return num_hotels
+        
+def preu_lloguer_casa(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de alquiler de una casa en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_lloguer_casa(int): Integer que representa el precio de alquilar una casa en una determinada casilla.'''
+    preu_lloguer_casa = preu_caselles[casella]["lloguer_casa"]
+    return preu_lloguer_casa
+
+def preu_lloguer_hotel(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de alquiler de un hotel en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_lloguer_hotel(int): Integer que representa el precio de alquilar un hotel en una determinada casilla.'''
+    preu_lloguer_hotel= preu_caselles[casella]["lloguer_hotel"]
+    return preu_lloguer_hotel
+        
+def preu_terreny(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de compra de una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_terreny(int): Integer que representa el precio de una casilla/terreno.'''
+    preu_terreny = preu_caselles[casella]["preu_terreny"]
+    return preu_terreny
+
+def preu_comprar_casa(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de compra de una casa en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_casa(int): Integer que representa el precio de una casa en una determinada casilla.'''
+    preu_casa = preu_caselles[casella]["comprar_casa"]
+    return preu_casa
+
+def preu_comprar_hotel(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de compra de un hotel en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_hotel(int): Integer que representa el precio de un hotel en una determinada casilla.'''
+    preu_hotel = preu_caselles[casella]["comprar_hotel"]
+    return preu_hotel
+
+def import_lloguer_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total a pagar por estar en la casilla de un jugador, dependiendo de la cantidad de casas y hoteles.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -import_casella(int): Integer que representa la cantidad a pagar al jugador propietario por estar en una casilla.'''
+    #Buscamos la casilla en el tablero para saber cuántas casas y hoteles hay:
+    n_cases = num_cases(casella, tauler)
+    preu_lloguer_cases = preu_lloguer_casa(casella, preu_caselles)
+
+    n_hotels = num_hotels(casella, tauler)
+    preu_lloguer_hotels = preu_lloguer_hotel(casella, preu_caselles)
+
+    import_casella = (n_cases * preu_lloguer_cases) + (n_hotels * preu_lloguer_hotels)
+    return import_casella
+
+def preu_total_casella(casella:str, preus_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total que ha pagado el propietario por una casilla (terreno, casas y hoteles).
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -preu_total_casella'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            preu_terreny = preu_terreny(casella, preus_caselles)
+            n_cases = num_cases(casella, tauler)
+            preu_comprar_cases = preu_comprar_casa(casella, preus_caselles)
+            n_hotels = num_hotels(casella, preus_caselles)
+            preu_comprar_hotels = preu_comprar_hotel(casella, preus_caselles)
+
+            preu_total_casella = preu_terreny + (n_cases * preu_comprar_cases) + (n_hotels * preu_comprar_hotels)
+            return preu_total_casella
+
+def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total que ha pagado el jugador por cada terreno, casa y hotel que posea.
+    
+    Inputs:
+        -nom_jugador(str): String que representa el nombre del jugador.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -preu_total_propietats(int): Integer que representa el precio total que ha pagado el jugador
+        por cada terreno, casa y hotel que posee.'''
+    preu_total_propietats = 0
+
+    for dict_casella in tauler:
+        nom_casella = dict_casella["nom_complet"]
+        if jugador_es_propietari(nom_jugador, nom_casella, tauler):
+            preu_casella_propietats = preu_total_casella(nom_casella, preus_caselles, tauler)
+            preu_total_propietats += preu_casella_propietats
+    
+    return preu_total_propietats
+
+#endregion ConsultarDatos
+
 #region GestioBanca
 def afegir_diners_banca(banca):
     '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
@@ -1011,186 +1195,6 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
     if "Sortir de la presó" in jugadors[nom_jugador]["cartes"]:
         jugadors[nom_jugador]["es_preso"] = False
         jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
-
-def propietari_casella(casella:str, tauler:list) -> str:
-    '''Retorna un string con el propietario de la casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
-        
-    Retorna:
-        -propietari_casella(str): String que contiene el nombre el jugador que posee la casilla.'''
-    #Buscamos la casilla en el tablero:
-    for dict_casella in tauler:
-        if dict_casella["nom_complet"] == casella:
-            propietari_casella = dict_casella["propietari"]
-            return propietari_casella
-        
-def jugador_es_propietari(nom_jugador:str, casella:str, tauler:list) -> bool:
-    '''Retorna un booleano True en caso de que el jugador sea el propietario de la casilla.
-    
-    Input:
-        -nom_jugador(str): String que representa el nombre del jugador.
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
-        
-    Retorna:
-        -jugador_es_propietari(bool): Booleano que informa sobre si el jugador es el propietario de la casilla.'''
-    jugador_es_propietari = (propietari_casella(casella, tauler) == nom_jugador)
-    return jugador_es_propietari
-        
-def num_cases(casella:str, tauler:list) -> int:
-    '''Retorna el número de casas que hay en una determinada casilla del tablero.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
-        
-    Retorna:
-        -num_cases(int): Integer que representa el número de casas que hay en la casilla.'''
-    #Buscamos la casilla en el tablero:
-    for dict_casella in tauler:
-        if dict_casella["nom_complet"] == casella:
-            num_cases = dict_casella["cases"]
-            return num_cases
-        
-def num_hotels(casella:str, tauler:list) -> int:
-    '''Retorna el número de hoteles que hay en una determinada casilla del tablero.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
-        
-    Retorna:
-        -num_hotels(int): Integer que representa el número de hoteles que hay en la casilla.'''
-    #Buscamos la casilla en el tablero:
-    for dict_casella in tauler:
-        if dict_casella["nom_complet"] == casella:
-            num_hotels = dict_casella["hotels"]
-            return num_hotels
-        
-def preu_lloguer_casa(casella:str, preu_caselles:dict) -> int:
-    '''Retorna el precio de alquiler de una casa en una determinada casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        
-    Retorna:
-        -preu_lloguer_casa(int): Integer que representa el precio de alquilar una casa en una determinada casilla.'''
-    preu_lloguer_casa = preu_caselles[casella]["lloguer_casa"]
-    return preu_lloguer_casa
-
-def preu_lloguer_hotel(casella:str, preu_caselles:dict) -> int:
-    '''Retorna el precio de alquiler de un hotel en una determinada casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        
-    Retorna:
-        -preu_lloguer_hotel(int): Integer que representa el precio de alquilar un hotel en una determinada casilla.'''
-    preu_lloguer_hotel= preu_caselles[casella]["lloguer_hotel"]
-    return preu_lloguer_hotel
-        
-def preu_terreny(casella:str, preu_caselles:dict) -> int:
-    '''Retorna el precio de compra de una determinada casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        
-    Retorna:
-        -preu_terreny(int): Integer que representa el precio de una casilla/terreno.'''
-    preu_terreny = preu_caselles[casella]["preu_terreny"]
-    return preu_terreny
-
-def preu_comprar_casa(casella:str, preu_caselles:dict) -> int:
-    '''Retorna el precio de compra de una casa en una determinada casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        
-    Retorna:
-        -preu_casa(int): Integer que representa el precio de una casa en una determinada casilla.'''
-    preu_casa = preu_caselles[casella]["comprar_casa"]
-    return preu_casa
-
-def preu_comprar_hotel(casella:str, preu_caselles:dict) -> int:
-    '''Retorna el precio de compra de un hotel en una determinada casilla.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        
-    Retorna:
-        -preu_hotel(int): Integer que representa el precio de un hotel en una determinada casilla.'''
-    preu_hotel = preu_caselles[casella]["comprar_hotel"]
-    return preu_hotel
-
-def import_lloguer_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
-    '''Retorna el precio total a pagar por estar en la casilla de un jugador, dependiendo de la cantidad de casas y hoteles.
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
-        
-    Retorna:
-        -import_casella(int): Integer que representa la cantidad a pagar al jugador propietario por estar en una casilla.'''
-    #Buscamos la casilla en el tablero para saber cuántas casas y hoteles hay:
-    n_cases = num_cases(casella, tauler)
-    preu_lloguer_cases = preu_lloguer_casa(casella, preu_caselles)
-
-    n_hotels = num_hotels(casella, tauler)
-    preu_lloguer_hotels = preu_lloguer_hotel(casella, preu_caselles)
-
-    import_casella = (n_cases * preu_lloguer_cases) + (n_hotels * preu_lloguer_hotels)
-    return import_casella
-
-def preu_total_casella(casella:str, preus_caselles:dict, tauler:list) -> int:
-    '''Retorna el precio total que ha pagado el propietario por una casilla (terreno, casas y hoteles).
-    
-    Input:
-        -casella(str): String con el nombre completo de la casilla del tablero.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
-        
-    Retorna:
-        -preu_total_casella'''
-    for dict_casella in tauler:
-        if dict_casella["nom_complet"] == casella:
-            preu_terreny = preu_terreny(casella, preus_caselles)
-            n_cases = num_cases(casella, tauler)
-            preu_comprar_cases = preu_comprar_casa(casella, preus_caselles)
-            n_hotels = num_hotels(casella, preus_caselles)
-            preu_comprar_hotels = preu_comprar_hotel(casella, preus_caselles)
-
-            preu_total_casella = preu_terreny + (n_cases * preu_comprar_cases) + (n_hotels * preu_comprar_hotels)
-            return preu_total_casella
-
-def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> int:
-    '''Retorna el precio total que ha pagado el jugador por cada terreno, casa y hotel que posea.
-    
-    Inputs:
-        -nom_jugador(str): String que representa el nombre del jugador.
-        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
-        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
-        
-    Retorna:
-        -preu_total_propietats(int): Integer que representa el precio total que ha pagado el jugador
-        por cada terreno, casa y hotel que posee.'''
-    preu_total_propietats = 0
-
-    for dict_casella in tauler:
-        nom_casella = dict_casella["nom_complet"]
-        if jugador_es_propietari(nom_jugador, nom_casella, tauler):
-            preu_casella_propietats = preu_total_casella(nom_casella, preus_caselles, tauler)
-            preu_total_propietats += preu_casella_propietats
-    
-    return preu_total_propietats
 
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede

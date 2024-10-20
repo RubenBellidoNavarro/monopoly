@@ -1113,6 +1113,27 @@ def import_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
     import_casella = n_cases*preu_cases + n_hotels*preu_hotels
     return import_casella
 
+def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> int:
+    '''Retorna el precio total que ha pagado el jugador por cada terreno, casa y hotel que posea.
+    
+    Inputs:
+        -nom_jugador(str): String que representa el nombre del jugador.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -preu_total_propietats(int): Integer que representa el precio total que ha pagado el jugador
+        por cada terreno, casa y hotel que posee.'''
+    preu_total_propietats = 0
+
+    for dict_casella in tauler:
+        nom_casella = dict_casella["nom_complet"]
+        if jugador_es_propietari(nom_jugador, nom_casella, tauler):
+            preu_casella_propietats = preu_venta_casella(nom_casella, preus_caselles, tauler)
+            preu_total_propietats += preu_casella_propietats
+    
+    return preu_total_propietats
+
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
     realizar el jugador actual.
@@ -1160,7 +1181,7 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
         possibles_jugades.append("preus")
 
     #Si el jugador no puede pagar el importe de estar en la casilla:
-    no_pot_pagar = (diners_jugador < importe_casella(casella_jugador, preus_caselles, tauler)) and (propietari_casella(casella_jugador, tauler) != nom_jugador)
+    no_pot_pagar = (diners_jugador < import_casella(casella_jugador, preus_caselles, tauler)) and (propietari_casella(casella_jugador, tauler) != nom_jugador)
     if no_pot_pagar:
         possibles_jugades.append("preu banc")
         possibles_jugades.append("preu jugador")

@@ -861,12 +861,13 @@ def genera_partida() -> tuple:
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
+    preus_caselles = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
     gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
-    return tauler, jugadors, ordre_jugadors
+    return tauler, jugadors, ordre_jugadors, preus_caselles
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
     '''Validamos si una posición es igual a otra

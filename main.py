@@ -628,9 +628,9 @@ def imprimeix_jugades(accions):
         mou_cursor(posicio_x, posicio_y)
         if text_inici_accio in accio:
             print(f"{simbol_inici_accio} ", end="")
-            print(accio)
+            print(accio.ljust(amplada - 2))
         else:
-            print(f"  {accio}")
+            print(f"  {accio.ljust(amplada - 2)}")
         
         # Aumentamos en 1 la línea
         posicio_y += 1

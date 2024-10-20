@@ -803,6 +803,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
         -tauler(list): Lista de diccionarios la información de todas las casillas.
         -ordre(list): Lista con el orden de los jugadores en la partida.
         -jugadors(dict): Diccionario con la información de todos los jugadores.
+        -banca(int): Candidad de dinero que tiene la banca
 
     Retorna: No retorna nada'''
     carta = random.choice(cartes_sort)
@@ -877,8 +878,8 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     Input:
         -jugador(dict): Diccionario con toda la información de un jugador.
         -tauler(list): Lista de diccionarios la información de todas las casillas.
-        -ordre(list): Lista con el orden de los jugadores en la partida.
         -jugadors(dict): Diccionario con la información de todos los jugadores.
+        -banca(int): Candidad de dinero que tiene la banca
 
     Retorna: No retorna nada'''
     carta = random.choice(cartes_caixa)

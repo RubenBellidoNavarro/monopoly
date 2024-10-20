@@ -635,7 +635,7 @@ def main():
     while True:
 
         #Miramos al principio de cada jugada si el contador rebasa la lista de jugadores. Si es así, se reinicia a 0.
-        if contador_jugador > len(lista_jugadores):
+        if contador_jugador > len(ordre_jugadors):
             contador_jugador = 0
 
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]

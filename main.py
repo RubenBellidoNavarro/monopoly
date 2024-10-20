@@ -161,12 +161,22 @@ jugades = []
 
 #region FuncionesInteraccionConsola
 def clearScreen():
+    '''Limpiamos la pantalla de la terminal.
+
+    Retorna: No retorna nada'''
     if os.name == 'nt':     # Si estàs a Windows
         os.system('cls')
     else:                   # Si estàs a Linux o macOS
         os.system('clear')
 
 def mou_cursor(x, y):
+    '''Movemos el cursor del terminal a la posición seleccionada.
+
+    Input:
+        -x(int): Posición en X de la posición a la que debemos mover el cursor.
+        -y(int): Posición en Y de la posición a la que debemos mover el cursor.
+
+    Retorna: No retorna nada'''
     # Escapamos y nos movemos a la posición indicada
     sys.stdout.write(f"\033[{y};{x}H")
     # Forzamos un aplicado del buffer
@@ -338,10 +348,23 @@ def gestiona_diners_banca(banca:int):
 
 #region ImpresionTablero
 def imprimeix_separador():
+    '''Imprimimos por pantalla las dos líneas divisorias del tablero (final de la primera y última fila)
+        
+    Retorna: No retorna nada'''
     amplada = casella_mesures["ampla"]
     print(f"+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+")
 
 def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
+    '''Imprimimos las casillas verticales. Se imprimirán las 2 filas con datos y el separador inferior. En caso de estar encima de la final vertical inferior, sólo se imprimirán las 2 filas con datos
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+    
+    Retorna: No retorna nada'''
     amplada = casella_mesures["ampla"]
     final_linia = "|"
     separador = f"+{"".ljust(amplada, "-")}+"
@@ -378,6 +401,16 @@ def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
         print(string_final)
 
 def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
+    '''Imprimimos las dos filas verticales. Gestionamos si nos encontramos en la fila superior o inferior para cambiar el orden de impresión de los datos.
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+
+    Retorna: No retorna nada'''
     primera_linia = "+"
     if cases > 0:
         primera_linia += f"{"".ljust(4, "-")}{cases}C"
@@ -421,6 +454,16 @@ def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
 
 
 def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
+    '''Gestionamos si la casilla a imprimir se encuentra en horizontal o vertical
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+        
+    Retorna: No retorna nada'''
     # Imprimimos por pantalla la casilla 
     # Gestionamos:
     #   - Impresión del nombre
@@ -433,12 +476,26 @@ def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
         imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio)
 
 def imprimeix_fila(fila_caselles):
+    '''Recorremos la fila de casillas y vamos imprimiendo cada una de las casillas.
+    
+    Input:
+        -fila_caselles(list): Lista con todas las casillas de una fila del tablero
+        
+    Retorna: No retorna nada'''
     # Recibimos una fila del tablero.
     # Iteramos por la fila e imprimimos cada una de las casillas de la fila
     for casella in fila_caselles:
             imprimeix_casella(casella["nom_acortat"], casella["cases"], casella["hotels"], casella["jugadors"], casella["posicio"])
 
 def imprimeix_taula(tauler):
+    '''Gestionamos la impresión completa del tablero.
+        1. Vamos sacando las diferentes filas del tablero y las vamos imprimiendo.
+        2. Imprimimos los separadores de las filas horizontales y verticales.
+    
+    Input:
+        -tauler(list): Lista que contiene los diccionarios de las diferentes casillas.
+        
+    Retorna: No retorna nada'''
     # Imprimimos del tablero, llamando cada de las fila con los separadores
     for index in posicions_caselles_files:
         fila = list(filter(lambda casella: casella["posicio"][0] == index, tauler))
@@ -452,6 +509,12 @@ def imprimeix_taula(tauler):
 
 #region ImprimirInformacion
 def imprimeix_informacio_banca(banca):
+    '''Gestionamos la impresión de la información de la banca
+    
+    Input:
+        -banca(int): Cantidad de dinero que tiene actualmente la banca.
+        
+    Retorna: No retorna nada'''
     # Imprimimos la información de la banca
     #   Banca:
     #   Diners: 1838734
@@ -461,6 +524,13 @@ def imprimeix_informacio_banca(banca):
     print(f"Diners: {banca}")
 
 def imprimeix_informacio_jugador(index, jugador):
+    '''Gestionamos la impresión de la información de un jugador
+    
+    Input:
+        -index(int): Nos indica qué número de jugador nos está llegando. Utilizado para saber la posición en la que debemos posicionar el cursor e imprimir su información
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: No retorna nada'''
     # Imprimimos la información de la banca
     #   Jugador Groc:
     #   Carrers: 2834
@@ -477,9 +547,7 @@ def imprimeix_informacio_jugador(index, jugador):
             print(f"{propietat}", end="")
             if index_ != longitud - 1:
                 print(", ", end="")
-
     else:
-
         print("(cap)")
 
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 2)
@@ -497,8 +565,14 @@ def imprimeix_informacio_jugador(index, jugador):
         print("(res)")  
 
 def imprimeix_informacio(banca, jugadors):
-    # Gestiona la impresión a la izquierda del tablero
-    # ¡MIRAR COMO CAMBIAR LA POSICIÓN DEL PUNTERO DE CONSOLA!
+    '''Gestionamos la impresión de la información a la derecha de tablero
+    
+    Input:
+        -banca(int): Cantidad de dinero de la banca.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+
+    Retorna: No retorna nada'''
+    # Gestiona la impresión a la derecha del tablero
     imprimeix_informacio_banca(banca)
 
     for index, jugador in enumerate(jugadors.values()):
@@ -507,6 +581,12 @@ def imprimeix_informacio(banca, jugadors):
 
 #region ImprimirJugadas
 def imprimeix_jugades(accions):
+    '''Gestionamos la impresión de las acciones transcurridas durante el juego. El máximo de líneas es 13.
+    
+    Input:
+        -accions(list): Lista de strings con las jugadas a imprimir.
+
+    Retorna: No retorna nada'''
     # Imprimimos en el espacio central del tablero 13 líneas de acciones realizadas por los jugadores
     amplada = tauler_mesures["ampla_total"] - (tauler_mesures["ampla_partida"] * 2)
     posicio_x = posicio_jugades[1]
@@ -539,12 +619,30 @@ def imprimeix_jugades(accions):
 
 #region Joc
 def afegeix_jugadors_sortida(jugadors: dict, ordre: list, tauler: list) -> None:
+    '''Añadimos la posición de la casilla 'Sortida' a los jugadores y añadimos los iconos de los jugadores a la casilla.
+    
+    Input:
+        -jugadors(dict): Diccionarios con la información de todos los jugadores.
+        -ordre(list): Lista con el ordre de jugadas de los jugadores. El valor de cada item de la lista es la clave del diccionario de jugadors.
+        -tauler(list): Lista que contiene diccionarios con la información de las casillas.
+
+    Retorna: No retorna nada'''
     casella_sortida = list(filter(lambda casella: casella["nom_complet"] == "Sortida", tauler))
     for jugador in ordre:
         jugadors[jugador]["posicio"] = casella_sortida[0]["posicio"]
         casella_sortida[0]["jugadors"].append(jugadors[jugador]["icona"])
 
 def genera_partida() -> tuple:
+    '''Gestionamos la generación de una nueva partida.
+        1. Generamos el tablero (en caso de volver a jugar, se sobreescribirán los correspondientes datos).
+        2. Generamos los jugadores (en caso de volver a jugar, se sobreescribirán los correspondientes datos).
+        3. Ordenamos de manera aleatoria los jugadores.
+        4. Añadimos dinero a la banca, en caso que sea necesario.
+        5. Pagamos a todos los jugadores con 2000€.
+        6. Añadimos los jugadores a la casilla de 'Sortida'.
+        7. Imprimimos el tablero y la información de la banca y los jugadores.
+
+    Retorna: tupla(tauler(list), jugadors(dict), ordre_jugadors(list))'''
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
@@ -556,15 +654,35 @@ def genera_partida() -> tuple:
     return tauler, jugadors, ordre_jugadors
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
+    '''Validamos si una posición es igual a otra
+
+    Input:
+        -posicio_1(list): Lista con 2 posiciones con el valor de X,Y
+        -posicio_2(list): Lista con 2 posiciones con el valor de X,Y
+
+    Retorna: bool'''
     return posicio_1[0] == posicio_2[0] and posicio_1[1] == posicio_2[1]
 
 def jugador_a_la_preso(tauler:list, jugador: dict) -> bool:
+    '''Validamos si un jugador se encuentra en la prisión
+
+    Input:
+        -tauler(list): Lista de diccionarios con la información de las casillas.
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: bool'''
     posicio_jugador = jugador["posicio"]
     posicio_preso = list(map(lambda casella: casella["posicio"], filter(lambda casella: casella["nom_complet"] == "Presó", tauler)))
     
     return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso[0])
 
 def actualitzar_jugador_preso(jugador:dict):
+    '''Actualizamos el estado del jugador que se encuentra en prisión
+
+    Input:
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: No retorna nada'''
     jugador["torns_preso"] += 1
 
     if jugador["torns_preso"] == 3:
@@ -572,6 +690,9 @@ def actualitzar_jugador_preso(jugador:dict):
         jugador["es_preso"] = False
 
 def tirar_daus() -> tuple:
+    '''Realizamos la tiradas de los datos y realizamos la suma de ellos.
+
+    Retorna: tuple(dau_1(int), dau_2(int), total(int))'''
     dau_1 = random.randint(1, 6)
     dau_2 = random.randint(1, 6)
     total = dau_1 + dau_2
@@ -579,9 +700,23 @@ def tirar_daus() -> tuple:
     return dau_1, dau_2, total
 
 def surt_preso_daus(dau_1:int, dau_2:int) -> bool:
+    '''Revismos si los dados son del mismo número para así salir de la prisión.
+
+    Input:
+        -dau_1(int): Valor del primer dado.
+        -dau_2(int): Valor del segundo dado.
+
+    Retorna: bool'''
     return dau_1 == dau_2
 
 def gestiona_caixa_i_sort_afegir_numero(nom_casella: str, posicio_jugador: list) -> str:
+    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos añadirle el número correspondiente para poderlo enviar a la posición que le corresponda.
+
+    Input:
+        -nom_casella(str): Nom que aparece en terminal de la casilla.
+        -posicio_jugador(list): Lista de 2 items con los valores X,Y de la posición del jugador.
+
+    Retorna: str'''
     caselles = list(filter(lambda casella: "Sort" in casella[0] or "Caixa" in casella[0], caselles_posicions))
 
     for casella in caselles:
@@ -591,6 +726,12 @@ def gestiona_caixa_i_sort_afegir_numero(nom_casella: str, posicio_jugador: list)
     return nom_casella
 
 def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
+    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos retirarle el número correspondiente para poderlo enviar a la posición que le corresponda.
+
+    Input:
+        -nom_casella(str): Nom que aparece en terminal de la casilla.
+
+    Retorna: tuple(nom_casella(str), posicio(list))'''
     index = caselles_ordenades.index(nom_casella)
     posicio = caselles_posicions[index][1]
     if "Sort" in nom_casella or "Caixa" in nom_casella:
@@ -599,6 +740,14 @@ def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
     return nom_casella, posicio
 
 def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
+    '''Actualizamos la posición del jugador en el tablero.
+
+    Input:
+        -tauler(list): Lista de diccionarios con la información de las casillas.
+        -jugador(dict): Diccionario con la información de un jugador.
+        -suma_daus(int): Número de casillas que deberemos avanzar en el tablero.
+
+    Retorna: No retorna nada'''
     casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
     nom_casella = gestiona_caixa_i_sort_afegir_numero(casella[0]["nom_complet"], jugador["posicio"])
     index = caselles_ordenades.index(nom_casella)
@@ -614,6 +763,12 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
     afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
 
 def afegir_jugada(accio: str) -> None:
+    '''Añadimos la jugada realizada e imprimimos la lista.
+
+    Input:
+        -accio(str): String de la jugada realizada que deberemos añadir a la lista.
+
+    Retorna: No retorna nada'''
     jugades.append(accio)
     imprimeix_jugades(jugades)
 

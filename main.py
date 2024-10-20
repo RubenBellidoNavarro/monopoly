@@ -831,12 +831,13 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
             else:
                 tirada = index_preso - index_actual
                 actualitza_posicio(tauler, jugador, tirada)
+            jugador["es_preso"] = True
         else:
             afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
     elif carta == "Anar sortida":
         afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
         jugador["diners"] += 200
-        afegir_jugada(f"+$\"{jugador["icona"]}\" rep 200€")
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 200€")
         casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
         index_actual = caselles_ordenades.index(casella_actual[0])
         tirada = 24 - index_actual
@@ -851,9 +852,9 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
         actualitza_posicio(tauler, jugador, tirada)
     elif carta == "Fer reparacions a les propietats":
         cases = sum(list(map(lambda casella: casella["cases"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 25
-        afegir_jugada(f"-$\"{jugador["icona"]}\" paga {cases}€ per les seves cases")
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cases}€ per les seves cases")
         hotels = sum(list(map(lambda casella: casella["hotels"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 100
-        afegir_jugada(f"-$\"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
         jugador["diners"] -= (cases + hotels)
     elif carta == "Ets escollit alcalde":
         afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 50€ de cada jugador")
@@ -864,6 +865,84 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
             total += 50
             jugadors[nom_jugador]["diners"] -= 50
         jugador["diners"] += total
+    
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
+
+def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None:
+    '''Gestionamos la caída de un jugador en una casilla de 'Caixa'.
+        1. Escogemos una carta al azar de caixa.
+        2. Realizamos las acciones correspondientes.
+
+    Input:
+        -jugador(dict): Diccionario con toda la información de un jugador.
+        -tauler(list): Lista de diccionarios la información de todas las casillas.
+        -ordre(list): Lista con el orden de los jugadores en la partida.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+
+    Retorna: No retorna nada'''
+    carta = random.choice(cartes_caixa)
+    afegir_jugada(f"+ Sort: \"{carta}\"")
+
+    "Sortir presó",
+    "Anar presó",
+    "",
+    "",
+    "Despeses escolars",
+    "",
+    ""
+
+    if carta == "Sortir presó":
+        # Jugador és a la presó
+            # SI: Surt de la presó
+            # NO: Afegim carta al seu stack
+        if jugador_a_la_preso(tauler, jugador):
+            jugador["es_preso"] = False
+            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
+        else:
+            jugador["cartes"].append(carta)
+            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+    elif carta == "Anar presó":
+        # Si jugador no és a la presó, el portem a la presó
+        if not jugador_a_la_preso(tauler, jugador):
+            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
+            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+            index_actual = caselles_ordenades.index(casella_actual[0])
+            index_preso = caselles_ordenades.index("Presó")
+            if index_actual > index_preso:
+                tirada = 24 - index_actual + index_preso
+                actualitza_posicio(tauler, jugador, tirada)
+            else:
+                tirada = index_preso - index_actual
+                actualitza_posicio(tauler, jugador, tirada)
+            jugador["es_preso"] = True
+        else:
+            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+    elif carta == "Error de la banca al teu favor":
+        cost = 150
+        banca -= cost
+        jugador["diners"] += cost
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
+    elif carta == "Despeses mèdiques":
+        cost = 50
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Despeses esacolars":
+        cost = 50
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Reparacions al carrer":
+        cost = 40
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Concurs de bellesa":
+        cost = 10
+        banca -= cost
+        jugador["diners"] += cost
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
@@ -970,14 +1049,13 @@ def main():
 
             elif nom_casella == "Sort":
                 gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
-                time.sleep(5)
+                time.sleep(1)
                 contador_jugador += 1
 
             elif nom_casella == "Caixa":
+                gestiona_caixa(jugador_actual, tauler, jugadors, banca)
+                time.sleep(1)
                 contador_jugador += 1
-                pass
-                '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
             
         else:
             contador_jugador += 1

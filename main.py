@@ -6,6 +6,9 @@
 import sys
 import os
 import re # Usado para poder cambiar el nombre de las casillas de 'Sort' i 'Caixa', ya que necesitan un 1 o 2 al final para identificarlas correctamente
+import time
+import random
+import json
 from colorama import just_fix_windows_console # Paquete para que la terminal de Windows entienda los caràcteres ANSI y podamos mover el cursor a la posición que deseemos
 
 just_fix_windows_console()
@@ -13,11 +16,7 @@ just_fix_windows_console()
 #region VARIABLESYCONSTANTES
 MIN_DINERS_BANCA = 500000
 MAX_LINIES_JUGADES = 13
-
-
-import random
-import json
-import time
+MAX_CASELLES = 24
 
 banca = 1000000
 
@@ -37,7 +36,7 @@ tauler_mesures = {
 noms_jugadors = ["Vermell","Groc","Taronja","Blau"]
 
 #Tupla que utilizaremos para recorrerla con las tiradas de dados, de forma ordenada:
-caselles_ordenades = ("Sortida",
+caselles_ordenades = ["Sortida",
                       "Lauria",
                       "Rosselló",
                       "Sort1",
@@ -61,9 +60,9 @@ caselles_ordenades = ("Sortida",
                       "Caixa2",
                       "Balmes",
                       "Pg. de Gràcia"
-                      )
+                      ]
 
-caselles_posicions = (("Sortida",[19,55]),
+caselles_posicions = [("Sortida",[19,55]),
                       ("Lauria",[19,46]),
                       ("Rosselló",[19,37]),
                       ("Sort1",[19,28]),
@@ -87,7 +86,7 @@ caselles_posicions = (("Sortida",[19,55]),
                       ("Caixa2",[11,55]),
                       ("Balmes",[14,55]),
                       ("Pg. de Gràcia",[17,55])
-                      )
+                      ]
 
 
 caselles_ordenades_nom_acortat = ("Sortida",
@@ -118,6 +117,23 @@ caselles_ordenades_nom_acortat = ("Sortida",
 
 #Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
 caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
+cartes_sort = [
+    "Sortir presó",
+    "Anar presó",
+    "Anar sortida",
+    "Anar 3 espais enrera",
+    "Fer reparacions a les propietats",
+    "Ets escollit alcalde"
+]
+cartes_caixa = [
+    "Sortir presó",
+    "Anar presó",
+    "Error de la banca al teu favor",
+    "Despeses mèdiques",
+    "Despeses escolars",
+    "Reparacions al carrer",
+    "Concurs de bellesa"
+]
 
 #Tupla que contiene la utilización de los precios para cada casilla junto a su nombre acortado.
 #Las posiciones de cada tupla corresponden a:
@@ -156,16 +172,30 @@ posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
 posicio_jugades = [5, 11]
+posicio_preso = [19, 0]
+posicio_sortida = [19,55]
+
+jugades = []
 #endregion VARIABLESYCONSTANTES
 
 #region FuncionesInteraccionConsola
 def clearScreen():
+    '''Limpiamos la pantalla de la terminal.
+
+    Retorna: No retorna nada'''
     if os.name == 'nt':     # Si estàs a Windows
         os.system('cls')
     else:                   # Si estàs a Linux o macOS
         os.system('clear')
 
 def mou_cursor(x, y):
+    '''Movemos el cursor del terminal a la posición seleccionada.
+
+    Input:
+        -x(int): Posición en X de la posición a la que debemos mover el cursor.
+        -y(int): Posición en Y de la posición a la que debemos mover el cursor.
+
+    Retorna: No retorna nada'''
     # Escapamos y nos movemos a la posición indicada
     sys.stdout.write(f"\033[{y};{x}H")
     # Forzamos un aplicado del buffer
@@ -337,10 +367,23 @@ def gestiona_diners_banca(banca:int):
 
 #region ImpresionTablero
 def imprimeix_separador():
+    '''Imprimimos por pantalla las dos líneas divisorias del tablero (final de la primera y última fila)
+        
+    Retorna: No retorna nada'''
     amplada = casella_mesures["ampla"]
     print(f"+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+")
 
 def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
+    '''Imprimimos las casillas verticales. Se imprimirán las 2 filas con datos y el separador inferior. En caso de estar encima de la final vertical inferior, sólo se imprimirán las 2 filas con datos
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+    
+    Retorna: No retorna nada'''
     amplada = casella_mesures["ampla"]
     final_linia = "|"
     separador = f"+{"".ljust(amplada, "-")}+"
@@ -377,6 +420,16 @@ def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
         print(string_final)
 
 def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
+    '''Imprimimos las dos filas verticales. Gestionamos si nos encontramos en la fila superior o inferior para cambiar el orden de impresión de los datos.
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+
+    Retorna: No retorna nada'''
     primera_linia = "+"
     if cases > 0:
         primera_linia += f"{"".ljust(4, "-")}{cases}C"
@@ -420,6 +473,16 @@ def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
 
 
 def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
+    '''Gestionamos si la casilla a imprimir se encuentra en horizontal o vertical
+    
+    Input:
+        -nom (str): Nombre a imprimir de la casilla
+        -cases (int): Número de cases en la casilla
+        -hotels (int): Número de hoteles en la casilla
+        -jugadors (list): Lista con los iconos de los jugadores en la casilla
+        -posicio (list): Lista con la posición en X,Y de la casilla
+        
+    Retorna: No retorna nada'''
     # Imprimimos por pantalla la casilla 
     # Gestionamos:
     #   - Impresión del nombre
@@ -432,12 +495,26 @@ def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
         imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio)
 
 def imprimeix_fila(fila_caselles):
+    '''Recorremos la fila de casillas y vamos imprimiendo cada una de las casillas.
+    
+    Input:
+        -fila_caselles(list): Lista con todas las casillas de una fila del tablero
+        
+    Retorna: No retorna nada'''
     # Recibimos una fila del tablero.
     # Iteramos por la fila e imprimimos cada una de las casillas de la fila
     for casella in fila_caselles:
             imprimeix_casella(casella["nom_acortat"], casella["cases"], casella["hotels"], casella["jugadors"], casella["posicio"])
 
 def imprimeix_taula(tauler):
+    '''Gestionamos la impresión completa del tablero.
+        1. Vamos sacando las diferentes filas del tablero y las vamos imprimiendo.
+        2. Imprimimos los separadores de las filas horizontales y verticales.
+    
+    Input:
+        -tauler(list): Lista que contiene los diccionarios de las diferentes casillas.
+        
+    Retorna: No retorna nada'''
     # Imprimimos del tablero, llamando cada de las fila con los separadores
     for index in posicions_caselles_files:
         fila = list(filter(lambda casella: casella["posicio"][0] == index, tauler))
@@ -451,6 +528,12 @@ def imprimeix_taula(tauler):
 
 #region ImprimirInformacion
 def imprimeix_informacio_banca(banca):
+    '''Gestionamos la impresión de la información de la banca
+    
+    Input:
+        -banca(int): Cantidad de dinero que tiene actualmente la banca.
+        
+    Retorna: No retorna nada'''
     # Imprimimos la información de la banca
     #   Banca:
     #   Diners: 1838734
@@ -460,6 +543,13 @@ def imprimeix_informacio_banca(banca):
     print(f"Diners: {banca}")
 
 def imprimeix_informacio_jugador(index, jugador):
+    '''Gestionamos la impresión de la información de un jugador
+    
+    Input:
+        -index(int): Nos indica qué número de jugador nos está llegando. Utilizado para saber la posición en la que debemos posicionar el cursor e imprimir su información
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: No retorna nada'''
     # Imprimimos la información de la banca
     #   Jugador Groc:
     #   Carrers: 2834
@@ -476,9 +566,7 @@ def imprimeix_informacio_jugador(index, jugador):
             print(f"{propietat}", end="")
             if index_ != longitud - 1:
                 print(", ", end="")
-
     else:
-
         print("(cap)")
 
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 2)
@@ -496,8 +584,14 @@ def imprimeix_informacio_jugador(index, jugador):
         print("(res)")  
 
 def imprimeix_informacio(banca, jugadors):
-    # Gestiona la impresión a la izquierda del tablero
-    # ¡MIRAR COMO CAMBIAR LA POSICIÓN DEL PUNTERO DE CONSOLA!
+    '''Gestionamos la impresión de la información a la derecha de tablero
+    
+    Input:
+        -banca(int): Cantidad de dinero de la banca.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+
+    Retorna: No retorna nada'''
+    # Gestiona la impresión a la derecha del tablero
     imprimeix_informacio_banca(banca)
 
     for index, jugador in enumerate(jugadors.values()):
@@ -506,6 +600,12 @@ def imprimeix_informacio(banca, jugadors):
 
 #region ImprimirJugadas
 def imprimeix_jugades(accions):
+    '''Gestionamos la impresión de las acciones transcurridas durante el juego. El máximo de líneas es 13.
+    
+    Input:
+        -accions(list): Lista de strings con las jugadas a imprimir.
+
+    Retorna: No retorna nada'''
     # Imprimimos en el espacio central del tablero 13 líneas de acciones realizadas por los jugadores
     amplada = tauler_mesures["ampla_total"] - (tauler_mesures["ampla_partida"] * 2)
     posicio_x = posicio_jugades[1]
@@ -528,9 +628,9 @@ def imprimeix_jugades(accions):
         mou_cursor(posicio_x, posicio_y)
         if text_inici_accio in accio:
             print(f"{simbol_inici_accio} ", end="")
-            print(accio)
+            print(accio.ljust(amplada - 2))
         else:
-            print(f"  {accio}")
+            print(f"  {accio.ljust(amplada - 2)}")
         
         # Aumentamos en 1 la línea
         posicio_y += 1
@@ -538,12 +638,30 @@ def imprimeix_jugades(accions):
 
 #region Joc
 def afegeix_jugadors_sortida(jugadors: dict, ordre: list, tauler: list) -> None:
+    '''Añadimos la posición de la casilla 'Sortida' a los jugadores y añadimos los iconos de los jugadores a la casilla.
+    
+    Input:
+        -jugadors(dict): Diccionarios con la información de todos los jugadores.
+        -ordre(list): Lista con el ordre de jugadas de los jugadores. El valor de cada item de la lista es la clave del diccionario de jugadors.
+        -tauler(list): Lista que contiene diccionarios con la información de las casillas.
+
+    Retorna: No retorna nada'''
     casella_sortida = list(filter(lambda casella: casella["nom_complet"] == "Sortida", tauler))
     for jugador in ordre:
         jugadors[jugador]["posicio"] = casella_sortida[0]["posicio"]
         casella_sortida[0]["jugadors"].append(jugadors[jugador]["icona"])
 
-def genera_partida():
+def genera_partida() -> tuple:
+    '''Gestionamos la generación de una nueva partida.
+        1. Generamos el tablero (en caso de volver a jugar, se sobreescribirán los correspondientes datos).
+        2. Generamos los jugadores (en caso de volver a jugar, se sobreescribirán los correspondientes datos).
+        3. Ordenamos de manera aleatoria los jugadores.
+        4. Añadimos dinero a la banca, en caso que sea necesario.
+        5. Pagamos a todos los jugadores con 2000€.
+        6. Añadimos los jugadores a la casilla de 'Sortida'.
+        7. Imprimimos el tablero y la información de la banca y los jugadores.
+
+    Retorna: tupla(tauler(list), jugadors(dict), ordre_jugadors(list))'''
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
@@ -553,6 +671,282 @@ def genera_partida():
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
     return tauler, jugadors, ordre_jugadors
+
+def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
+    '''Validamos si una posición es igual a otra
+
+    Input:
+        -posicio_1(list): Lista con 2 posiciones con el valor de X,Y
+        -posicio_2(list): Lista con 2 posiciones con el valor de X,Y
+
+    Retorna: bool'''
+    return posicio_1[0] == posicio_2[0] and posicio_1[1] == posicio_2[1]
+
+def jugador_a_la_preso(tauler:list, jugador: dict) -> bool:
+    '''Validamos si un jugador se encuentra en la prisión
+
+    Input:
+        -tauler(list): Lista de diccionarios con la información de las casillas.
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: bool'''
+    posicio_jugador = jugador["posicio"]
+    posicio_preso = list(map(lambda casella: casella["posicio"], filter(lambda casella: casella["nom_complet"] == "Presó", tauler)))
+    
+    return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso[0])
+
+def actualitzar_jugador_preso(jugador:dict):
+    '''Actualizamos el estado del jugador que se encuentra en prisión
+
+    Input:
+        -jugador(dict): Diccionario con la información de un jugador.
+
+    Retorna: No retorna nada'''
+    jugador["torns_preso"] += 1
+
+    if jugador["torns_preso"] == 3:
+        jugador["torns_preso"] = 0
+        jugador["es_preso"] = False
+
+def tirar_daus() -> tuple:
+    '''Realizamos la tiradas de los datos y realizamos la suma de ellos.
+
+    Retorna: tuple(dau_1(int), dau_2(int), total(int))'''
+    dau_1 = random.randint(1, 6)
+    dau_2 = random.randint(1, 6)
+    total = dau_1 + dau_2
+
+    return dau_1, dau_2, total
+
+def surt_preso_daus(dau_1:int, dau_2:int) -> bool:
+    '''Revismos si los dados son del mismo número para así salir de la prisión.
+
+    Input:
+        -dau_1(int): Valor del primer dado.
+        -dau_2(int): Valor del segundo dado.
+
+    Retorna: bool'''
+    return dau_1 == dau_2
+
+def gestiona_caixa_i_sort_afegir_numero(nom_casella: str, posicio_jugador: list) -> str:
+    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos añadirle el número correspondiente para poderlo enviar a la posición que le corresponda.
+
+    Input:
+        -nom_casella(str): Nom que aparece en terminal de la casilla.
+        -posicio_jugador(list): Lista de 2 items con los valores X,Y de la posición del jugador.
+
+    Retorna: str'''
+    caselles = list(filter(lambda casella: "Sort" in casella[0] or "Caixa" in casella[0], caselles_posicions))
+
+    for casella in caselles:
+        if mateixa_posicio(casella[1], posicio_jugador):
+            return casella[0]
+    
+    return nom_casella
+
+def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
+    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos retirarle el número correspondiente para poderlo enviar a la posición que le corresponda.
+
+    Input:
+        -nom_casella(str): Nom que aparece en terminal de la casilla.
+
+    Retorna: tuple(nom_casella(str), posicio(list))'''
+    index = caselles_ordenades.index(nom_casella)
+    posicio = caselles_posicions[index][1]
+    if "Sort" in nom_casella or "Caixa" in nom_casella:
+        return re.sub(r'\d+', '', nom_casella), posicio
+
+    return nom_casella, posicio
+
+def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
+    '''Actualizamos la posición del jugador en el tablero.
+
+    Input:
+        -tauler(list): Lista de diccionarios con la información de las casillas.
+        -jugador(dict): Diccionario con la información de un jugador.
+        -suma_daus(int): Número de casillas que deberemos avanzar en el tablero.
+
+    Retorna: nom_casllea(srt)'''
+    casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
+    nom_casella = gestiona_caixa_i_sort_afegir_numero(casella[0]["nom_complet"], jugador["posicio"])
+    index = caselles_ordenades.index(nom_casella)
+    casella[0]["jugadors"].remove(jugador["icona"])
+
+    nou_index = (index + suma_daus) % MAX_CASELLES
+    nom_casella = caselles_ordenades[nou_index]
+    nom_casella, posicio = gestiona_caixa_i_sort_retirar_numero(nom_casella)
+    casella = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] == nom_casella and mateixa_posicio(casella["posicio"], posicio), tauler)))
+    casella[0]["jugadors"].append(jugador["icona"])
+    jugador["posicio"] = posicio
+
+    afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
+
+    return nom_casella
+
+def afegir_jugada(accio: str) -> None:
+    '''Añadimos la jugada realizada e imprimimos la lista.
+
+    Input:
+        -accio(str): String de la jugada realizada que deberemos añadir a la lista.
+
+    Retorna: No retorna nada'''
+    jugades.append(accio)
+    imprimeix_jugades(jugades)
+
+def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: int) -> None:
+    '''Gestionamos la caída de un jugador en una casilla de 'Sort'.
+        1. Escogemos una carta al azar de suerte.
+        2. Realizamos las acciones correspondientes.
+
+    Input:
+        -jugador(dict): Diccionario con toda la información de un jugador.
+        -tauler(list): Lista de diccionarios la información de todas las casillas.
+        -ordre(list): Lista con el orden de los jugadores en la partida.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+        -banca(int): Candidad de dinero que tiene la banca
+
+    Retorna: No retorna nada'''
+    carta = random.choice(cartes_sort)
+    afegir_jugada(f"+ Sort: \"{carta}\"")
+
+    if carta == "Sortir presó":
+        # Jugador és a la presó
+            # SI: Surt de la presó
+            # NO: Afegim carta al seu stack
+        if jugador_a_la_preso(tauler, jugador):
+            jugador["es_preso"] = False
+            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
+        else:
+            jugador["cartes"].append(carta)
+            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+    elif carta == "Anar presó":
+        # Si jugador no és a la presó, el portem a la presó
+        if not jugador_a_la_preso(tauler, jugador):
+            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
+            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+            index_actual = caselles_ordenades.index(casella_actual[0])
+            index_preso = caselles_ordenades.index("Presó")
+            if index_actual > index_preso:
+                tirada = 24 - index_actual + index_preso
+                actualitza_posicio(tauler, jugador, tirada)
+            else:
+                tirada = index_preso - index_actual
+                actualitza_posicio(tauler, jugador, tirada)
+            jugador["es_preso"] = True
+        else:
+            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+    elif carta == "Anar sortida":
+        afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
+        jugador["diners"] += 200
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 200€")
+        casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+        index_actual = caselles_ordenades.index(casella_actual[0])
+        tirada = 24 - index_actual
+        actualitza_posicio(tauler, jugador, tirada)
+    elif carta == "Anar 3 espais enrera":
+        afegir_jugada(f"\"{jugador["icona"]}\" retrocedeix 3 posicions")
+        casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+        index_actual = caselles_ordenades.index(casella_actual[0])
+        tirada = - 3
+        if index_actual + tirada < 0:
+            tirada = 24 - (index_actual + tirada)
+        actualitza_posicio(tauler, jugador, tirada)
+    elif carta == "Fer reparacions a les propietats":
+        cases = sum(list(map(lambda casella: casella["cases"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 25
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cases}€ per les seves cases")
+        hotels = sum(list(map(lambda casella: casella["hotels"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 100
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
+        jugador["diners"] -= (cases + hotels)
+    elif carta == "Ets escollit alcalde":
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 50€ de cada jugador")
+        total = 0
+        for nom_jugador in ordre:
+            if nom_jugador == jugador["nom"]:
+                continue
+            total += 50
+            jugadors[nom_jugador]["diners"] -= 50
+        jugador["diners"] += total
+    
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
+
+def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None:
+    '''Gestionamos la caída de un jugador en una casilla de 'Caixa'.
+        1. Escogemos una carta al azar de caixa.
+        2. Realizamos las acciones correspondientes.
+
+    Input:
+        -jugador(dict): Diccionario con toda la información de un jugador.
+        -tauler(list): Lista de diccionarios la información de todas las casillas.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+        -banca(int): Candidad de dinero que tiene la banca
+
+    Retorna: No retorna nada'''
+    carta = random.choice(cartes_caixa)
+    afegir_jugada(f"+ Sort: \"{carta}\"")
+
+    "Sortir presó",
+    "Anar presó",
+    "",
+    "",
+    "Despeses escolars",
+    "",
+    ""
+
+    if carta == "Sortir presó":
+        # Jugador és a la presó
+            # SI: Surt de la presó
+            # NO: Afegim carta al seu stack
+        if jugador_a_la_preso(tauler, jugador):
+            jugador["es_preso"] = False
+            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
+        else:
+            jugador["cartes"].append(carta)
+            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+    elif carta == "Anar presó":
+        # Si jugador no és a la presó, el portem a la presó
+        if not jugador_a_la_preso(tauler, jugador):
+            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
+            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+            index_actual = caselles_ordenades.index(casella_actual[0])
+            index_preso = caselles_ordenades.index("Presó")
+            if index_actual > index_preso:
+                tirada = 24 - index_actual + index_preso
+                actualitza_posicio(tauler, jugador, tirada)
+            else:
+                tirada = index_preso - index_actual
+                actualitza_posicio(tauler, jugador, tirada)
+            jugador["es_preso"] = True
+        else:
+            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+    elif carta == "Error de la banca al teu favor":
+        cost = 150
+        banca -= cost
+        jugador["diners"] += cost
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
+    elif carta == "Despeses mèdiques":
+        cost = 50
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Despeses esacolars":
+        cost = 50
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Reparacions al carrer":
+        cost = 40
+        banca += cost
+        jugador["diners"] -= cost
+        afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
+    elif carta == "Concurs de bellesa":
+        cost = 10
+        banca -= cost
+        jugador["diners"] += cost
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
+    
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
 
 def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     '''Comprueba si un jugador ha perdido la partida (tiene <= 0 en dinero), y devuelve
@@ -618,8 +1012,16 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
         jugadors[nom_jugador]["es_preso"] = False
         jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
 
-
 def main():
+    # Generar la partida
+    #   - Generamos el tablero
+    #       · Generamos las casillas y las metemos en el tablero
+    #   - Determinamos el orden de los jugadores
+    #   - Generamos los jugadores con los datos iniciales
+    #       · Les damos el primer ingreso
+    #   - Añandimos a la casilla 'Salida' todos los jugadores
+
+    # Iniciar bucle de juego:
     tauler, jugadors, ordre_jugadors = genera_partida()
 
     contador_jugador = 0    
@@ -635,71 +1037,83 @@ def main():
     while True:
 
         #Miramos al principio de cada jugada si el contador rebasa la lista de jugadores. Si es así, se reinicia a 0.
-        if contador_jugador > len(ordre_jugadors):
+        if contador_jugador >= len(ordre_jugadors):
             contador_jugador = 0
 
+        # Recogemos la información del jugador actual
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
 
     #   - Tiramos dados del jugador
-        if jugador_a_la_presio(dict_jugadores): #devuelve un booleano diciendo si el jugador está en la prisión
-            actualizar_jugador_preso(dict_jugadors) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
-            contador_jugador += 1
-            continue #pasamos al siguiente jugador
-        tirar_dados() #Se retornan una tupla con los valores de los 2 dados
+        if jugador_a_la_preso(tauler, jugador_actual): #devuelve un booleano diciendo si el jugador está en la prisión
+            # Lanzamos los dados del jugador. En caso que no se haya sacado un doble dígito (2, 2) o (4, 4), el jugador continuará en la cárcel
+            dau_1, dau_2, total = tirar_daus()
+            surt_preso = surt_preso_daus(dau_1, dau_2)
 
-    #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-        actualitza_posicion(tauler, dict_jugadores, tirada_dados)
+            if not surt_preso:
+                actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
+                afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}. Continua a la presó")
+                contador_jugador += 1
+                continue #pasamos al siguiente jugador
+            else:
+                jugador_actual["torns_preso"] = 3
+                actualitzar_jugador_preso(jugador_actual)
+        else:   
+            dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
-    #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
-        afegir_jugada(jugada, lista_jugadas)
-
-
-
-
-
-    #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        casilla_jugador = jugador_actual["posicio"]
-        if casilla_jugador in caselles_especials:
         
-            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
+        #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
+            afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
+            #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
+            nom_casella = actualitza_posicio(tauler, jugador_actual, total)
+        
+        imprimeix_taula(tauler)
+
+        time.sleep(2)
+            
+#   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
+        #casilla_jugador = jugador_actual["posicio"]
+        if nom_casella in caselles_especials:
+        
+            if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
                 clearScreen()
-                imprimeix_taula()
-                imprimeix_informacio()
+                imprimeix_taula(tauler)
+                imprimeix_informacio(banca, jugadors)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
 
-            elif casilla_jugador == "Anr pró":
+            elif nom_casella == "Anr pró":
                 enviar_jugador_preso(jugador_actual, jugadors, tauler)
 
-
-            elif casilla_jugador == "Sortida":
+            elif nom_casella == "Sortida":
                 #Añadimos 200€ al jugador:
                 nom_jugador = jugador_actual["nom"]
                 jugadors[nom_jugador]["diners"] += 200
 
                 #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
                 clearScreen
-                imprimeix_taula()
-                imprimeix_informacio()
+                imprimeix_taula(tauler)
+                imprimeix_informacio(banca, jugadors)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
 
-            elif casilla_jugador == "Presó":
+            elif nom_casella == "Presó":
                 enviar_jugador_preso(jugador_actual, jugadors, tauler)
 
-            elif casilla_jugador == "Sort":
-                pass
-                '''resultat = escollir_opcio_sort()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+            elif nom_casella == "Sort":
+                gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
+                time.sleep(1)
+                contador_jugador += 1
 
-            elif casilla_jugador == "Caixa":
-                pass
-                '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
+            elif nom_casella == "Caixa":
+                gestiona_caixa(jugador_actual, tauler, jugadors, banca)
+                time.sleep(1)
+                contador_jugador += 1
             
-        #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+        else:
+            contador_jugador += 1
+        """#Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
         '''calcula_possibles_jugadas(jugador_actual, jugadors, tauler)'''
 
         #Actualiza la información del juego:
@@ -725,7 +1139,7 @@ def main():
         if '''hi_ha_guanyador(ordre_jugadors)''':
             #Se realiza la impresión final por pantalla de la partida:
             '''mostrar_ganador(ordre_jugadors)'''
-            break
+            break"""
 
 #endregion Joc
 

@@ -1026,6 +1026,22 @@ def propietari_casella(casella:str, tauler:list) -> str:
         if dict_casella["nom_complet"] == casella:
             propietari_casella = dict_casella["propietari"]
             return propietari_casella
+        
+def num_cases(casella:str, tauler:list) -> int:
+    '''Retorna el número de casas que hay en una determinada casilla del tablero.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -num_cases(int): Integer que representa el número de casas que hay en la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            num_cases = dict_casella["cases"]
+            return num_cases
+
 
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede

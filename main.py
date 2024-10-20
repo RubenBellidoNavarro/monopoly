@@ -1027,6 +1027,19 @@ def propietari_casella(casella:str, tauler:list) -> str:
             propietari_casella = dict_casella["propietari"]
             return propietari_casella
         
+def jugador_es_propietari(nom_jugador:str, casella:str, tauler:list) -> bool:
+    '''Retorna un booleano True en caso de que el jugador sea el propietario de la casilla.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador.
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna:
+        -jugador_es_propietari(bool): Booleano que informa sobre si el jugador es el propietario de la casilla.'''
+    jugador_es_propietari = (propietari_casella(casella, tauler) == nom_jugador)
+    return jugador_es_propietari
+        
 def num_cases(casella:str, tauler:list) -> int:
     '''Retorna el número de casas que hay en una determinada casilla del tablero.
     

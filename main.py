@@ -36,7 +36,7 @@ tauler_mesures = {
 noms_jugadors = ["Vermell","Groc","Taronja","Blau"]
 
 #Tupla que utilizaremos para recorrerla con las tiradas de dados, de forma ordenada:
-caselles_ordenades = ("Sortida",
+caselles_ordenades = ["Sortida",
                       "Lauria",
                       "Rosselló",
                       "Sort1",
@@ -60,9 +60,9 @@ caselles_ordenades = ("Sortida",
                       "Caixa2",
                       "Balmes",
                       "Pg. de Gràcia"
-                      )
+                      ]
 
-caselles_posicions = (("Sortida",[19,55]),
+caselles_posicions = [("Sortida",[19,55]),
                       ("Lauria",[19,46]),
                       ("Rosselló",[19,37]),
                       ("Sort1",[19,28]),
@@ -86,7 +86,7 @@ caselles_posicions = (("Sortida",[19,55]),
                       ("Caixa2",[11,55]),
                       ("Balmes",[14,55]),
                       ("Pg. de Gràcia",[17,55])
-                      )
+                      ]
 
 
 caselles_ordenades_nom_acortat = ("Sortida",
@@ -117,6 +117,23 @@ caselles_ordenades_nom_acortat = ("Sortida",
 
 #Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
 caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
+cartes_sort = [
+    "Sortir presó",
+    "Anar presó",
+    "Anar sortida",
+    "Anar 3 espais enrera",
+    "Fer reparacions a les propietats",
+    "Ets escollit alcalde"
+]
+cartes_caixa = [
+    "Sortir presó",
+    "Anar presó",
+    "Error de la banca al teu favor",
+    "Despeses mèdiques",
+    "Despeses escolars",
+    "Reparacions al carrer",
+    "Concurs de bellesa"
+]
 
 #Tupla que contiene la utilización de los precios para cada casilla junto a su nombre acortado.
 #Las posiciones de cada tupla corresponden a:
@@ -155,6 +172,8 @@ posicions_caselles_columnes = [0, 10, 19, 28, 37, 45, 55]
 posicions_separadors = [[0, 4], [0, 22]]
 posicions_informacio = [[66, 1], [66, 4], [66, 9], [66, 14], [66, 19]]
 posicio_jugades = [5, 11]
+posicio_preso = [19, 0]
+posicio_sortida = [19,55]
 
 jugades = []
 #endregion VARIABLESYCONSTANTES
@@ -739,7 +758,7 @@ def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
 
     return nom_casella, posicio
 
-def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
+def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
     '''Actualizamos la posición del jugador en el tablero.
 
     Input:
@@ -747,7 +766,7 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
         -jugador(dict): Diccionario con la información de un jugador.
         -suma_daus(int): Número de casillas que deberemos avanzar en el tablero.
 
-    Retorna: No retorna nada'''
+    Retorna: nom_casllea(srt)'''
     casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
     nom_casella = gestiona_caixa_i_sort_afegir_numero(casella[0]["nom_complet"], jugador["posicio"])
     index = caselles_ordenades.index(nom_casella)
@@ -762,6 +781,8 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> None:
 
     afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
 
+    return nom_casella
+
 def afegir_jugada(accio: str) -> None:
     '''Añadimos la jugada realizada e imprimimos la lista.
 
@@ -771,6 +792,81 @@ def afegir_jugada(accio: str) -> None:
     Retorna: No retorna nada'''
     jugades.append(accio)
     imprimeix_jugades(jugades)
+
+def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict) -> None:
+    '''Gestionamos la caída de un jugador en una casilla de 'Sort'.
+        1. Escogemos una carta al azar de suerte.
+        2. Realizamos las acciones correspondientes.
+
+    Input:
+        -jugador(dict): Diccionario con toda la información de un jugador.
+        -tauler(list): Lista de diccionarios la información de todas las casillas.
+        -ordre(list): Lista con el orden de los jugadores en la partida.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+
+    Retorna: No retorna nada'''
+    carta = random.choice(cartes_sort)
+    afegir_jugada(f"+ Sort: \"{carta}\"")
+
+    if carta == "Sortir presó":
+        # Jugador és a la presó
+            # SI: Surt de la presó
+            # NO: Afegim carta al seu stack
+        if jugador_a_la_preso(tauler, jugador):
+            jugador["es_preso"] = False
+            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
+        else:
+            jugador["cartes"].append(carta)
+            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+    elif carta == "Anar presó":
+        # Si jugador no és a la presó, el portem a la presó
+        if not jugador_a_la_preso(tauler, jugador):
+            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
+            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+            index_actual = caselles_ordenades.index(casella_actual[0])
+            index_preso = caselles_ordenades.index("Presó")
+            if index_actual > index_preso:
+                tirada = 24 - index_actual + index_preso
+                actualitza_posicio(tauler, jugador, tirada)
+            else:
+                tirada = index_preso - index_actual
+                actualitza_posicio(tauler, jugador, tirada)
+        else:
+            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+    elif carta == "Anar sortida":
+        afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
+        jugador["diners"] += 200
+        afegir_jugada(f"\"{jugador["icona"]}\" rep 200€")
+        casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+        index_actual = caselles_ordenades.index(casella_actual[0])
+        tirada = 24 - index_actual
+        actualitza_posicio(tauler, jugador, tirada)
+    elif carta == "Anar 3 espais enrera":
+        afegir_jugada(f"\"{jugador["icona"]}\" retrocedeix 3 posicions")
+        casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+        index_actual = caselles_ordenades.index(casella_actual[0])
+        tirada = - 3
+        if index_actual + tirada < 0:
+            tirada = 24 - (index_actual + tirada)
+        actualitza_posicio(tauler, jugador, tirada)
+    elif carta == "Fer reparacions a les propietats":
+        cases = sum(list(map(lambda casella: casella["cases"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 25
+        afegir_jugada(f"\"{jugador["icona"]}\" paga {cases}€ per les seves cases")
+        hotels = sum(list(map(lambda casella: casella["hotels"], filter(lambda casella: casella["nom_complet"] in jugador["propietats"], tauler)))) * 100
+        afegir_jugada(f"\"{jugador["icona"]}\" paga {hotels}€ per les seves cases")
+        jugador["diners"] -= (cases + hotels)
+    elif carta == "Ets escollit alcalde":
+        afegir_jugada(f"\"{jugador["icona"]}\" rep 50€ de cada jugador")
+        total = 0
+        for nom_jugador in ordre:
+            if nom_jugador == jugador["nom"]:
+                continue
+            total += 50
+            jugadors[nom_jugador]["diners"] -= 50
+        jugador["diners"] += total
+    
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
 
 def main():
     # Generar la partida
@@ -824,27 +920,25 @@ def main():
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
             afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
             #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            actualitza_posicio(tauler, jugador_actual, total)
+            nom_casella = actualitza_posicio(tauler, jugador_actual, total)
         
         imprimeix_taula(tauler)
 
-        time.sleep(5)
-        contador_jugador += 1
-        continue
+        time.sleep(2)
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        casilla_jugador = jugador_actual["posicio"]
-        if casilla_jugador in caselles_especials:
+        #casilla_jugador = jugador_actual["posicio"]
+        if nom_casella in caselles_especials:
         
-            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
+            if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
                 clearScreen()
-                imprimeix_taula()
-                imprimeix_informacio()
+                imprimeix_taula(tauler)
+                imprimeix_informacio(banca, jugadors)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
 
-            elif casilla_jugador == "Anr pró":
+            elif nom_casella == "Anr pró":
                 pass
                 '''
                 #Actualizar posicion tauler (mandar a casilla Presso)
@@ -854,89 +948,40 @@ def main():
                 #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
                 '''
 
-            elif casilla_jugador == "Sortida":
+            elif nom_casella == "Sortida":
                 #Añadimos 200€ al jugador:
                 nom_jugador = jugador_actual["nom"]
-                jugadors["nom"]["diners"] += 200
+                jugadors[nom_jugador]["diners"] += 200
 
                 #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
                 clearScreen
-                imprimeix_taula()
-                imprimeix_informacio()
+                imprimeix_taula(tauler)
+                imprimeix_informacio(banca, jugadors)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
 
-            elif casilla_jugador == "Presó":
+            elif nom_casella == "Presó":
                 pass
                 '''
                 #Actualizar clave "es_preso" del jugador a 'True'
                 #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
                 '''
 
-            elif casilla_jugador == "Sort":
-                pass
-                '''resultat = escollir_opcio_sort()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
-
-            elif casilla_jugador == "Caixa":
-                pass
-                '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
-
-#   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        casilla_jugador = jugador_actual["posicio"]
-        if casilla_jugador in caselles_especials:
-        
-            if casilla_jugador == "Parking": #en esta casilla, el jugador sólo puede pasar
-                clearScreen()
-                imprimeix_taula()
-                imprimeix_informacio()
-                time.sleep(1)
+            elif nom_casella == "Sort":
+                gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors)
+                time.sleep(5)
                 contador_jugador += 1
-                continue
 
-            elif casilla_jugador == "Anr pró":
-                pass
-                '''
-                #Actualizar posicion tauler (mandar a casilla Presso)
-                #Actualizar posicion jugadors (mandar a casila Presso)
-
-                #Actualizar clave "es_preso" del jugador a 'True'
-                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
-                '''
-
-            elif casilla_jugador == "Sortida":
-                #Añadimos 200€ al jugador:
-                nom_jugador = jugador_actual["nom"]
-                jugadors["nom"]["diners"] += 200
-
-                #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
-                clearScreen
-                imprimeix_taula()
-                imprimeix_informacio()
-                time.sleep(1)
+            elif nom_casella == "Caixa":
                 contador_jugador += 1
-                continue
-
-            elif casilla_jugador == "Presó":
-                pass
-                '''
-                #Actualizar clave "es_preso" del jugador a 'True'
-                #Si el jugador tiene la carta de 'salir prision', poner 'es_preso' del jugador con valor 'False'.
-                '''
-
-            elif casilla_jugador == "Sort":
-                pass
-                '''resultat = escollir_opcio_sort()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
-                '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
-
-            elif casilla_jugador == "Caixa":
                 pass
                 '''resultat = escollir_opcio_caixa()''' #Escoge de forma aleatoria una opción posible al caer en esta casilla
                 '''executar_resultat(resultat, jugador_actual, tauler, jugadors)''' #Realiza la acción necesaria sobre el jugador, dependiendo del resultado obtenido
             
-        #Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+        else:
+            contador_jugador += 1
+        """#Decide qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
         '''calcula_possibles_jugadas(jugador_actual, jugadors, tauler)'''
 
         #Actualiza la información del juego:
@@ -962,7 +1007,7 @@ def main():
         if '''hi_ha_guanyador(ordre_jugadors)''':
             #Se realiza la impresión final por pantalla de la partida:
             '''mostrar_ganador(ordre_jugadors)'''
-            break
+            break"""
 #endregion Joc
 
 #region MAIN

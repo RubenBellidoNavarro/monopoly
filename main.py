@@ -1068,6 +1068,18 @@ def preu_lloguer_casa(casella:str, preu_caselles:dict) -> int:
         -preu_lloguer_casa(int): Integer que representa el precio de alquilar una casa en una determinada casilla.'''
     preu_lloguer_casa = preu_caselles[casella]["lloguer_casa"]
     return preu_lloguer_casa
+
+def preu_lloguer_hotel(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de alquiler de un hotel en una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_lloguer_hotel(int): Integer que representa el precio de alquilar un hotel en una determinada casilla.'''
+    preu_lloguer_hotel= preu_caselles[casella]["lloguer_hotel"]
+    return preu_lloguer_hotel
         
 def preu_terreny(casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una determinada casilla.

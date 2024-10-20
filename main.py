@@ -1142,12 +1142,12 @@ def import_casella(casella:str, preu_caselles:dict, tauler:list) -> int:
         -import_casella(int): Integer que representa la cantidad a pagar al jugador propietario por estar en una casilla.'''
     #Buscamos la casilla en el tablero para saber cuántas casas y hoteles hay:
     n_cases = num_cases(casella, tauler)
-    preu_cases = preu_comprar_casa(casella, preu_caselles)
+    preu_lloguer_cases = preu_lloguer_casa(casella, preu_caselles)
 
     n_hotels = num_hotels(casella, tauler)
-    preu_hotels = preu_comprar_hotel(casella, preu_caselles)
+    preu_lloguer_hotels = preu_lloguer_hotel(casella, preu_caselles)
 
-    import_casella = n_cases*preu_cases + n_hotels*preu_hotels
+    import_casella = (n_cases * preu_lloguer_cases) + (n_hotels * preu_lloguer_hotels)
     return import_casella
 
 def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> int:

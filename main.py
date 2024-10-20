@@ -526,6 +526,18 @@ def preu_total_propietats(nom_jugador:str, preus_caselles:dict, tauler:list) -> 
     
     return preu_total_propietats
 
+def hi_ha_guanyador(ordre_jugadors:list) -> bool:
+    '''Retorna True si sólo queda un jugador en la partida.
+    
+    Input:
+        -ordre_jugadors(list): Lista que contiene los nombres de los jugadores activos en la partida.
+        
+    Retorna:
+        -hi_ha_guanyador(bool): Booleano que informa sobre si la partida tiene un ganador'''
+    #Si sólo queda un jugador activo en la partida, debe ser el ganador:
+    hi_ha_guanyador = (len(ordre_jugadors) == 1)
+    return hi_ha_guanyador
+
 #endregion ConsultarDatos
 
 #region GestioBanca
@@ -1404,7 +1416,7 @@ def main():
         imprimeix_informacio()
     
         #Si solo queda un jugador en la partida === Si hay un ganador (len(ordre_jugadors) == 1):
-        if '''hi_ha_guanyador(ordre_jugadors)''':
+        if hi_ha_guanyador(ordre_jugadors):
             #Se realiza la impresión final por pantalla de la partida:
             '''mostrar_ganador(ordre_jugadors)'''
             break

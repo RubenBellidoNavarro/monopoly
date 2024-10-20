@@ -1041,7 +1041,18 @@ def num_cases(casella:str, tauler:list) -> int:
         if dict_casella["nom_complet"] == casella:
             num_cases = dict_casella["cases"]
             return num_cases
-
+        
+def preu_terreny(casella:str, preu_caselles:dict) -> int:
+    '''Retorna el precio de compra de una determinada casilla.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -preus_caselles(dict): Diccionario que contiene toda la información referente a los precios.
+        
+    Retorna:
+        -preu_terreny(int): Integer que representa el precio de una casilla/terreno.'''
+    preu_terreny = preu_caselles[casella]["preu_terreny"]
+    return preu_terreny
 
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede

@@ -1042,6 +1042,21 @@ def num_cases(casella:str, tauler:list) -> int:
             num_cases = dict_casella["cases"]
             return num_cases
         
+def num_hotels(casella:str, tauler:list) -> int:
+    '''Retorna el número de hoteles que hay en una determinada casilla del tablero.
+    
+    Input:
+        -casella(str): String con el nombre completo de la casilla del tablero.
+        -tauler(list): Lista de diccionarios que contienen la información de cada casilla del tablero.
+        
+    Retorna:
+        -num_hotels(int): Integer que representa el número de hoteles que hay en la casilla.'''
+    #Buscamos la casilla en el tablero:
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == casella:
+            num_hotels = dict_casella["hotels"]
+            return num_hotels
+        
 def preu_terreny(casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una determinada casilla.
     

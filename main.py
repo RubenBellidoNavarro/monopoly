@@ -1854,6 +1854,27 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
         break
     return jugada_escollida
 
+def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
+        -nom_casella(str): String que representa el nombre de la casilla que se quiere adquirir.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_comprar_terreny = preu_terreny(nom_casella, preus_caselles)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_comprar_terreny
+    #Añadimos el terreno a la lista de propiedades del jugador:
+    jugadors[nom_jugador]["propietats"].append(nom_casella)
+    #Hacemos que el jugador sea propietario de la casilla en el tablero:
+    cambiar_propietari(nom_casella, nom_jugador, tauler)
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1977,7 +1998,7 @@ def main():
                 if jugada_escollida == 'passar':
                     pass
                 elif jugada_escollida == 'comprar terreny':
-                    jugador_compra_terreny(nom_jugador, nom_casella, jugadors, tauler)
+                    jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
                 elif jugada_escollida == 'comprar casa':
                     jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
                 elif jugada_escollida == 'comprar hotel':

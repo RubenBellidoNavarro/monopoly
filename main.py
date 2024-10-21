@@ -2086,15 +2086,15 @@ def main():
                     continue
 
                 elif jugada_escollida == 'vendre al banc':
-                    jugador_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
+                    jugador_actual_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a B':
-                    jugador_vend_tot_a_B(nom_jugador, preus, jugadors, tauler)
+                    jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Blau', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a T':
-                    jugador_vend_tot_a_T(nom_jugador, preus, jugadors, tauler)
+                    jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Taronja', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a G':
-                    jugador_vend_tot_a_G(nom_jugador, preus, jugadors, tauler)
+                    jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Groc', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a V':
-                    jugador_vend_tot_a_V(nom_jugador, preus, jugadors, tauler)
+                    jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
                 
                 break
             

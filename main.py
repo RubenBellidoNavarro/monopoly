@@ -1552,22 +1552,11 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
     afegir_jugada(f"+ Sort: \"{carta}\"")
 
     if carta == "Sortir presó":
-        # Jugador és a la presó
-            # SI: Surt de la presó
-            # NO: Afegim carta al seu stack
-        if jugador_a_la_preso(tauler, jugador):
-            jugador["es_preso"] = False
-            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
-        else:
-            jugador["cartes"].append(carta)
-            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+        jugador["cartes"].append(carta)
+        afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
     elif carta == "Anar presó":
         # Si jugador no és a la presó, el portem a la presó
-        if not jugador_a_la_preso(tauler, jugador):
-            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
-            enviar_jugador_preso(jugador, jugadors, tauler)
-        else:
-            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+        enviar_jugador_preso(jugador, jugadors, tauler)
     elif carta == "Anar sortida":
         afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
         jugador["diners"] += 200
@@ -1619,22 +1608,12 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     afegir_jugada(f"+ Sort: \"{carta}\"")
 
     if carta == "Sortir presó":
-        # Jugador és a la presó
-            # SI: Surt de la presó
-            # NO: Afegim carta al seu stack
-        if jugador_a_la_preso(tauler, jugador):
-            jugador["es_preso"] = False
-            afegir_jugada(f"\"{jugador["icona"]}\" surt de la presó")
-        else:
-            jugador["cartes"].append(carta)
-            afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
+        jugador["cartes"].append(carta)
+        afegir_jugada(f"\"{jugador["icona"]}\" es guarda la carta")
     elif carta == "Anar presó":
         # Si jugador no és a la presó, el portem a la presó
-        if not jugador_a_la_preso(tauler, jugador):
-            afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
-            enviar_jugador_preso(jugador, jugadors, tauler)
-        else:
-            afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
+        afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
+        enviar_jugador_preso(jugador, jugadors, tauler)
     elif carta == "Error de la banca al teu favor":
         cost = 150
         banca -= cost
@@ -1702,23 +1681,17 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
         de una casilla (nombre, nombreAcortado, numCasas, numHoteles, jugadores, posicionCasilla).
         
     Retorna: None'''
-    nom_jugador = jugador_actual["nom"]
-
-    #Modificamos los datos de 'jugadors':
-    jugadors[nom_jugador]["es_preso"] = True
-    jugadors[nom_jugador]["torns_preso"] = 0
-    jugadors[nom_jugador]["posicio"] = posicio_preso
-
-    afegir_jugada(f"\"{jugador_actual["icona"]}\" va a la Presó")
     casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador_actual["posicio"], caselles_posicions)))
-    index_actual = caselles_ordenades.index(casella_actual[0])
-    index_preso = caselles_ordenades.index("Presó")
-    if index_actual > index_preso:
-        tirada = 24 - index_actual + index_preso
-        actualitza_posicio(tauler, jugador_actual, tirada)
-    else:
-        tirada = index_preso - index_actual
-        actualitza_posicio(tauler, jugador_actual, tirada)
+
+    if casella_actual[0] != "Presó":
+        index_actual = caselles_ordenades.index(casella_actual[0])
+        index_preso = caselles_ordenades.index("Presó")
+        if index_actual > index_preso:
+            tirada = 24 - index_actual + index_preso
+            actualitza_posicio(tauler, jugador_actual, tirada)
+        else:
+            tirada = index_preso - index_actual
+            actualitza_posicio(tauler, jugador_actual, tirada)
     jugador_actual["es_preso"] = True
     jugador_actual["torns_preso"] = 0
 
@@ -1737,9 +1710,10 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
             casella["jugadors"][0] += nom_jugador[0]"""
 
     #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False' y retiramos la carta:
-    if "Sortir de la presó" in jugadors[nom_jugador]["cartes"]:
-        jugadors[nom_jugador]["es_preso"] = False
-        jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
+    if "Sortir de la presó" in jugador_actual["cartes"]:
+        jugador_actual["es_preso"] = False
+        jugador_actual["cartes"].remove("Sortir de la presó")
+        afegir_jugada(f"\"{jugador_actual["icona"]}\" surt de la presó amb carta")
 
 def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors) -> list:
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
@@ -1862,19 +1836,26 @@ def main():
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
 
     #   - Tiramos dados del jugador
-        if jugador_a_la_preso(tauler, jugador_actual): #devuelve un booleano diciendo si el jugador está en la prisión
+        if jugador_actual["es_preso"] and jugador_actual["torns_preso"] <= 2: #devuelve un booleano diciendo si el jugador está en la prisión
             # Lanzamos los dados del jugador. En caso que no se haya sacado un doble dígito (2, 2) o (4, 4), el jugador continuará en la cárcel
             dau_1, dau_2, total = tirar_daus()
             surt_preso = surt_preso_daus(dau_1, dau_2)
 
             if not surt_preso:
-                actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
-                afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}. Continua a la presó")
+                #actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
+                afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", {dau_1} i {dau_2}. Continua a presó")
+                jugador_actual["torns_preso"] += 1
+                clearScreen()
+                imprimeix_taula(tauler)
+                imprimeix_informacio(banca, jugadors)
+                imprimeix_jugades(jugades)
+                time.sleep(2)
                 contador_jugador += 1
                 continue #pasamos al siguiente jugador
             else:
                 jugador_actual["torns_preso"] = 3
-                actualitzar_jugador_preso(jugador_actual)
+                jugador_actual["es_preso"] = False
+                #actualitzar_jugador_preso(jugador_actual)
         else:   
             dau_1, dau_2, total = tirar_daus() #Se retornan una tupla con los valores de los 2 dados y el valor sumado de ellos
 
@@ -1882,7 +1863,7 @@ def main():
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
             afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
             #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            ha_passat_sortida, nom_casella = actualitza_posicio(tauler, jugador_actual, 6)
+            ha_passat_sortida, nom_casella = actualitza_posicio(tauler, jugador_actual, total)
 
             if ha_passat_sortida and nom_casella != "Sortida":
                 jugador_actual["diners"] += 200

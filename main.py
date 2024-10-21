@@ -1581,14 +1581,15 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
         -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores (inluido el actual)
         -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
         
-    Retorna: None'''
+    Retorna: 
+        -input_jugador(str): String que respresenta la selección del jugador'''
     #Pedimus un input hasta que este sea válido:
     while True:
-        input_jugador = input("Escull una opció del llistat: ")
+        opcio_escogida = input("Escull una opció del llistat: ")
         #Si el input se corresponde con alguna de las posibles jugadas, declaramos el input como válido:
         input_invalid = True
         for jugada in possibles_jugades:
-            if input_jugador.lower() == jugada:
+            if opcio_escogida.lower() == jugada:
                 input_invalid == False
         #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
         if input_invalid:
@@ -1596,10 +1597,8 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
             continue
         break
 
-    #Si el jugador escoge 'passar':
+    return opcio_escogida
     
-
-
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1713,7 +1712,8 @@ def main():
         '''imprimeix_possibles_jugades(str_jugades)'''
 
         #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-        '''input_jugador(jugador_actual, possibles_jugades jugadors, tauler)'''
+        opcio_escogida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+        
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 

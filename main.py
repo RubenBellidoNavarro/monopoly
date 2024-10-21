@@ -179,7 +179,7 @@ jugades = []
 #endregion VARIABLESYCONSTANTES
 
 #region FuncionesInteraccionConsola
-def clearScreen():
+def clearScreen() -> None:
     '''Limpiamos la pantalla de la terminal.
 
     Retorna: No retorna nada'''
@@ -188,7 +188,7 @@ def clearScreen():
     else:                   # Si estàs a Linux o macOS
         os.system('clear')
 
-def mou_cursor(x, y):
+def mou_cursor(x: int, y: int) -> None:
     '''Movemos el cursor del terminal a la posición seleccionada.
 
     Input:
@@ -200,6 +200,12 @@ def mou_cursor(x, y):
     sys.stdout.write(f"\033[{y};{x}H")
     # Forzamos un aplicado del buffer
     sys.stdout.flush()
+
+def imprimeix_per_pantalla(tauler: list, banca: int, jugadors: dict, jugades: list) -> None:
+    clearScreen()
+    imprimeix_taula(tauler)
+    imprimeix_informacio(banca, jugadors)
+    imprimeix_jugades(jugades)
 #endregion FuncionesInteraccionConsola
 
 #region GeneracionPartida             
@@ -564,14 +570,14 @@ def gestiona_diners_banca(banca:int):
 #endregion GestioBanca
 
 #region ImpresionTablero
-def imprimeix_separador():
+def imprimeix_separador() -> None:
     '''Imprimimos por pantalla las dos líneas divisorias del tablero (final de la primera y última fila)
         
     Retorna: No retorna nada'''
     amplada = casella_mesures["ampla"]
     print(f"+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+{"".ljust(amplada, "-")}+")
 
-def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
+def imprimeix_casella_vertical(nom: str, cases: int, hotels: int, jugadors: dict, posicio: list) -> None:
     '''Imprimimos las casillas verticales. Se imprimirán las 2 filas con datos y el separador inferior. En caso de estar encima de la final vertical inferior, sólo se imprimirán las 2 filas con datos
     
     Input:
@@ -617,7 +623,7 @@ def imprimeix_casella_vertical(nom, cases, hotels, jugadors, posicio):
         mou_cursor(posicio[1], posicio[0] + 2)
         print(string_final)
 
-def imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio):
+def imprimeix_casella_horizontal(nom: str, cases: int, hotels: int, jugadors: dict, posicio: list) -> None:
     '''Imprimimos las dos filas verticales. Gestionamos si nos encontramos en la fila superior o inferior para cambiar el orden de impresión de los datos.
     
     Input:
@@ -692,7 +698,7 @@ def imprimeix_casella(nom, cases, hotels, jugadors, posicio):
     else:
         imprimeix_casella_horizontal(nom, cases, hotels, jugadors, posicio)
 
-def imprimeix_fila(fila_caselles):
+def imprimeix_fila(fila_caselles: list) -> None:
     '''Recorremos la fila de casillas y vamos imprimiendo cada una de las casillas.
     
     Input:
@@ -704,7 +710,7 @@ def imprimeix_fila(fila_caselles):
     for casella in fila_caselles:
             imprimeix_casella(casella["nom_acortat"], casella["cases"], casella["hotels"], casella["jugadors"], casella["posicio"])
 
-def imprimeix_taula(tauler):
+def imprimeix_taula(tauler: list) -> None:
     '''Gestionamos la impresión completa del tablero.
         1. Vamos sacando las diferentes filas del tablero y las vamos imprimiendo.
         2. Imprimimos los separadores de las filas horizontales y verticales.
@@ -725,7 +731,7 @@ def imprimeix_taula(tauler):
 #endregion ImpresionTablero
 
 #region ImprimirInformacion
-def imprimeix_informacio_banca(banca):
+def imprimeix_informacio_banca(banca: int) -> None:
     '''Gestionamos la impresión de la información de la banca
     
     Input:
@@ -740,7 +746,7 @@ def imprimeix_informacio_banca(banca):
     mou_cursor(posicions_informacio[0][0], posicions_informacio[0][1] + 1)
     print(f"Diners: {banca}")
 
-def imprimeix_informacio_jugador(index, jugador):
+def imprimeix_informacio_jugador(index: int, jugador: dict) -> None:
     '''Gestionamos la impresión de la información de un jugador
     
     Input:
@@ -781,7 +787,7 @@ def imprimeix_informacio_jugador(index, jugador):
     else:
         print("(res)")  
 
-def imprimeix_informacio(banca, jugadors):
+def imprimeix_informacio(banca: int, jugadors: dict) -> None:
     '''Gestionamos la impresión de la información a la derecha de tablero
     
     Input:
@@ -797,7 +803,7 @@ def imprimeix_informacio(banca, jugadors):
 #endregion ImprimirInformacion
 
 #region ImprimirJugadas
-def imprimeix_jugades(accions):
+def imprimeix_jugades(accions: list) -> None:
     '''Gestionamos la impresión de las acciones transcurridas durante el juego. El máximo de líneas es 13.
     
     Input:
@@ -867,8 +873,7 @@ def genera_partida() -> tuple:
     gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
     return tauler, jugadors, ordre_jugadors, preus
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
@@ -1066,8 +1071,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
             jugadors[nom_jugador]["diners"] -= 50
         jugador["diners"] += total
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Caixa'.
@@ -1144,8 +1148,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         jugador["diners"] += cost
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
     '''Validamos si una posición es igual a otra
@@ -1258,16 +1261,6 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
 
     return nom_casella
 
-def afegir_jugada(accio: str) -> None:
-    '''Añadimos la jugada realizada e imprimimos la lista.
-
-    Input:
-        -accio(str): String de la jugada realizada que deberemos añadir a la lista.
-
-    Retorna: No retorna nada'''
-    jugades.append(accio)
-    imprimeix_jugades(jugades)
-
 def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Sort'.
         1. Escogemos una carta al azar de suerte.
@@ -1342,8 +1335,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
             jugadors[nom_jugador]["diners"] -= 50
         jugador["diners"] += total
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Caixa'.
@@ -1412,8 +1404,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         jugador["diners"] += cost
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
     '''Validamos si una posición es igual a otra
@@ -1525,16 +1516,6 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> tuple:
 
     return (nou_index < index, nom_casella)
 
-def afegir_jugada(accio: str) -> None:
-    '''Añadimos la jugada realizada e imprimimos la lista.
-
-    Input:
-        -accio(str): String de la jugada realizada que deberemos añadir a la lista.
-
-    Retorna: No retorna nada'''
-    jugades.append(accio)
-    imprimeix_jugades(jugades)
-
 def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Sort'.
         1. Escogemos una carta al azar de suerte.
@@ -1589,8 +1570,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
             jugadors[nom_jugador]["diners"] -= 50
         jugador["diners"] += total
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None:
     '''Gestionamos la caída de un jugador en una casilla de 'Caixa'.
@@ -1640,8 +1620,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         jugador["diners"] += cost
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     
-    imprimeix_taula(tauler)
-    imprimeix_informacio(banca, jugadors)
+    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
 
 def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     '''Comprueba si un jugador ha perdido la partida (tiene <= 0 en dinero), y devuelve
@@ -1694,20 +1673,6 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
             actualitza_posicio(tauler, jugador_actual, tirada)
     jugador_actual["es_preso"] = True
     jugador_actual["torns_preso"] = 0
-
-    #Modificamos los datos de 'tauler':
-    """for casella in tauler:
-        #Si el jugador está en esta casilla, que es distina de "Presó", lo eliminamos de la casilla:
-        if (nom_jugador[0] not in casella["jugadors"]) and (casella["nom"] != "Presó"):
-            jugadores_casilla_actualizados = ""
-            #Recorremos los jugadores en la casilla. Los guardamos en una variable obviando al jugador actual:
-            for char in casella["jugadors"][0]:
-                if char != nom_jugador[0]:
-                    jugadores_casilla_actualizados += char
-            casella["jugadors"][0] = jugadores_casilla_actualizados
-        #Si el jugador está en la casilla "Presó", y no lo hemos añadido aún a la clave "jugadors":
-        if (casella["nom_complet"] == "Presó") and (nom_jugador[0] not in casella["jugadors"][0]):
-            casella["jugadors"][0] += nom_jugador[0]"""
 
     #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False' y retiramos la carta:
     if "Sortir de la presó" in jugador_actual["cartes"]:
@@ -1846,9 +1811,7 @@ def main():
                 afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", {dau_1} i {dau_2}. Continua a presó")
                 jugador_actual["torns_preso"] += 1
                 clearScreen()
-                imprimeix_taula(tauler)
-                imprimeix_informacio(banca, jugadors)
-                imprimeix_jugades(jugades)
+                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                 time.sleep(2)
                 contador_jugador += 1
                 continue #pasamos al siguiente jugador
@@ -1869,8 +1832,7 @@ def main():
                 jugador_actual["diners"] += 200
                 afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
         
-        imprimeix_taula(tauler)
-
+        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
         time.sleep(2)
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
@@ -1878,8 +1840,7 @@ def main():
         
             if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
                 clearScreen()
-                imprimeix_taula(tauler)
-                imprimeix_informacio(banca, jugadors)
+                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
@@ -1895,8 +1856,7 @@ def main():
 
                 #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
                 clearScreen()
-                imprimeix_taula(tauler)
-                imprimeix_informacio(banca, jugadors)
+                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                 time.sleep(1)
                 contador_jugador += 1
                 continue
@@ -1923,9 +1883,7 @@ def main():
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
 
             #Actualizamos la información del juego:
-            clearScreen()
-            imprimeix_taula(tauler)
-            imprimeix_informacio(banca, jugadors)
+            imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
             #Imprimimos las posibles jugadas que puede hacer el jugador:
             '''imprimeix_possibles_jugades(str_jugades)'''
 
@@ -1938,9 +1896,7 @@ def main():
             borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
         #Volvemos a imprimir tablero e información con la nueva jugada
-        clearScreen()
-        imprimeix_taula(tauler)
-        imprimeix_informacio(banca, jugadors)
+        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

@@ -1961,7 +1961,7 @@ def main():
             '''imprimeix_possibles_jugades(str_jugades)'''
 
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-            jugada_escollida = input_jugador(jugador_actual, jugadors, tauler)
+            jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 

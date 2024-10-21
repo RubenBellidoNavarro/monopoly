@@ -1936,6 +1936,20 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
     #HAñadimos una casa a la casilla en el tablero:
     afegir_cases(nom_casella, 1, tauler)
 
+def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
+    '''Añade un número de choteles a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se añadira el número de hoteles.
+        -num_cases(int): Integer que representa el número de hoteles a añadir.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["hotels"] += num_hotels
+            break
+
 def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
     por parte de un jugador.

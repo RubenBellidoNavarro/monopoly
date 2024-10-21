@@ -1974,7 +1974,6 @@ def main():
             while True:
                 jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
 
-                #Si el jugador escoge 'passar':
                 if jugada_escollida == 'passar':
                     pass
                 elif jugada_escollida == 'comprar terreny':
@@ -1983,6 +1982,8 @@ def main():
                     jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
                 elif jugada_escollida == 'comprar hotel':
                     jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
+
+                #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
                 elif jugada_escollida == 'preus':
                     imprimeix_preus_casella_actual(nom_casella, preus) #Mostramos en la parte central los precios de comprar casa y hotel.
                     continue
@@ -1992,6 +1993,7 @@ def main():
                 elif jugada_escollida == 'preu jugador':
                     imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
                     continue
+
                 elif jugada_escollida == 'vendre a B':
                     jugador_vend_tot_a_B(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a T':

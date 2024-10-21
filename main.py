@@ -1434,9 +1434,8 @@ def jugador_a_la_preso(tauler:list, jugador: dict) -> bool:
 
     Retorna: bool'''
     posicio_jugador = jugador["posicio"]
-    posicio_preso = list(map(lambda casella: casella["posicio"], filter(lambda casella: casella["nom_complet"] == "Presó", tauler)))
     
-    return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso[0])
+    return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso)
 
 def actualitzar_jugador_preso(jugador:dict):
     '''Actualizamos el estado del jugador que se encuentra en prisión
@@ -1708,12 +1707,25 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
     #Modificamos los datos de 'jugadors':
     jugadors[nom_jugador]["es_preso"] = True
     jugadors[nom_jugador]["torns_preso"] = 0
-    jugadors[nom_jugador]["posicio"] = "Presó"
+    jugadors[nom_jugador]["posicio"] = posicio_preso
+
+    afegir_jugada(f"\"{jugador_actual["icona"]}\" va a la Presó")
+    casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador_actual["posicio"], caselles_posicions)))
+    index_actual = caselles_ordenades.index(casella_actual[0])
+    index_preso = caselles_ordenades.index("Presó")
+    if index_actual > index_preso:
+        tirada = 24 - index_actual + index_preso
+        actualitza_posicio(tauler, jugador_actual, tirada)
+    else:
+        tirada = index_preso - index_actual
+        actualitza_posicio(tauler, jugador_actual, tirada)
+    jugador_actual["es_preso"] = True
+    jugador_actual["torns_preso"] = 0
 
     #Modificamos los datos de 'tauler':
-    for casella in tauler:
+    """for casella in tauler:
         #Si el jugador está en esta casilla, que es distina de "Presó", lo eliminamos de la casilla:
-        if (nom_jugador[0] in casella["jugadors"][0]) and (casella["nom"] != "Presó"):
+        if (nom_jugador[0] not in casella["jugadors"]) and (casella["nom"] != "Presó"):
             jugadores_casilla_actualizados = ""
             #Recorremos los jugadores en la casilla. Los guardamos en una variable obviando al jugador actual:
             for char in casella["jugadors"][0]:
@@ -1722,7 +1734,7 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
             casella["jugadors"][0] = jugadores_casilla_actualizados
         #Si el jugador está en la casilla "Presó", y no lo hemos añadido aún a la clave "jugadors":
         if (casella["nom_complet"] == "Presó") and (nom_jugador[0] not in casella["jugadors"][0]):
-            casella["jugadors"][0] += nom_jugador[0]
+            casella["jugadors"][0] += nom_jugador[0]"""
 
     #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False' y retiramos la carta:
     if "Sortir de la presó" in jugadors[nom_jugador]["cartes"]:
@@ -1870,7 +1882,7 @@ def main():
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
             afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
             #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            ha_passat_sortida, nom_casella = actualitza_posicio(tauler, jugador_actual, total)
+            ha_passat_sortida, nom_casella = actualitza_posicio(tauler, jugador_actual, 6)
 
             if ha_passat_sortida and nom_casella != "Sortida":
                 jugador_actual["diners"] += 200
@@ -1910,6 +1922,7 @@ def main():
 
             elif nom_casella == "Presó":
                 enviar_jugador_preso(jugador_actual, jugadors, tauler)
+                contador_jugador += 1
 
             elif nom_casella == "Sort":
                 gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)

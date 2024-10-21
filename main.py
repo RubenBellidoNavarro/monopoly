@@ -567,6 +567,10 @@ def afegir_diners_banca(banca):
     banca += 500000
     return banca
 
+def retirar_diners_banca(quantitat:int) -> None:
+    global banca
+    banca -= quantitat
+
 def gestiona_diners_banca(banca:int):
     '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()
     
@@ -1962,7 +1966,7 @@ def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, t
     #Ingresamos el dinero al jugador:
     jugadors[nom_jugador]["diners"] += preu_per_total_propietats
     #Retiramos el dinero a la banca:
-    retirar_diners_banca(quantitat, banca)
+    retirar_diners_banca(preu_per_total_propietats)
     #Realizamos el traspase de propiedades entre jugador y banca:
     traspassar_totes_les_propietats(nom_jugador, 'banca', tauler)
 

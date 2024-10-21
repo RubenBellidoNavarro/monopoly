@@ -202,6 +202,15 @@ def mou_cursor(x: int, y: int) -> None:
     sys.stdout.flush()
 
 def imprimeix_per_pantalla(tauler: list, banca: int, jugadors: dict, jugades: list) -> None:
+    '''Limipamos la pantalla e imprimimos el tablero, información y jugadas
+
+    Input:
+        -tauler(lisy): Lista con los diccionarios que contienen la información de las casillas.
+        -banca(int): Cantidad de dinero que dispone la banca.
+        -jugadors(dict): Diccionario que continene la información de todos los jugadores.
+        -jugades(list): Lista con todas las jugadas realizadas.
+
+    Retorna: No retorna nada'''
     clearScreen()
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)

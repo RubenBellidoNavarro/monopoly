@@ -2073,7 +2073,7 @@ def main():
                 elif jugada_escollida == 'comprar hotel':
                     jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
 
-                '''
+                
                 #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
                 elif jugada_escollida == 'preus':
                     imprimeix_preus_casella_actual(nom_casella, preus) #Mostramos en la parte central los precios de comprar casa y hotel.
@@ -2085,6 +2085,8 @@ def main():
                     imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
                     continue
 
+                elif jugada_escollida == 'vendre al banc':
+                    jugador_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a B':
                     jugador_vend_tot_a_B(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a T':
@@ -2093,7 +2095,7 @@ def main():
                     jugador_vend_tot_a_G(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a V':
                     jugador_vend_tot_a_V(nom_jugador, preus, jugadors, tauler)
-                '''
+                
                 break
             
         #Volvemos a imprimir tablero e información con la nueva jugada

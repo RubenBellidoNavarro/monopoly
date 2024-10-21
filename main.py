@@ -116,7 +116,7 @@ caselles_ordenades_nom_acortat = ("Sortida",
                       )
 
 #Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
-caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
+caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking", "Sort1", "Sort2", "Caixa1", "Caixa2")
 cartes_sort = [
     "Sortir presó",
     "Anar presó",
@@ -245,6 +245,7 @@ def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
         if casella not in caselles_especials:
             noms_complets.append(casella)
     noms_complets = tuple(noms_complets)
+    return noms_complets
 
 def genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles):
     '''Genera un diccionario que contiene los precios de cada casilla.
@@ -388,6 +389,7 @@ def num_cases(casella:str, tauler:list) -> int:
         if dict_casella["nom_complet"] == casella:
             num_cases = dict_casella["cases"]
             return num_cases
+    return 0
         
 def num_hotels(casella:str, tauler:list) -> int:
     '''Retorna el número de hoteles que hay en una determinada casilla del tablero.
@@ -861,13 +863,13 @@ def genera_partida() -> tuple:
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
-    preus_caselles = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
+    preus = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
     gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_taula(tauler)
     imprimeix_informacio(banca, jugadors)
-    return tauler, jugadors, ordre_jugadors, preus_caselles
+    return tauler, jugadors, ordre_jugadors, preus
 
 def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
     '''Validamos si una posición es igual a otra
@@ -1223,7 +1225,7 @@ def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
 
     return nom_casella, posicio
 
-def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
+def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> tuple:
     '''Actualizamos la posición del jugador en el tablero.
 
     Input:
@@ -1246,7 +1248,7 @@ def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
 
     afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
 
-    return nom_casella
+    return (nou_index < index, nom_casella)
 
 def afegir_jugada(accio: str) -> None:
     '''Añadimos la jugada realizada e imprimimos la lista.
@@ -1288,16 +1290,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
         # Si jugador no és a la presó, el portem a la presó
         if not jugador_a_la_preso(tauler, jugador):
             afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
-            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
-            index_actual = caselles_ordenades.index(casella_actual[0])
-            index_preso = caselles_ordenades.index("Presó")
-            if index_actual > index_preso:
-                tirada = 24 - index_actual + index_preso
-                actualitza_posicio(tauler, jugador, tirada)
-            else:
-                tirada = index_preso - index_actual
-                actualitza_posicio(tauler, jugador, tirada)
-            jugador["es_preso"] = True
+            enviar_jugador_preso(jugador, jugadors, tauler)
         else:
             afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
     elif carta == "Anar sortida":
@@ -1350,14 +1343,6 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     carta = random.choice(cartes_caixa)
     afegir_jugada(f"+ Sort: \"{carta}\"")
 
-    "Sortir presó",
-    "Anar presó",
-    "",
-    "",
-    "Despeses escolars",
-    "",
-    ""
-
     if carta == "Sortir presó":
         # Jugador és a la presó
             # SI: Surt de la presó
@@ -1372,16 +1357,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         # Si jugador no és a la presó, el portem a la presó
         if not jugador_a_la_preso(tauler, jugador):
             afegir_jugada(f"\"{jugador["icona"]}\" va a la Presó")
-            casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
-            index_actual = caselles_ordenades.index(casella_actual[0])
-            index_preso = caselles_ordenades.index("Presó")
-            if index_actual > index_preso:
-                tirada = 24 - index_actual + index_preso
-                actualitza_posicio(tauler, jugador, tirada)
-            else:
-                tirada = index_preso - index_actual
-                actualitza_posicio(tauler, jugador, tirada)
-            jugador["es_preso"] = True
+            enviar_jugador_preso(jugador, jugadors, tauler)
         else:
             afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
     elif carta == "Error de la banca al teu favor":
@@ -1477,7 +1453,7 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
         jugadors[nom_jugador]["es_preso"] = False
         jugadors[nom_jugador]["cartes"].remove("Sortir de la presó")
 
-def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors):
+def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors) -> list:
     '''Retorna una lista de strings que representan cada una de las posibles jugadas que puede
     realizar el jugador actual.
     
@@ -1491,40 +1467,41 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
         -possibles_jugades(list): Lista de strings que representan cada una de las posibles jugadas
         que puede realizar el jugador durante su turno.'''
     nom_jugador = jugador_actual["nom"]
-    casella_jugador = jugador_actual["posicio"][0]
+    casella_jugador = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador_actual["posicio"], caselles_posicions)))
     diners_jugador = jugador_actual["diners"]
 
     #Iniciamos la variable resultante con la opción "passar" incluida, que siempre estará disponible:
     possibles_jugades = ["passar"]
 
     #Si el jugador puede comprar un terreno:
-    terreny_lliure = (propietari_casella(casella_jugador, tauler) == "banca")
-    pot_pagar_terreny = (diners_jugador > preu_terreny(casella_jugador))
-    casella_no_es_especial = casella_jugador not in caselles_especials
-    if terreny_lliure and pot_pagar_terreny and casella_no_es_especial:
-        possibles_jugades.append("comprar terreny")
+    if len(casella_jugador) != 0:
+        terreny_lliure = (propietari_casella(casella_jugador[0], tauler) == "banca")
+        pot_pagar_terreny = (diners_jugador > preu_terreny(casella_jugador[0], preus_caselles))
+        casella_no_es_especial = casella_jugador[0] not in caselles_especials
+        if terreny_lliure and pot_pagar_terreny and casella_no_es_especial:
+            possibles_jugades.append("comprar terreny")
 
     #Si el jugador puede comprar una casa:
-    jugador_es_propietari = (propietari_casella(casella_jugador, tauler) == nom_jugador)
-    menys_de_4_cases = (num_cases(casella_jugador, tauler) < 4)
-    pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador, preus_caselles))
+    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    menys_de_4_cases = (num_cases(casella_jugador[0], tauler) < 4)
+    pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador[0], preus_caselles))
     if jugador_es_propietari and menys_de_4_cases and pot_pagar_casa:
         possibles_jugades.append("comprar casa")
 
     #Si el jugador puede comprar un hotel:
-    jugador_es_propietari = (propietari_casella(casella_jugador, tauler) == nom_jugador)
-    minim_2_cases = (num_cases(casella_jugador, preus_caselles) >= 2)
-    pot_pagar_hotel = (diners_jugador > preu_comprar_hotel(casella_jugador, preus_caselles))
+    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    minim_2_cases = (num_cases(casella_jugador[0], tauler) >= 2)
+    pot_pagar_hotel = (diners_jugador > preu_comprar_hotel(casella_jugador[0], preus_caselles))
     if jugador_es_propietari and minim_2_cases and pot_pagar_hotel:
         possibles_jugades.append("comprar hotel")
 
     #Si el jugador es propietario de la casilla (y quiere consultar precios):
-    jugador_es_propietari = (propietari_casella(casella_jugador, tauler) == nom_jugador)
+    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     if jugador_es_propietari:
         possibles_jugades.append("preus")
 
     #Si el jugador no puede pagar el importe de estar en la casilla:
-    no_pot_pagar = (diners_jugador < import_lloguer_casella(casella_jugador, preus_caselles, tauler)) and (propietari_casella(casella_jugador, tauler) != nom_jugador)
+    no_pot_pagar = (diners_jugador < import_lloguer_casella(casella_jugador[0], preus_caselles, tauler)) and (propietari_casella(casella_jugador[0], tauler) != nom_jugador)
     if no_pot_pagar:
         possibles_jugades.append("preu banc")
         possibles_jugades.append("preu jugador")
@@ -1539,6 +1516,7 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
                 pot_pagar = (diners_potencial_comprador > (preu_total_propietats(nom_jugador, preus_caselles, tauler) * 0.9))
                 if pot_pagar:
                     possibles_jugades.append(f"vendre a {potencial_comprador[0]}")
+    return possibles_jugades
 
 def str_possibles_jugades(jugador:dict, possibles_jugades:list) -> str:
     '''Retorna el string que se utilizará para imprimir las posibles opciones que
@@ -1571,7 +1549,7 @@ def main():
     #   - Añandimos a la casilla 'Salida' todos los jugadores
 
     # Iniciar bucle de juego:
-    tauler, jugadors, ordre_jugadors, preus_caselles = genera_partida()
+    tauler, jugadors, ordre_jugadors, preus = genera_partida()
 
     contador_jugador = 0    
 
@@ -1613,7 +1591,11 @@ def main():
         #   - Añadimos jugada a la lista de jugadas (para poder imprimirla)
             afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", ha sortit {dau_1} i {dau_2}")
             #   - Actualizamos posición en tablero (borramos actual y ponemos la nueva, tanto en jugador como en casilla)
-            nom_casella = actualitza_posicio(tauler, jugador_actual, total)
+            ha_passat_sortida, nom_casella = actualitza_posicio(tauler, jugador_actual, total)
+
+            if ha_passat_sortida and nom_casella != "Sortida":
+                jugador_actual["diners"] += 200
+                afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
         
         imprimeix_taula(tauler)
 
@@ -1637,9 +1619,10 @@ def main():
                 #Añadimos 200€ al jugador:
                 nom_jugador = jugador_actual["nom"]
                 jugadors[nom_jugador]["diners"] += 200
+                afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
 
                 #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
-                clearScreen
+                clearScreen()
                 imprimeix_taula(tauler)
                 imprimeix_informacio(banca, jugadors)
                 time.sleep(1)
@@ -1662,19 +1645,19 @@ def main():
         else:
             contador_jugador += 1
 
-        #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
-        possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, ordre_jugadors)
-        str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
+            #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+            possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
+            str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
 
-        #Actualizamos la información del juego:
-        clearScreen()
-        imprimeix_taula()
-        imprimeix_informacio()
-        #Imprimimos las posibles jugadas que puede hacer el jugador:
-        '''imprimeix_possibles_jugades(str_jugades)'''
+            #Actualizamos la información del juego:
+            clearScreen()
+            imprimeix_taula(tauler)
+            imprimeix_informacio(banca, jugadors)
+            #Imprimimos las posibles jugadas que puede hacer el jugador:
+            '''imprimeix_possibles_jugades(str_jugades)'''
 
-        #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-        '''input_jugador(jugador_actual, jugadors, tauler)'''
+            #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
+            '''input_jugador(jugador_actual, jugadors, tauler)'''
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
@@ -1683,8 +1666,8 @@ def main():
 
         #Volvemos a imprimir tablero e información con la nueva jugada
         clearScreen()
-        imprimeix_taula()
-        imprimeix_informacio()
+        imprimeix_taula(tauler)
+        imprimeix_informacio(banca, jugadors)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

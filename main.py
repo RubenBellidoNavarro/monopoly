@@ -1903,6 +1903,20 @@ def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
             dict_casella["cases"] += num_cases
             break
 
+def retirar_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
+    '''Retira un número de casas a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se eliminará el número de casas.
+        -num_cases(int): Integer que representa el número de casas a quitar.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["cases"] -= num_cases
+            break
+
 def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de una casa
     por parte de un jugador.

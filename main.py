@@ -1856,6 +1856,8 @@ def main():
 
             elif nom_casella == "Anr pró":
                 enviar_jugador_preso(jugador_actual, jugadors, tauler)
+                contador_jugador += 1
+                continue
 
             elif nom_casella == "Sortida":
                 #Añadimos 200€ al jugador:
@@ -1873,16 +1875,19 @@ def main():
             elif nom_casella == "Presó":
                 enviar_jugador_preso(jugador_actual, jugadors, tauler)
                 contador_jugador += 1
+                continue
 
             elif nom_casella == "Sort":
                 gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
                 time.sleep(1)
                 contador_jugador += 1
+                continue
 
             elif nom_casella == "Caixa":
                 gestiona_caixa(jugador_actual, tauler, jugadors, banca)
                 time.sleep(1)
                 contador_jugador += 1
+                continue
             
         else:
             contador_jugador += 1

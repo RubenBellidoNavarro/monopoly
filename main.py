@@ -809,6 +809,16 @@ def imprimeix_informacio(banca: int, jugadors: dict) -> None:
 
     for index, jugador in enumerate(jugadors.values()):
         imprimeix_informacio_jugador(index + 1, jugador)
+
+def imprimeix_possibles_jugades(str_jugades:str) -> None:
+    '''Imprime las posibles jugadas que puede hacer el jugador en su turno.
+    
+    Input:
+        -str_jugades(str): String con el contenido a imprimir.
+        
+    Retorna: None'''
+    print(str_jugades)
+
 #endregion ImprimirInformacion
 
 #region ImprimirJugadas
@@ -1778,6 +1788,149 @@ def str_possibles_jugades(jugador:dict, possibles_jugades:list) -> str:
     str_jugades = qui_juga + jugades_possibles[:-2]
     return str_jugades
 
+def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, tauler:list) -> None:
+    '''Recibe el input del usuario y lo procesa, dependiendo de las acciones que pueda realizar en su turno.
+    
+    Inputs:
+        -jugador_actual(dict): Diccionario que contiene la información sobre el jugador actual
+        -possibles_jugades(list): Lista de strings con cada una de las opciones que puede realizar el usuario.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores (inluido el actual)
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna: None'''
+    #Pedimus un input hasta que este sea válido:
+    while True:
+        jugada_escollida = input("Escull una opció del llistat: ")
+        #Si el input se corresponde con alguna de las posibles jugadas, declaramos el input como válido:
+        input_invalid = True
+        for jugada in possibles_jugades:
+            if jugada_escollida.lower() == jugada:
+                input_invalid = False
+                jugada_escollida = jugada
+        #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
+        if input_invalid:
+            print("Opció invàlida, torneu a provar.")
+            continue
+        break
+    return jugada_escollida
+
+def cambiar_propietari(nom_casella:str, nou_propietari:str, tauler:list) -> None:
+    '''Modifica la clave 'propietari' dentro de 'tauler' para asignarle el nuevo propietario.
+    
+    Input:
+        -nom_casella(str): String que representa el nombre de la casilla que cambiará de propietario.
+        -nou_propietari(str): String que representa el nombre del nuevo propietario de la casilla.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["propietari"] = nou_propietari
+            break
+
+def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
+        -nom_casella(str): String que representa el nombre de la casilla que se quiere adquirir.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_comprar_terreny = preu_terreny(nom_casella, preus_caselles)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_comprar_terreny
+    #Añadimos el terreno a la lista de propiedades del jugador:
+    jugadors[nom_jugador]["propietats"].append(nom_casella)
+    #Hacemos que el jugador sea propietario de la casilla en el tablero:
+    cambiar_propietari(nom_casella, nom_jugador, tauler)
+
+def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
+    '''Añade un número de casas a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se añadira el número de casas.
+        -num_cases(int): Integer que representa el número de casas a añadir.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["cases"] += num_cases
+            break
+
+def retirar_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
+    '''Retira un número de casas a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se eliminará el número de casas.
+        -num_cases(int): Integer que representa el número de casas a quitar.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["cases"] -= num_cases
+            break
+
+def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de una casa
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar la casa.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir una casa.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_compra_casa = preu_comprar_casa(nom_casella, preus_caselles)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_compra_casa
+    #HAñadimos una casa a la casilla en el tablero:
+    afegir_cases(nom_casella, 1, tauler)
+
+def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
+    '''Añade un número de choteles a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se añadira el número de hoteles.
+        -num_cases(int): Integer que representa el número de hoteles a añadir.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["hotels"] += num_hotels
+            break
+
+def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el hotel.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir un hotel.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_compra_hotel = preu_comprar_hotel(nom_casella, preus)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_compra_hotel
+    #Añadimos un hotel a la casilla del tablero:
+    afegir_hotels(nom_casella, 1, tauler)
+    #Retiramos 2 casas en la casilla de compra del hotel:
+    retirar_cases(nom_casella, 2, tauler)
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1905,18 +2058,51 @@ def main():
             #Actualizamos la información del juego:
             imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
             #Imprimimos las posibles jugadas que puede hacer el jugador:
-            '''imprimeix_possibles_jugades(str_jugades)'''
+            imprimeix_possibles_jugades(str_jugades)
 
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-            '''input_jugador(jugador_actual, jugadors, tauler)'''
+            while True:
+                jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+
+                if jugada_escollida == 'passar':
+                    pass
+                elif jugada_escollida == 'comprar terreny':
+                    jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
+                elif jugada_escollida == 'comprar casa':
+                    jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
+                elif jugada_escollida == 'comprar hotel':
+                    jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
+
+                '''
+                #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
+                elif jugada_escollida == 'preus':
+                    imprimeix_preus_casella_actual(nom_casella, preus) #Mostramos en la parte central los precios de comprar casa y hotel.
+                    continue
+                elif jugada_escollida == 'preu banc':
+                    imprimeix_ganancias_vendre_a_banc(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades al banco (al 50% del precio que pagó originalmente)
+                    continue
+                elif jugada_escollida == 'preu jugador':
+                    imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
+                    continue
+
+                elif jugada_escollida == 'vendre a B':
+                    jugador_vend_tot_a_B(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a T':
+                    jugador_vend_tot_a_T(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a G':
+                    jugador_vend_tot_a_G(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a V':
+                    jugador_vend_tot_a_V(nom_jugador, preus, jugadors, tauler)
+                '''
+                break
+            
+        #Volvemos a imprimir tablero e información con la nueva jugada
+        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Eliminamos al jugador de la lista de jugadores:
             borrar_jugador_partida(ordre_jugadors, jugador_actual)
-
-        #Volvemos a imprimir tablero e información con la nueva jugada
-        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

@@ -1968,26 +1968,25 @@ def main():
             imprimeix_taula(tauler)
             imprimeix_informacio(banca, jugadors)
             imprimeix_possibles_jugades(str_jugades)
-            print(f"array de posibles jugadas: {possibles_jugades}")
-
+            
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
             jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
         
-        #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
-        if jugador_perd(jugador_actual, jugadors): 
-            #Eliminamos al jugador de la lista de jugadores:
-            borrar_jugador_partida(ordre_jugadors, jugador_actual)
+            #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
+            if jugador_perd(jugador_actual, jugadors): 
+                #Eliminamos al jugador de la lista de jugadores:
+                borrar_jugador_partida(ordre_jugadors, jugador_actual)
 
-        #Volvemos a imprimir tablero e información con la nueva jugada
-        clearScreen()
-        imprimeix_taula(tauler)
-        imprimeix_informacio(banca, jugadors)
-    
-        #Si solo queda un jugador en la partida después del turno:
-        if hi_ha_guanyador(ordre_jugadors):
-            #Realizamos la impresión final por pantalla de la partida, y rompemos el bucle de juego:
-            '''mostrar_ganador(ordre_jugadors)'''
-            break
+            #Volvemos a imprimir tablero e información con la nueva jugada
+            clearScreen()
+            imprimeix_taula(tauler)
+            imprimeix_informacio(banca, jugadors)
+        
+            #Si solo queda un jugador en la partida después del turno:
+            if hi_ha_guanyador(ordre_jugadors):
+                #Realizamos la impresión final por pantalla de la partida, y rompemos el bucle de juego:
+                '''mostrar_ganador(ordre_jugadors)'''
+                break
 
 #endregion Joc
 

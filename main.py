@@ -1695,20 +1695,6 @@ def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> Non
     jugador_actual["es_preso"] = True
     jugador_actual["torns_preso"] = 0
 
-    #Modificamos los datos de 'tauler':
-    """for casella in tauler:
-        #Si el jugador está en esta casilla, que es distina de "Presó", lo eliminamos de la casilla:
-        if (nom_jugador[0] not in casella["jugadors"]) and (casella["nom"] != "Presó"):
-            jugadores_casilla_actualizados = ""
-            #Recorremos los jugadores en la casilla. Los guardamos en una variable obviando al jugador actual:
-            for char in casella["jugadors"][0]:
-                if char != nom_jugador[0]:
-                    jugadores_casilla_actualizados += char
-            casella["jugadors"][0] = jugadores_casilla_actualizados
-        #Si el jugador está en la casilla "Presó", y no lo hemos añadido aún a la clave "jugadors":
-        if (casella["nom_complet"] == "Presó") and (nom_jugador[0] not in casella["jugadors"][0]):
-            casella["jugadors"][0] += nom_jugador[0]"""
-
     #Si el jugador tiene una carta para salir de la prisión, cambiamos su estado 'es_preso' a 'False' y retiramos la carta:
     if "Sortir de la presó" in jugador_actual["cartes"]:
         jugador_actual["es_preso"] = False

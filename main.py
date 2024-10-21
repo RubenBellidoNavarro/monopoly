@@ -821,6 +821,7 @@ def imprimeix_possibles_jugades(str_jugades:str) -> None:
         -str_jugades(str): String con el contenido a imprimir.
         
     Retorna: None'''
+    mou_cursor(0, 23)
     print(str_jugades)
 
 #endregion ImprimirInformacion
@@ -2109,12 +2110,6 @@ def main():
             #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
-            mou_cursor(0, 24)
-            opcio = input(f"{str_jugades}: ").lower()
-
-            if opcio == "truc":
-                #Gestionar Trucos
-                pass
 
             #Actualizamos la información del juego:
             imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
@@ -2124,6 +2119,10 @@ def main():
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
             while True:
                 jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+
+                if jugada_escollida == "truc":
+                #Gestionar Trucos
+                    pass
 
                 if jugada_escollida == 'passar':
                     pass

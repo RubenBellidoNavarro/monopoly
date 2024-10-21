@@ -445,7 +445,7 @@ def preu_lloguer_hotel(casella:str, preu_caselles:dict) -> int:
     preu_lloguer_hotel= preu_caselles[casella]["lloguer_hotel"]
     return preu_lloguer_hotel
         
-def preu_terreny(casella:str, preu_caselles:dict) -> int:
+def preu_terreny(nom_casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una determinada casilla.
     
     Input:
@@ -454,7 +454,7 @@ def preu_terreny(casella:str, preu_caselles:dict) -> int:
         
     Retorna:
         -preu_terreny(int): Integer que representa el precio de una casilla/terreno.'''
-    preu_terreny = preu_caselles[casella]["preu_terreny"]
+    preu_terreny = preu_caselles[nom_casella]["preu_terreny"]
     return preu_terreny
 
 def preu_comprar_casa(casella:str, preu_caselles:dict) -> int:
@@ -1859,7 +1859,7 @@ def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugador
         -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
         
     Retorna: None'''
-    preu_comprar_terreny = preu_terreny(nom_casella, preus_caselles)
+    preu_comprar_terreny = preu_terreny(nom_casella, preus)
 
     #Retiramos dinero de la compra al jugador:
     jugadors[nom_jugador]["diners"] -= preu_comprar_terreny
@@ -1908,7 +1908,7 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
         -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
         
     Retorna: None'''
-    preu_compra_casa = preu_comprar_casa(nom_casella, preus_caselles)
+    preu_compra_casa = preu_comprar_casa(nom_casella, preus)
 
     #Retiramos dinero de la compra al jugador:
     jugadors[nom_jugador]["diners"] -= preu_compra_casa
@@ -2021,6 +2021,7 @@ def main():
 
         # Recogemos la información del jugador actual
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
+        nom_jugador = jugador_actual["nom"]
 
     #   - Tiramos dados del jugador
         if jugador_actual["es_preso"] and jugador_actual["torns_preso"] <= 2: #devuelve un booleano diciendo si el jugador está en la prisión

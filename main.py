@@ -2111,13 +2111,13 @@ def main():
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
 
-            #Actualizamos la información del juego:
-            imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-            #Imprimimos las posibles jugadas que puede hacer el jugador:
-            imprimeix_possibles_jugades(str_jugades)
-
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
             while True:
+                #Actualizamos la información del juego:
+                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                #Imprimimos las posibles jugadas que puede hacer el jugador:
+                imprimeix_possibles_jugades(str_jugades)
+
                 jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
 
                 if jugada_escollida == "truc":

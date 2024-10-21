@@ -1890,6 +1890,8 @@ def main():
             #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
+            mou_cursor(0, 24)
+            input(f"{str_jugades}: ")
 
             #Actualizamos la información del juego:
             imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
@@ -1918,5 +1920,5 @@ def main():
 #region MAIN
 clearScreen()
 main()
-mou_cursor(0, 25)
+mou_cursor(0, 26)
 #endregion MAIN

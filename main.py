@@ -1922,8 +1922,8 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
     por parte de un jugador.
     
     Input:
-        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
-        -nom_casella(str): String que representa el nombre de la casilla que se quiere adquirir.
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar la casa.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir una casa.
         -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
         -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
         -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
@@ -1935,6 +1935,27 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
     jugadors[nom_jugador]["diners"] -= preu_compra_casa
     #HAñadimos una casa a la casilla en el tablero:
     afegir_cases(nom_casella, 1, tauler)
+
+def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el hotel.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir un hotel.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_compra_hotel = preu_comprar_hotel(nom_casella, preus)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_compra_hotel
+    #Añadimos un hotel a la casilla del tablero:
+    afegir_hotels(nom_casella, 1, tauler)
+    #Retiramos 2 casas en la casilla de compra del hotel:
+    retirar_cases(nom_casella, 2, tauler)
 
 def main():
     # Generar la partida

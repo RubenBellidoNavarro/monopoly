@@ -116,7 +116,7 @@ caselles_ordenades_nom_acortat = ("Sortida",
                       )
 
 #Tupla de casillas que no tienen asociadas precios ni pertenencias a ningún jugador:
-caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking")
+caselles_especials = ("Sort","Presó","Caixa","Anr pró","Sortida","Parking","Sort1","Sort2","Caixa1")
 cartes_sort = [
     "Sortir presó",
     "Anar presó",
@@ -143,7 +143,7 @@ cartes_caixa = [
 ### [3] = Precio Comprar Terreny
 ### [4] = Precio Comprar casa
 ### [5] = Precio Comprar hotel
-preus_caselles = (("Lauria",10,15,50,200,250),
+preus_caselles_valors = (("Lauria",10,15,50,200,250),
                   ("Rosell",10,15,50,225,255),
                   ("Marina",15,15,50,250,260),
                   ("Consell",15,20,50,275,265),
@@ -246,7 +246,7 @@ def genera_noms_complets_sense_especials(caselles_ordenades:tuple) -> tuple:
             noms_complets.append(casella)
     noms_complets = tuple(noms_complets)
 
-def genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles):
+def genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles, noms_complets_sense_especials):
     '''Genera un diccionario que contiene los precios de cada casilla.
     
     Input:
@@ -858,10 +858,13 @@ def genera_partida() -> tuple:
         7. Imprimimos el tablero y la información de la banca y los jugadores.
 
     Retorna: tupla(tauler(list), jugadors(dict), ordre_jugadors(list))'''
+    global preus_caselles_valors
+    
     tauler = genera_tauler(caselles_ordenades, caselles_ordenades_nom_acortat, caselles_especials, caselles_posicions)
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
-    preus_caselles = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
+    noms_complets_sense_especials = genera_noms_complets_sense_especials(caselles_ordenades)
+    preus_caselles = genera_preus_caselles(caselles_ordenades, preus_caselles_valors, etiquetes_preus_caselles, noms_complets_sense_especials)
     gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
@@ -1595,6 +1598,7 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
 
     #Si el jugador escoge 'passar':
     
+
 
 def main():
     # Generar la partida

@@ -1818,6 +1818,31 @@ def str_possibles_jugades(jugador:dict, possibles_jugades:list) -> str:
     str_jugades = qui_juga + jugades_possibles[:-2]
     return str_jugades
 
+def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, tauler:list) -> None:
+    '''Recibe el input del usuario y lo procesa, dependiendo de las acciones que pueda realizar en su turno.
+    
+    Inputs:
+        -jugador_actual(dict): Diccionario que contiene la información sobre el jugador actual
+        -possibles_jugades(list): Lista de strings con cada una de las opciones que puede realizar el usuario.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores (inluido el actual)
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna: None'''
+    #Pedimus un input hasta que este sea válido:
+    while True:
+        jugada_escollida = input("Escull una opció del llistat: ")
+        #Si el input se corresponde con alguna de las posibles jugadas, declaramos el input como válido:
+        input_invalid = True
+        for jugada in possibles_jugades:
+            if jugada_escollida.lower() == jugada:
+                input_invalid == False
+        #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
+        if input_invalid:
+            print("Opció invàlida, torneu a provar.")
+            continue
+        break
+    return jugada_escollida
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1936,7 +1961,7 @@ def main():
             '''imprimeix_possibles_jugades(str_jugades)'''
 
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-            '''input_jugador(jugador_actual, jugadors, tauler)'''
+            jugada_escollida = input_jugador(jugador_actual, jugadors, tauler)
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 

@@ -2136,13 +2136,13 @@ def main():
                 
                 #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
                 elif jugada_escollida == 'preus':
-                    imprimeix_preus_casella_actual(nom_casella, preus) #Mostramos en la parte central los precios de comprar casa y hotel.
+                    '''imprimeix_preus_casella_actual(nom_casella, preus)''' #Mostramos en la parte central los precios de comprar casa y hotel.
                     continue
                 elif jugada_escollida == 'preu banc':
-                    imprimeix_ganancias_vendre_a_banc(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades al banco (al 50% del precio que pagó originalmente)
+                    '''imprimeix_ganancias_vendre_a_banc(nom_casella, preus, tauler)''' #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades al banco (al 50% del precio que pagó originalmente)
                     continue
                 elif jugada_escollida == 'preu jugador':
-                    imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
+                    '''imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler)''' #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
                     continue
 
                 elif jugada_escollida == 'vendre al banc':

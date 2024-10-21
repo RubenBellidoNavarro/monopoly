@@ -1846,6 +1846,7 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
         for jugada in possibles_jugades:
             if jugada_escollida.lower() == jugada:
                 input_invalid = False
+                jugada_escollida = jugada
         #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
         if input_invalid:
             print("Opció invàlida, torneu a provar.")
@@ -1968,7 +1969,7 @@ def main():
             imprimeix_taula(tauler)
             imprimeix_informacio(banca, jugadors)
             imprimeix_possibles_jugades(str_jugades)
-            
+
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
             jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
         

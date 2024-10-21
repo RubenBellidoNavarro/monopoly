@@ -1971,7 +1971,38 @@ def main():
             imprimeix_possibles_jugades(str_jugades)
 
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-            jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+            while True:
+                jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+
+                #Si el jugador escoge 'passar':
+                if jugada_escollida == 'passar':
+                    pass
+                elif jugada_escollida == 'comprar terreny':
+                    jugador_compra_terreny(nom_jugador, nom_casella, jugadors, tauler)
+                elif jugada_escollida == 'comprar casa':
+                    jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
+                elif jugada_escollida == 'comprar hotel':
+                    jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
+                elif jugada_escollida == 'preus':
+                    imprimeix_preus_casella_actual(nom_casella, preus) #Mostramos en la parte central los precios de comprar casa y hotel.
+                    continue
+                elif jugada_escollida == 'preu banc':
+                    imprimeix_ganancias_vendre_a_banc(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades al banco (al 50% del precio que pagó originalmente)
+                    continue
+                elif jugada_escollida == 'preu jugador':
+                    imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler) #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
+                    continue
+                elif jugada_escollida == 'vendre a B':
+                    jugador_vend_tot_a_B(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a T':
+                    jugador_vend_tot_a_T(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a G':
+                    jugador_vend_tot_a_G(nom_jugador, preus, jugadors, tauler)
+                elif jugada_escollida == 'vendre a V':
+                    jugador_vend_tot_a_V(nom_jugador, preus, jugadors, tauler)
+
+                break
+            
         
             #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
             if jugador_perd(jugador_actual, jugadors): 

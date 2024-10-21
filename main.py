@@ -1891,7 +1891,11 @@ def main():
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
             mou_cursor(0, 24)
-            input(f"{str_jugades}: ")
+            opcio = input(f"{str_jugades}: ").lower()
+
+            if opcio == "truc":
+                #Gestionar Trucos
+                pass
 
             #Actualizamos la información del juego:
             imprimeix_per_pantalla(tauler, banca, jugadors, jugades)

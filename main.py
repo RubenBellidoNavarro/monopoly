@@ -885,14 +885,6 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     carta = random.choice(cartes_caixa)
     afegir_jugada(f"+ Sort: \"{carta}\"")
 
-    "Sortir presó",
-    "Anar presó",
-    "",
-    "",
-    "Despeses escolars",
-    "",
-    ""
-
     if carta == "Sortir presó":
         # Jugador és a la presó
             # SI: Surt de la presó

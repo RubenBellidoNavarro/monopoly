@@ -1828,6 +1828,21 @@ def cambiar_propietari(nom_casella:str, nou_propietari:str, tauler:list) -> None
             dict_casella["propietari"] = nou_propietari
             break
 
+def traspassar_totes_les_propietats(nom_anterior_propietari:str, nom_nou_propietari:str, tauler:list) -> None:
+    '''Modifica la clave 'propietari' dentro de todas las casillas del tablero que fueran del anterior propietario, 
+    para que ahora pertenezcan al nuevo propietario.
+    
+    Input:
+        -nom_anterior_propietari(str): String que representa el nombre del jugador que posee las propiedades, y va a entregarlas a uno nuevo.
+        -nom_nou_propietari(str): String que representa el nombre del jugador que va a adquirir las propiedades.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+    
+    Retorna: None'''
+    for dict_casella in tauler:
+        nom_casella = dict_casella["nom_complet"]
+        if propietari_casella(nom_casella, tauler) == nom_anterior_propietari:
+            cambiar_propietari(nom_casella, nom_nou_propietari, tauler)
+
 def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
     por parte de un jugador.

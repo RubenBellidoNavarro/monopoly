@@ -794,6 +794,16 @@ def imprimeix_informacio(banca, jugadors):
 
     for index, jugador in enumerate(jugadors.values()):
         imprimeix_informacio_jugador(index + 1, jugador)
+
+def imprimeix_possibles_jugades(str_jugades:str) -> None:
+    '''Imprime las posibles jugadas que puede hacer el jugador en su turno.
+    
+    Input:
+        -str_jugades(str): String con el contenido a imprimir.
+        
+    Retorna: None'''
+    print(str_jugades)
+
 #endregion ImprimirInformacion
 
 #region ImprimirJugadas
@@ -1835,7 +1845,7 @@ def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, ta
         input_invalid = True
         for jugada in possibles_jugades:
             if jugada_escollida.lower() == jugada:
-                input_invalid == False
+                input_invalid = False
         #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
         if input_invalid:
             print("Opció invàlida, torneu a provar.")
@@ -1957,8 +1967,8 @@ def main():
             clearScreen()
             imprimeix_taula(tauler)
             imprimeix_informacio(banca, jugadors)
-            #Imprimimos las posibles jugadas que puede hacer el jugador:
-            '''imprimeix_possibles_jugades(str_jugades)'''
+            imprimeix_possibles_jugades(str_jugades)
+            print(f"array de posibles jugadas: {possibles_jugades}")
 
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
             jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)

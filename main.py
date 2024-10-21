@@ -1946,6 +1946,26 @@ def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:
     #Retiramos 2 casas en la casilla de compra del hotel:
     retirar_cases(nom_casella, 2, tauler)
 
+def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Realiza un transpaso de todas las propiedades del jugador actual a la banca, otorgando al 
+    jugador actual el 50% del dinero que pagó por dichas propiedades.
+    
+    Input:
+        -nom_jugador_vendedor(str): String que representa el nombre del jugador que va a vender todas sus propiedades.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    #Calculamos el precio que se ingresará/retirará, será el 50% del que pagó el jugador:
+    preu_per_total_propietats = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
+    #Ingresamos el dinero al jugador:
+    jugadors[nom_jugador]["diners"] += preu_per_total_propietats
+    #Retiramos el dinero a la banca:
+    retirar_diners_banca(quantitat, banca)
+    #Realizamos el traspase de propiedades entre jugador y banca:
+    traspassar_totes_les_propietats(nom_jugador, 'banca', tauler)
+
 def jugador_actual_vend_tot_a_altre_jugador(nom_jugador_vendedor:str, nom_jugador_comprador:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Realiza un transpaso de todas las propiedades del jugador actual al jugador 'B', otorgando al 
     jugador actual el 90% del dinero que pagó por dichas propiedades.

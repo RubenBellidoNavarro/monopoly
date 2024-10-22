@@ -2125,35 +2125,56 @@ def main():
                     pass
 
                 if jugada_escollida == 'passar':
+                    afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
                     pass
                 elif jugada_escollida == 'comprar terreny':
+                    afegir_jugada(f'"{nom_jugador[0]}" compra el terreny')
                     jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
                 elif jugada_escollida == 'comprar casa':
+                    afegir_jugada(f'"{nom_jugador[0]}" compra una casa')
                     jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
                 elif jugada_escollida == 'comprar hotel':
+                    afegir_jugada(f'"{nom_jugador[0]}" compra un hotel')
                     jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
 
                 
                 #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
                 elif jugada_escollida == 'preus':
-                    '''imprimeix_preus_casella_actual(nom_casella, preus)''' #Mostramos en la parte central los precios de comprar casa y hotel.
+                    espais = 16
+                    str_preu_terreny = "+Preu terreny:".ljust(espais) + f"{preu_terreny(nom_casella, preus)}€"
+                    afegir_jugada(str_preu_terreny)
+                    str_preu_compra = "+Preu casa".ljust(espais) + f"{preu_comprar_casa(nom_casella, preus)}€"
+                    afegir_jugada(str_preu_compra)
+                    str_preu_hotel = "+Preu hotel".ljust(espais) + f"{preu_comprar_hotel(nom_casella, preus)}€"
+                    afegir_jugada(str_preu_hotel)
                     continue
                 elif jugada_escollida == 'preu banc':
-                    '''imprimeix_ganancias_vendre_a_banc(nom_casella, preus, tauler)''' #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades al banco (al 50% del precio que pagó originalmente)
+                    str_preu_banc = f"+Preu banc: {preu_total_propietats(nom_jugador, preus, tauler) * 0.5}€"
+                    afegir_jugada(str_preu_banc)
                     continue
                 elif jugada_escollida == 'preu jugador':
-                    '''imprimeix_ganancias_vendre_a_jugador(nom_casella, preus, tauler)''' #Mostramos en la parte central cuánto ganaría el jugador si vende sus propiedades a otro jugador (al 90% del precio que pagó originalmente)
+                    str_preu_jugador = f"+Preu jugador: {preu_total_propietats(nom_jugador, preus, tauler) * 0.9}€"
                     continue
 
                 elif jugada_escollida == 'vendre al banc':
+                    preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
+                    afegir_jugada(f'"{nom_jugador[0]}" ven tot al banc per {preu_pagat}€')
                     jugador_actual_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a B':
+                    preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                    afegir_jugada(f'"{nom_jugador[0]}" ven tot a "B" per {preu_pagat}€')
                     jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Blau', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a T':
+                    preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                    afegir_jugada(f'"{nom_jugador[0]}" ven tot a "T" per {preu_pagat}€')
                     jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Taronja', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a G':
+                    preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                    afegir_jugada(f'"{nom_jugador[0]}" ven tot a "G" per {preu_pagat}€')
                     jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Groc', preus, jugadors, tauler)
                 elif jugada_escollida == 'vendre a V':
+                    preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                    afegir_jugada(f'"{nom_jugador[0]}" ven tot a "V" per {preu_pagat}€')
                     jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
                 
                 break

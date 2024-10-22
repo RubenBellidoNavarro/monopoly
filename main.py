@@ -2069,155 +2069,155 @@ def main():
                 jugador_actual["diners"] += 200
                 afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
         
-        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-        time.sleep(2)
+            imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+            time.sleep(2)
             
 #   - Revisamos qué opciones tiene el usuario según la casilla en la que se encuentra
-        if nom_casella in caselles_especials:
-        
-            if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
-                clearScreen()
-                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-                time.sleep(1)
-                contador_jugador += 1
-                continue
-
-            elif nom_casella == "Anr pró":
-                enviar_jugador_preso(jugador_actual, jugadors, tauler)
-                contador_jugador += 1
-                continue
-
-            elif nom_casella == "Sortida":
-                #Añadimos 200€ al jugador:
-                nom_jugador = jugador_actual["nom"]
-                jugadors[nom_jugador]["diners"] += 200
-                afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
-
-                #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
-                clearScreen()
-                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-                time.sleep(1)
-                contador_jugador += 1
-                continue
-
-            elif nom_casella == "Presó":
-                enviar_jugador_preso(jugador_actual, jugadors, tauler)
-                contador_jugador += 1
-                continue
-
-            elif nom_casella == "Sort":
-                gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
-                time.sleep(1)
-                contador_jugador += 1
-                continue
-
-            elif nom_casella == "Caixa":
-                gestiona_caixa(jugador_actual, tauler, jugadors, banca)
-                time.sleep(1)
-                contador_jugador += 1
-                continue
+            if nom_casella in caselles_especials:
             
-        else:
-            contador_jugador += 1
-
-            #Si el jugador está en la casilla 'Presó', pasamos al siguiente jugador:
-            if nom_casella == 'Presó':
-                continue
-
-            #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
-            possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
-            str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
-
-            #Declaramos variable que informa de si el jugador ha pagado un alquiler:
-            ha_pagat_lloguer = False
-
-            #Si el jugador está en la casilla de otro jugador, y tiene dinero para pagar:
-            pot_pagar = (len(possibles_jugades) == 1) #Si sólo tiene como opción pasar, y no está en una casilla especial, es que puede pagar
-            altre_jugador_es_propietari = (not jugador_es_propietari(nom_jugador, nom_casella, tauler)) and (propietari_casella(nom_casella, tauler) != "banca")
-            if pot_pagar and altre_jugador_es_propietari:
-                nom_propietari = propietari_casella(nom_casella, tauler)
-                preu_lloguer = import_lloguer_casella(nom_casella, preus, tauler)
-                str_lloguer = f'"{nom_jugador[0]}" paga {preu_lloguer}€ de lloguer a "{nom_propietari[0]}"'
-                afegir_jugada(str_lloguer)
-                paga_lloguer(nom_jugador, nom_propietari, preu_lloguer, jugadors)
-                ha_pagat_lloguer = True
-
-            #Si el jugador no ha tenido que pagar un alquiler o no ha podido hacerlo, le pedimos que elija jugada:
-            if not ha_pagat_lloguer:
-            #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-                while True:
-                    #Actualizamos la información del juego:
+                if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
+                    clearScreen()
                     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-                    #Imprimimos las posibles jugadas que puede hacer el jugador:
-                    imprimeix_possibles_jugades(str_jugades)
+                    time.sleep(1)
+                    contador_jugador += 1
+                    continue
 
-                    jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+                elif nom_casella == "Anr pró":
+                    enviar_jugador_preso(jugador_actual, jugadors, tauler)
+                    contador_jugador += 1
+                    continue
 
-                    #Gestionar Trucos
-                    if jugada_escollida == "truc":
-                        #Truco que otorgue todas las propiedades (con 4C4H) a un jugador, y los demás jugadors con 10€, para comprobar que funciona correctamente las funcionalidades de vender todas las propiedades, de 'possibles_jugades'
-                        #Truco que otorgue a un jugador todas las propiedades con 4C y ningún hotel. Todos los jugadores tienen 1.000.000€ o similar. Para comprobar que el jugador con las propiedades, al hacer hoteles, pierde las casas correctamente.
-                        pass
+                elif nom_casella == "Sortida":
+                    #Añadimos 200€ al jugador:
+                    nom_jugador = jugador_actual["nom"]
+                    jugadors[nom_jugador]["diners"] += 200
+                    afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
 
-                    elif jugada_escollida == 'passar':
-                        afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
-                        pass
+                    #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
+                    clearScreen()
+                    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                    time.sleep(1)
+                    contador_jugador += 1
+                    continue
 
-                    #Si el jugador quiere comprar una propiedad:
-                    elif jugada_escollida == 'comprar terreny':
-                        afegir_jugada(f'"{nom_jugador[0]}" compra el terreny')
-                        jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
-                    elif jugada_escollida == 'comprar casa':
-                        afegir_jugada(f'"{nom_jugador[0]}" compra una casa')
-                        jugador_compra_casa(nom_jugador, nom_casella, preus, jugadors, tauler)
-                    elif jugada_escollida == 'comprar hotel':
-                        afegir_jugada(f'"{nom_jugador[0]}" compra un hotel')
-                        jugador_compra_hotel(nom_jugador, nom_casella, preus, jugadors, tauler)
+                elif nom_casella == "Presó":
+                    enviar_jugador_preso(jugador_actual, jugadors, tauler)
+                    contador_jugador += 1
+                    continue
 
-                    
-                    #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
-                    elif jugada_escollida == 'preus':
-                        espais = 16
-                        str_preu_terreny = "+Preu terreny:".ljust(espais) + f"{preu_terreny(nom_casella, preus)}€"
-                        afegir_jugada(str_preu_terreny)
-                        str_preu_compra = "+Preu casa".ljust(espais) + f"{preu_comprar_casa(nom_casella, preus)}€"
-                        afegir_jugada(str_preu_compra)
-                        str_preu_hotel = "+Preu hotel".ljust(espais) + f"{preu_comprar_hotel(nom_casella, preus)}€"
-                        afegir_jugada(str_preu_hotel)
-                        continue
-                    elif jugada_escollida == 'preu banc':
-                        str_preu_banc = f"+Preu banc: {preu_total_propietats(nom_jugador, preus, tauler) * 0.5}€"
-                        afegir_jugada(str_preu_banc)
-                        continue
-                    elif jugada_escollida == 'preu jugador':
-                        str_preu_jugador = f"+Preu jugador: {preu_total_propietats(nom_jugador, preus, tauler) * 0.9}€"
-                        afegir_jugada(str_preu_jugador)
-                        continue
+                elif nom_casella == "Sort":
+                    gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
+                    time.sleep(1)
+                    contador_jugador += 1
+                    continue
 
-                    #Si el jugador elige vender sus propiedades a otra entidad (banco o jugador):
-                    elif jugada_escollida == 'vendre al banc':
-                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
-                        afegir_jugada(f'"{nom_jugador[0]}" ven tot al banc per {preu_pagat}€')
-                        jugador_actual_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
-                    elif jugada_escollida == 'vendre a B':
-                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
-                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "B" per {preu_pagat}€')
-                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Blau', preus, jugadors, tauler)
-                    elif jugada_escollida == 'vendre a T':
-                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
-                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "T" per {preu_pagat}€')
-                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Taronja', preus, jugadors, tauler)
-                    elif jugada_escollida == 'vendre a G':
-                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
-                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "G" per {preu_pagat}€')
-                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Groc', preus, jugadors, tauler)
-                    elif jugada_escollida == 'vendre a V':
-                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
-                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "V" per {preu_pagat}€')
-                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
-                    
-                    #Una vez escogida una orden que no sea de consulta, continuamos el bucle de juego:
-                    break
+                elif nom_casella == "Caixa":
+                    gestiona_caixa(jugador_actual, tauler, jugadors, banca)
+                    time.sleep(1)
+                    contador_jugador += 1
+                    continue
+                
+            else:
+                contador_jugador += 1
+
+                #Si el jugador está en la casilla 'Presó', pasamos al siguiente jugador:
+                if nom_casella == 'Presó':
+                    continue
+
+                #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
+                possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
+                str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
+
+                #Declaramos variable que informa de si el jugador ha pagado un alquiler:
+                ha_pagat_lloguer = False
+
+                #Si el jugador está en la casilla de otro jugador, y tiene dinero para pagar:
+                pot_pagar = (len(possibles_jugades) == 1) #Si sólo tiene como opción pasar, y no está en una casilla especial, es que puede pagar
+                altre_jugador_es_propietari = (not jugador_es_propietari(nom_jugador, nom_casella, tauler)) and (propietari_casella(nom_casella, tauler) != "banca")
+                if pot_pagar and altre_jugador_es_propietari:
+                    nom_propietari = propietari_casella(nom_casella, tauler)
+                    preu_lloguer = import_lloguer_casella(nom_casella, preus, tauler)
+                    str_lloguer = f'"{nom_jugador[0]}" paga {preu_lloguer}€ de lloguer a "{nom_propietari[0]}"'
+                    afegir_jugada(str_lloguer)
+                    paga_lloguer(nom_jugador, nom_propietari, preu_lloguer, jugadors)
+                    ha_pagat_lloguer = True
+
+                #Si el jugador no ha tenido que pagar un alquiler o no ha podido hacerlo, le pedimos que elija jugada:
+                if not ha_pagat_lloguer:
+                #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
+                    while True:
+                        #Actualizamos la información del juego:
+                        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                        #Imprimimos las posibles jugadas que puede hacer el jugador:
+                        imprimeix_possibles_jugades(str_jugades)
+
+                        jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+                        
+                        #Gestionar Trucos
+                        if jugada_escollida == "truc":
+                            #Truco que otorgue todas las propiedades (con 4C4H) a un jugador, y los demás jugadors con 10€, para comprobar que funciona correctamente las funcionalidades de vender todas las propiedades, de 'possibles_jugades'
+                            #Truco que otorgue a un jugador todas las propiedades con 4C y ningún hotel. Todos los jugadores tienen 1.000.000€ o similar. Para comprobar que el jugador con las propiedades, al hacer hoteles, pierde las casas correctamente.
+                            pass
+
+                        elif jugada_escollida == 'passar':
+                            afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
+                            pass
+
+                        #Si el jugador quiere comprar una propiedad:
+                        elif jugada_escollida == 'comprar terreny':
+                            afegir_jugada(f'"{nom_jugador[0]}" compra el terreny')
+                            jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
+                        elif jugada_escollida == 'comprar casa':
+                            afegir_jugada(f'"{nom_jugador[0]}" compra una casa')
+                            jugador_compra_casa(nom_jugador, nom_casella, preus, jugadors, tauler)
+                        elif jugada_escollida == 'comprar hotel':
+                            afegir_jugada(f'"{nom_jugador[0]}" compra un hotel')
+                            jugador_compra_hotel(nom_jugador, nom_casella, preus, jugadors, tauler)
+
+                        
+                        #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
+                        elif jugada_escollida == 'preus':
+                            espais = 16
+                            str_preu_terreny = "+Preu terreny:".ljust(espais) + f"{preu_terreny(nom_casella, preus)}€"
+                            afegir_jugada(str_preu_terreny)
+                            str_preu_compra = "+Preu casa".ljust(espais) + f"{preu_comprar_casa(nom_casella, preus)}€"
+                            afegir_jugada(str_preu_compra)
+                            str_preu_hotel = "+Preu hotel".ljust(espais) + f"{preu_comprar_hotel(nom_casella, preus)}€"
+                            afegir_jugada(str_preu_hotel)
+                            continue
+                        elif jugada_escollida == 'preu banc':
+                            str_preu_banc = f"+Preu banc: {preu_total_propietats(nom_jugador, preus, tauler) * 0.5}€"
+                            afegir_jugada(str_preu_banc)
+                            continue
+                        elif jugada_escollida == 'preu jugador':
+                            str_preu_jugador = f"+Preu jugador: {preu_total_propietats(nom_jugador, preus, tauler) * 0.9}€"
+                            afegir_jugada(str_preu_jugador)
+                            continue
+
+                        #Si el jugador elige vender sus propiedades a otra entidad (banco o jugador):
+                        elif jugada_escollida == 'vendre al banc':
+                            preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
+                            afegir_jugada(f'"{nom_jugador[0]}" ven tot al banc per {preu_pagat}€')
+                            jugador_actual_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
+                        elif jugada_escollida == 'vendre a B':
+                            preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                            afegir_jugada(f'"{nom_jugador[0]}" ven tot a "B" per {preu_pagat}€')
+                            jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Blau', preus, jugadors, tauler)
+                        elif jugada_escollida == 'vendre a T':
+                            preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                            afegir_jugada(f'"{nom_jugador[0]}" ven tot a "T" per {preu_pagat}€')
+                            jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Taronja', preus, jugadors, tauler)
+                        elif jugada_escollida == 'vendre a G':
+                            preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                            afegir_jugada(f'"{nom_jugador[0]}" ven tot a "G" per {preu_pagat}€')
+                            jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Groc', preus, jugadors, tauler)
+                        elif jugada_escollida == 'vendre a V':
+                            preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                            afegir_jugada(f'"{nom_jugador[0]}" ven tot a "V" per {preu_pagat}€')
+                            jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
+                        
+                        #Una vez escogida una orden que no sea de consulta, continuamos el bucle de juego:
+                        break
             
         #Volvemos a imprimir tablero e información con la nueva jugada
         imprimeix_per_pantalla(tauler, banca, jugadors, jugades)

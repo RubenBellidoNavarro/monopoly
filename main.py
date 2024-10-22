@@ -2120,13 +2120,15 @@ def main():
 
                 jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
 
-                if jugada_escollida == "truc":
                 #Gestionar Trucos
+                if jugada_escollida == "truc":
                     pass
 
                 if jugada_escollida == 'passar':
                     afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
                     pass
+
+                #Si el jugador quiere comprar una propiedad:
                 elif jugada_escollida == 'comprar terreny':
                     afegir_jugada(f'"{nom_jugador[0]}" compra el terreny')
                     jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
@@ -2157,6 +2159,7 @@ def main():
                     afegir_jugada(str_preu_jugador)
                     continue
 
+                #Si el jugador elige vender sus propiedades a otra entidad (banco o jugador):
                 elif jugada_escollida == 'vendre al banc':
                     preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
                     afegir_jugada(f'"{nom_jugador[0]}" ven tot al banc per {preu_pagat}€')
@@ -2178,6 +2181,7 @@ def main():
                     afegir_jugada(f'"{nom_jugador[0]}" ven tot a "V" per {preu_pagat}€')
                     jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
                 
+                #Una vez escogida una orden que no sea de consulta, continuamos el bucle de juego:
                 break
             
         #Volvemos a imprimir tablero e información con la nueva jugada

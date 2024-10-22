@@ -1736,7 +1736,6 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
     jugador_actual_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     menys_de_4_cases = (num_cases(casella_jugador[0], tauler) < 4)
     pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador[0], preus_caselles))
-    
     if jugador_actual_es_propietari and menys_de_4_cases and pot_pagar_casa:
         possibles_jugades.append("comprar casa")
 
@@ -1747,11 +1746,9 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
     if jugador_actual_es_propietari and minim_2_cases and pot_pagar_hotel:
         possibles_jugades.append("comprar hotel")
 
-    #Si el propietario de la casilla es el jugador actual o el banco, y jugador actual quiere consultar precios:
-    banca_es_propietaria = (propietari_casella(casella_jugador[0], tauler) == "banca")
-    jugador_actual_es_propietari = jugador_es_propietari(nom_jugador, casella_jugador, tauler)
-    if banca_es_propietaria or jugador_actual_es_propietari:
-        possibles_jugades.append("preus")
+    #Si el jugador puede comprar un terreno, una casa o un hotel:
+    if ('comprar terreny' in possibles_jugades) or ('comprar casa' in possibles_jugades) or ('comprar hotel' in possibles_jugades):
+        possibles_jugades.append('preus')
 
     #Si el jugador no puede pagar el importe de estar en la casilla:
     no_pot_pagar = (diners_jugador < import_lloguer_casella(casella_jugador[0], preus_caselles, tauler)) and (propietari_casella(casella_jugador[0], tauler) != nom_jugador)

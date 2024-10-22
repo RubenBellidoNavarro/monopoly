@@ -2166,10 +2166,10 @@ def main():
                         jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
                     elif jugada_escollida == 'comprar casa':
                         afegir_jugada(f'"{nom_jugador[0]}" compra una casa')
-                        jugador_compra_casa(nom_jugador, nom_casella, jugadors, tauler)
+                        jugador_compra_casa(nom_jugador, nom_casella, preus, jugadors, tauler)
                     elif jugada_escollida == 'comprar hotel':
                         afegir_jugada(f'"{nom_jugador[0]}" compra un hotel')
-                        jugador_compra_hotel(nom_jugador, nom_casella, jugadors, tauler)
+                        jugador_compra_hotel(nom_jugador, nom_casella, preus, jugadors, tauler)
 
                     
                     #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input

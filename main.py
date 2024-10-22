@@ -1733,24 +1733,24 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
             possibles_jugades.append("comprar terreny")
 
     #Si el jugador puede comprar una casa:
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    jugador_actual_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     menys_de_4_cases = (num_cases(casella_jugador[0], tauler) < 4)
     pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador[0], preus_caselles))
     
-    if jugador_es_propietari and menys_de_4_cases and pot_pagar_casa:
+    if jugador_actual_es_propietari and menys_de_4_cases and pot_pagar_casa:
         possibles_jugades.append("comprar casa")
 
     #Si el jugador puede comprar un hotel:
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    jugador_actual_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     minim_2_cases = (num_cases(casella_jugador[0], tauler) >= 2)
     pot_pagar_hotel = (diners_jugador > preu_comprar_hotel(casella_jugador[0], preus_caselles))
-    if jugador_es_propietari and minim_2_cases and pot_pagar_hotel:
+    if jugador_actual_es_propietari and minim_2_cases and pot_pagar_hotel:
         possibles_jugades.append("comprar hotel")
 
-    #Si el jugador es propietario de la casilla (y quiere consultar precios):
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
-
-    if jugador_es_propietari:
+    #Si el propietario de la casilla es el jugador actual o el banco, y jugador actual quiere consultar precios:
+    banca_es_propietaria = (propietari_casella(casella_jugador[0], tauler) == "banca")
+    jugador_actual_es_propietari = jugador_es_propietari(nom_jugador, casella_jugador, tauler)
+    if banca_es_propietaria or jugador_actual_es_propietari:
         possibles_jugades.append("preus")
 
     #Si el jugador no puede pagar el importe de estar en la casilla:

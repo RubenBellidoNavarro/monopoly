@@ -1992,6 +1992,21 @@ def jugador_actual_vend_tot_a_altre_jugador(nom_jugador_vendedor:str, nom_jugado
     #Realizamos el traspase de propiedades entre vendedor y comprador:
     traspassar_totes_les_propietats(nom_jugador_vendedor, nom_jugador_comprador, tauler)
 
+def paga_lloguer(nom_jugador:str, nom_propietari:str, preu_lloguer:int, jugadors:dict) -> None:
+    '''Realiza el intercambio de dinero entre el pagador y el propietario.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que ha de pagar.
+        -nom_propietari(str): String que representa e l nombre del jugador que recibe el dinero por el alquiler.
+        -preu_lloguer(int): Integer que representa el importe a pagar en concepto de alquiler.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        
+    Retorna: None'''
+    #Retiramos dinero al jugador que paga:
+    jugadors[nom_jugador]["diners"] -= preu_lloguer
+    #Añadimos dinero al jugador que alquila su casilla:
+    jugadors[nom_propietari]["diners"] += preu_lloguer
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -2132,7 +2147,7 @@ def main():
                     preu_lloguer = import_lloguer_casella(nom_casella, preus, tauler)
                     str_lloguer = f'"{nom_jugador[0]}" paga {preu_lloguer}€ de lloguer a "{nom_propietari[0]}"'
                     afegir_jugada(str_lloguer)
-                    paga_lloguer(nom_jugador, nom_propietari, preu_lloguer,)
+                    paga_lloguer(nom_jugador, nom_propietari, preu_lloguer, jugadors)
 
                 elif jugada_escollida == 'passar':
                     afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')

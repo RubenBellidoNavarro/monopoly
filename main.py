@@ -2123,6 +2123,10 @@ def main():
         else:
             contador_jugador += 1
 
+            #Si el jugador está en la casilla 'Presó', pasamos al siguiente jugador:
+            if nom_casella == 'Presó':
+                continue
+
             #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)

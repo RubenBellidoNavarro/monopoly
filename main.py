@@ -2124,7 +2124,17 @@ def main():
                 if jugada_escollida == "truc":
                     pass
 
-                if jugada_escollida == 'passar':
+                #Si el jugador está en la casilla de otro jugador, y tiene dinero para pagar:
+                pot_pagar = (len(possibles_jugades) == 1) #Si sólo tiene como opción pasar, y no está en una casilla especial, es que puede pagar
+                altre_jugador_es_propietari = (not jugador_es_propietari(nom_jugador, nom_casella, tauler)) and (propietari_casella(nom_casella, tauler) != "banca")
+                if pot_pagar and altre_jugador_es_propietari:
+                    nom_propietari = propietari_casella(nom_casella, tauler)
+                    preu_lloguer = import_lloguer_casella(nom_casella, preus, tauler)
+                    str_lloguer = f'"{nom_jugador[0]}" paga {preu_lloguer}€ de lloguer a "{nom_propietari[0]}"'
+                    afegir_jugada(str_lloguer)
+                    paga_lloguer(nom_jugador, nom_propietari, preu_lloguer,)
+
+                elif jugada_escollida == 'passar':
                     afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
                     pass
 

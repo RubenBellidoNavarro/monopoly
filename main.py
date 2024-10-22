@@ -2155,6 +2155,8 @@ def main():
 
                     #Gestionar Trucos
                     if jugada_escollida == "truc":
+                        #Truco que otorgue todas las propiedades (con 4C4H) a un jugador, y los demás jugadors con 10€, para comprobar que funciona correctamente las funcionalidades de vender todas las propiedades, de 'possibles_jugades'
+                        #Truco que otorgue a un jugador todas las propiedades con 4C y ningún hotel. Todos los jugadores tienen 1.000.000€ o similar. Para comprobar que el jugador con las propiedades, al hacer hoteles, pierde las casas correctamente.
                         pass
 
                     elif jugada_escollida == 'passar':

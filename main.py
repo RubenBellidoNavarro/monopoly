@@ -1757,6 +1757,7 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
     no_pot_pagar = (diners_jugador < import_lloguer_casella(casella_jugador[0], preus_caselles, tauler)) and (propietari_casella(casella_jugador[0], tauler) != nom_jugador)
 
     if no_pot_pagar:
+        possibles_jugades.remove("passar") #Eliminamos opción de pasar turno en caso de que esté en la casilla de otro jugador, y no pueda pagar alquiler.
         possibles_jugades.append("preu banc")
         possibles_jugades.append("preu jugador")
         possibles_jugades.append("vendre al banc")

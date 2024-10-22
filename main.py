@@ -445,7 +445,7 @@ def preu_lloguer_hotel(casella:str, preu_caselles:dict) -> int:
     preu_lloguer_hotel= preu_caselles[casella]["lloguer_hotel"]
     return preu_lloguer_hotel
         
-def preu_terreny(casella:str, preu_caselles:dict) -> int:
+def preu_terreny(nom_casella:str, preu_caselles:dict) -> int:
     '''Retorna el precio de compra de una determinada casilla.
     
     Input:
@@ -454,7 +454,7 @@ def preu_terreny(casella:str, preu_caselles:dict) -> int:
         
     Retorna:
         -preu_terreny(int): Integer que representa el precio de una casilla/terreno.'''
-    preu_terreny = preu_caselles[casella]["preu_terreny"]
+    preu_terreny = preu_caselles[nom_casella]["preu_terreny"]
     return preu_terreny
 
 def preu_comprar_casa(casella:str, preu_caselles:dict) -> int:
@@ -566,6 +566,10 @@ def afegir_diners_banca(banca):
     Retorna: No retorna ningún valor. Modifica el valor de la varialbe "banca"'''
     banca += 500000
     return banca
+
+def retirar_diners_banca(quantitat:int) -> None:
+    global banca
+    banca -= quantitat
 
 def gestiona_diners_banca(banca:int):
     '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()
@@ -809,6 +813,17 @@ def imprimeix_informacio(banca: int, jugadors: dict) -> None:
 
     for index, jugador in enumerate(jugadors.values()):
         imprimeix_informacio_jugador(index + 1, jugador)
+
+def imprimeix_possibles_jugades(str_jugades:str) -> None:
+    '''Imprime las posibles jugadas que puede hacer el jugador en su turno.
+    
+    Input:
+        -str_jugades(str): String con el contenido a imprimir.
+        
+    Retorna: None'''
+    mou_cursor(0, 23)
+    print(str_jugades)
+
 #endregion ImprimirInformacion
 
 #region ImprimirJugadas
@@ -1718,30 +1733,28 @@ def calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus_caselles, 
             possibles_jugades.append("comprar terreny")
 
     #Si el jugador puede comprar una casa:
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    jugador_actual_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     menys_de_4_cases = (num_cases(casella_jugador[0], tauler) < 4)
     pot_pagar_casa = (diners_jugador > preu_comprar_casa(casella_jugador[0], preus_caselles))
-    
-    if jugador_es_propietari and menys_de_4_cases and pot_pagar_casa:
+    if jugador_actual_es_propietari and menys_de_4_cases and pot_pagar_casa:
         possibles_jugades.append("comprar casa")
 
     #Si el jugador puede comprar un hotel:
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
+    jugador_actual_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
     minim_2_cases = (num_cases(casella_jugador[0], tauler) >= 2)
     pot_pagar_hotel = (diners_jugador > preu_comprar_hotel(casella_jugador[0], preus_caselles))
-    if jugador_es_propietari and minim_2_cases and pot_pagar_hotel:
+    if jugador_actual_es_propietari and minim_2_cases and pot_pagar_hotel:
         possibles_jugades.append("comprar hotel")
 
-    #Si el jugador es propietario de la casilla (y quiere consultar precios):
-    jugador_es_propietari = (propietari_casella(casella_jugador[0], tauler) == nom_jugador)
-
-    if jugador_es_propietari:
-        possibles_jugades.append("preus")
+    #Si el jugador puede comprar un terreno, una casa o un hotel:
+    if ('comprar terreny' in possibles_jugades) or ('comprar casa' in possibles_jugades) or ('comprar hotel' in possibles_jugades):
+        possibles_jugades.append('preus')
 
     #Si el jugador no puede pagar el importe de estar en la casilla:
     no_pot_pagar = (diners_jugador < import_lloguer_casella(casella_jugador[0], preus_caselles, tauler)) and (propietari_casella(casella_jugador[0], tauler) != nom_jugador)
 
     if no_pot_pagar:
+        possibles_jugades.remove("passar") #Eliminamos opción de pasar turno en caso de que esté en la casilla de otro jugador, y no pueda pagar alquiler.
         possibles_jugades.append("preu banc")
         possibles_jugades.append("preu jugador")
         possibles_jugades.append("vendre al banc")
@@ -1778,6 +1791,220 @@ def str_possibles_jugades(jugador:dict, possibles_jugades:list) -> str:
     str_jugades = qui_juga + jugades_possibles[:-2]
     return str_jugades
 
+def input_jugador(jugador_actual:dict, possibles_jugades:list, jugadors:dict, tauler:list) -> None:
+    '''Recibe el input del usuario y lo procesa, dependiendo de las acciones que pueda realizar en su turno.
+    
+    Inputs:
+        -jugador_actual(dict): Diccionario que contiene la información sobre el jugador actual
+        -possibles_jugades(list): Lista de strings con cada una de las opciones que puede realizar el usuario.
+        -jugadors(dict): Diccionario de diccionarios que contiene la información de todos los jugadores (inluido el actual)
+        -tauler(list): Lista de diccionarios que contienen la información de las casillas del tablero.
+        
+    Retorna: None'''
+    #Pedimus un input hasta que este sea válido:
+    while True:
+        jugada_escollida = input("Escull una opció del llistat: ")
+        #Si el input se corresponde con alguna de las posibles jugadas, declaramos el input como válido:
+        input_invalid = True
+        for jugada in possibles_jugades:
+            if jugada_escollida.lower() == jugada:
+                input_invalid = False
+                jugada_escollida = jugada
+        #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
+        if input_invalid:
+            print("Opció invàlida, torneu a provar.")
+            continue
+        break
+    return jugada_escollida
+
+def cambiar_propietari(nom_casella:str, nou_propietari:str, tauler:list) -> None:
+    '''Modifica la clave 'propietari' dentro de 'tauler' para asignarle el nuevo propietario.
+    
+    Input:
+        -nom_casella(str): String que representa el nombre de la casilla que cambiará de propietario.
+        -nou_propietari(str): String que representa el nombre del nuevo propietario de la casilla.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["propietari"] = nou_propietari
+            break
+
+def traspassar_totes_les_propietats(nom_anterior_propietari:str, nom_nou_propietari:str, tauler:list) -> None:
+    '''Modifica la clave 'propietari' dentro de todas las casillas del tablero que fueran del anterior propietario, 
+    para que ahora pertenezcan al nuevo propietario.
+    
+    Input:
+        -nom_anterior_propietari(str): String que representa el nombre del jugador que posee las propiedades, y va a entregarlas a uno nuevo.
+        -nom_nou_propietari(str): String que representa el nombre del jugador que va a adquirir las propiedades.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+    
+    Retorna: None'''
+    for dict_casella in tauler:
+        nom_casella = dict_casella["nom_complet"]
+        if propietari_casella(nom_casella, tauler) == nom_anterior_propietari:
+            cambiar_propietari(nom_casella, nom_nou_propietari, tauler)
+
+def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
+        -nom_casella(str): String que representa el nombre de la casilla que se quiere adquirir.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_comprar_terreny = preu_terreny(nom_casella, preus)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_comprar_terreny
+    #Añadimos el terreno a la lista de propiedades del jugador:
+    jugadors[nom_jugador]["propietats"].append(nom_casella)
+    #Hacemos que el jugador sea propietario de la casilla en el tablero:
+    cambiar_propietari(nom_casella, nom_jugador, tauler)
+
+def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
+    '''Añade un número de casas a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se añadira el número de casas.
+        -num_cases(int): Integer que representa el número de casas a añadir.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["cases"] += num_cases
+            break
+
+def retirar_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
+    '''Retira un número de casas a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se eliminará el número de casas.
+        -num_cases(int): Integer que representa el número de casas a quitar.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["cases"] -= num_cases
+            break
+
+def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de una casa
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar la casa.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir una casa.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_compra_casa = preu_comprar_casa(nom_casella, preus)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_compra_casa
+    #HAñadimos una casa a la casilla en el tablero:
+    afegir_cases(nom_casella, 1, tauler)
+
+def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
+    '''Añade un número de choteles a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se añadira el número de hoteles.
+        -num_cases(int): Integer que representa el número de hoteles a añadir.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["hotels"] += num_hotels
+            break
+
+def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
+    por parte de un jugador.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que va a comprar el hotel.
+        -nom_casella(str): String que representa el nombre de la casilla en la que se quiere adquirir un hotel.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    preu_compra_hotel = preu_comprar_hotel(nom_casella, preus)
+
+    #Retiramos dinero de la compra al jugador:
+    jugadors[nom_jugador]["diners"] -= preu_compra_hotel
+    #Añadimos un hotel a la casilla del tablero:
+    afegir_hotels(nom_casella, 1, tauler)
+    #Retiramos 2 casas en la casilla de compra del hotel:
+    retirar_cases(nom_casella, 2, tauler)
+
+def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Realiza un transpaso de todas las propiedades del jugador actual a la banca, otorgando al 
+    jugador actual el 50% del dinero que pagó por dichas propiedades.
+    
+    Input:
+        -nom_jugador_vendedor(str): String que representa el nombre del jugador que va a vender todas sus propiedades.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    #Calculamos el precio que se ingresará/retirará, será el 50% del que pagó el jugador:
+    preu_per_total_propietats = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
+    #Ingresamos el dinero al jugador:
+    jugadors[nom_jugador]["diners"] += preu_per_total_propietats
+    #Retiramos el dinero a la banca:
+    retirar_diners_banca(preu_per_total_propietats)
+    #Realizamos el traspase de propiedades entre jugador y banca:
+    traspassar_totes_les_propietats(nom_jugador, 'banca', tauler)
+
+def jugador_actual_vend_tot_a_altre_jugador(nom_jugador_vendedor:str, nom_jugador_comprador:str, preus:dict, jugadors:dict, tauler:list) -> None:
+    '''Realiza un transpaso de todas las propiedades del jugador actual al jugador 'B', otorgando al 
+    jugador actual el 90% del dinero que pagó por dichas propiedades.
+    
+    Input:
+        -nom_jugador_vendedor(str): String que representa el nombre del jugador que va a vender todas sus propiedades.
+        -nom_jugador_comprador(str): String que representa el nombre del jugador que va a comprar las propiedades del vendedor.
+        -preus(dict): Diccionario que contiene información sobre los precios de todas las casillas del tablero.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
+        
+    Retorna: None'''
+    #Calculamos el precio que se ingresará/retirará, será el 90% del que pagó el vendedor:
+    preu_per_total_propietats = (preu_total_propietats(nom_jugador_vendedor, preus, tauler) * 0.9)
+    #Ingresamos el dinero al vendedor:
+    jugadors[nom_jugador_vendedor]["diners"] += preu_per_total_propietats
+    #Retiramos el dinero al comprador:
+    jugadors[nom_jugador_comprador]["diners"] -= preu_per_total_propietats
+    #Realizamos el traspase de propiedades entre vendedor y comprador:
+    traspassar_totes_les_propietats(nom_jugador_vendedor, nom_jugador_comprador, tauler)
+
+def paga_lloguer(nom_jugador:str, nom_propietari:str, preu_lloguer:int, jugadors:dict) -> None:
+    '''Realiza el intercambio de dinero entre el pagador y el propietario.
+    
+    Input:
+        -nom_jugador(str): String que representa el nombre del jugador que ha de pagar.
+        -nom_propietari(str): String que representa e l nombre del jugador que recibe el dinero por el alquiler.
+        -preu_lloguer(int): Integer que representa el importe a pagar en concepto de alquiler.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        
+    Retorna: None'''
+    #Retiramos dinero al jugador que paga:
+    jugadors[nom_jugador]["diners"] -= preu_lloguer
+    #Añadimos dinero al jugador que alquila su casilla:
+    jugadors[nom_propietari]["diners"] += preu_lloguer
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -1808,6 +2035,7 @@ def main():
 
         # Recogemos la información del jugador actual
         jugador_actual = jugadors[ordre_jugadors[contador_jugador]]
+        nom_jugador = jugador_actual["nom"]
 
     #   - Tiramos dados del jugador
         if jugador_actual["es_preso"] and jugador_actual["torns_preso"] <= 2: #devuelve un booleano diciendo si el jugador está en la prisión
@@ -1892,31 +2120,112 @@ def main():
         else:
             contador_jugador += 1
 
+            #Si el jugador está en la casilla 'Presó', pasamos al siguiente jugador:
+            if nom_casella == 'Presó':
+                continue
+
             #Determinamos qué jugadas puede realizar el jugador (retorna lista de 'str' de jugadas):
             possibles_jugades = calcula_possibles_jugades(jugador_actual, jugadors, tauler, preus, ordre_jugadors)
             str_jugades = str_possibles_jugades(jugador_actual, possibles_jugades)
-            mou_cursor(0, 24)
-            opcio = input(f"{str_jugades}: ").lower()
 
-            if opcio == "truc":
-                #Gestionar Trucos
-                pass
+            #Declaramos variable que informa de si el jugador ha pagado un alquiler:
+            ha_pagat_lloguer = False
 
-            #Actualizamos la información del juego:
-            imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
-            #Imprimimos las posibles jugadas que puede hacer el jugador:
-            '''imprimeix_possibles_jugades(str_jugades)'''
+            #Si el jugador está en la casilla de otro jugador, y tiene dinero para pagar:
+            pot_pagar = (len(possibles_jugades) == 1) #Si sólo tiene como opción pasar, y no está en una casilla especial, es que puede pagar
+            altre_jugador_es_propietari = (not jugador_es_propietari(nom_jugador, nom_casella, tauler)) and (propietari_casella(nom_casella, tauler) != "banca")
+            if pot_pagar and altre_jugador_es_propietari:
+                nom_propietari = propietari_casella(nom_casella, tauler)
+                preu_lloguer = import_lloguer_casella(nom_casella, preus, tauler)
+                str_lloguer = f'"{nom_jugador[0]}" paga {preu_lloguer}€ de lloguer a "{nom_propietari[0]}"'
+                afegir_jugada(str_lloguer)
+                paga_lloguer(nom_jugador, nom_propietari, preu_lloguer, jugadors)
+                ha_pagat_lloguer = True
 
+            #Si el jugador no ha tenido que pagar un alquiler o no ha podido hacerlo, le pedimos que elija jugada:
+            if not ha_pagat_lloguer:
             #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
-            '''input_jugador(jugador_actual, jugadors, tauler)'''
+                while True:
+                    #Actualizamos la información del juego:
+                    imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                    #Imprimimos las posibles jugadas que puede hacer el jugador:
+                    imprimeix_possibles_jugades(str_jugades)
+
+                    jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
+
+                    #Gestionar Trucos
+                    if jugada_escollida == "truc":
+                        #Truco que otorgue todas las propiedades (con 4C4H) a un jugador, y los demás jugadors con 10€, para comprobar que funciona correctamente las funcionalidades de vender todas las propiedades, de 'possibles_jugades'
+                        #Truco que otorgue a un jugador todas las propiedades con 4C y ningún hotel. Todos los jugadores tienen 1.000.000€ o similar. Para comprobar que el jugador con las propiedades, al hacer hoteles, pierde las casas correctamente.
+                        pass
+
+                    elif jugada_escollida == 'passar':
+                        afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')
+                        pass
+
+                    #Si el jugador quiere comprar una propiedad:
+                    elif jugada_escollida == 'comprar terreny':
+                        afegir_jugada(f'"{nom_jugador[0]}" compra el terreny')
+                        jugador_compra_terreny(nom_jugador, nom_casella, preus, jugadors, tauler)
+                    elif jugada_escollida == 'comprar casa':
+                        afegir_jugada(f'"{nom_jugador[0]}" compra una casa')
+                        jugador_compra_casa(nom_jugador, nom_casella, preus, jugadors, tauler)
+                    elif jugada_escollida == 'comprar hotel':
+                        afegir_jugada(f'"{nom_jugador[0]}" compra un hotel')
+                        jugador_compra_hotel(nom_jugador, nom_casella, preus, jugadors, tauler)
+
+                    
+                    #Si el usuario escoge una jugada que consista en consultar información, volvemos a pedirle un input
+                    elif jugada_escollida == 'preus':
+                        espais = 16
+                        str_preu_terreny = "+Preu terreny:".ljust(espais) + f"{preu_terreny(nom_casella, preus)}€"
+                        afegir_jugada(str_preu_terreny)
+                        str_preu_compra = "+Preu casa".ljust(espais) + f"{preu_comprar_casa(nom_casella, preus)}€"
+                        afegir_jugada(str_preu_compra)
+                        str_preu_hotel = "+Preu hotel".ljust(espais) + f"{preu_comprar_hotel(nom_casella, preus)}€"
+                        afegir_jugada(str_preu_hotel)
+                        continue
+                    elif jugada_escollida == 'preu banc':
+                        str_preu_banc = f"+Preu banc: {preu_total_propietats(nom_jugador, preus, tauler) * 0.5}€"
+                        afegir_jugada(str_preu_banc)
+                        continue
+                    elif jugada_escollida == 'preu jugador':
+                        str_preu_jugador = f"+Preu jugador: {preu_total_propietats(nom_jugador, preus, tauler) * 0.9}€"
+                        afegir_jugada(str_preu_jugador)
+                        continue
+
+                    #Si el jugador elige vender sus propiedades a otra entidad (banco o jugador):
+                    elif jugada_escollida == 'vendre al banc':
+                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.5)
+                        afegir_jugada(f'"{nom_jugador[0]}" ven tot al banc per {preu_pagat}€')
+                        jugador_actual_ven_tot_al_banc(nom_jugador, preus, jugadors, tauler)
+                    elif jugada_escollida == 'vendre a B':
+                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "B" per {preu_pagat}€')
+                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Blau', preus, jugadors, tauler)
+                    elif jugada_escollida == 'vendre a T':
+                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "T" per {preu_pagat}€')
+                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Taronja', preus, jugadors, tauler)
+                    elif jugada_escollida == 'vendre a G':
+                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "G" per {preu_pagat}€')
+                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Groc', preus, jugadors, tauler)
+                    elif jugada_escollida == 'vendre a V':
+                        preu_pagat = (preu_total_propietats(nom_jugador, preus, tauler) * 0.9)
+                        afegir_jugada(f'"{nom_jugador[0]}" ven tot a "V" per {preu_pagat}€')
+                        jugador_actual_vend_tot_a_altre_jugador(nom_jugador, 'Vermell', preus, jugadors, tauler)
+                    
+                    #Una vez escogida una orden que no sea de consulta, continuamos el bucle de juego:
+                    break
+            
+        #Volvemos a imprimir tablero e información con la nueva jugada
+        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
         
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Eliminamos al jugador de la lista de jugadores:
             borrar_jugador_partida(ordre_jugadors, jugador_actual)
-
-        #Volvemos a imprimir tablero e información con la nueva jugada
-        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

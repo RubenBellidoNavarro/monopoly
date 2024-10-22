@@ -2154,6 +2154,7 @@ def main():
                     continue
                 elif jugada_escollida == 'preu jugador':
                     str_preu_jugador = f"+Preu jugador: {preu_total_propietats(nom_jugador, preus, tauler) * 0.9}€"
+                    afegir_jugada(str_preu_jugador)
                     continue
 
                 elif jugada_escollida == 'vendre al banc':

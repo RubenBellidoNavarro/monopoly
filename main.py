@@ -2038,7 +2038,6 @@ def truc_anar_a(nom_casella:str, jugador: dict, tauler: list) -> bool:
 
     if index_actual > index_truc:
         jugador["diners"] += 200
-        retirar_diners_banca(200)
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya 200€ al passar per \"Sortida\"")
         tirada = 24 - index_actual + index_truc
     else:
@@ -2276,7 +2275,6 @@ def main():
 
             if ha_passat_sortida and nom_casella != "Sortida":
                 jugador_actual["diners"] += 200
-                retirar_diners_banca(200)
                 afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
         
             imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
@@ -2300,10 +2298,10 @@ def main():
                     #Añadimos 200€ al jugador:
                     nom_jugador = jugador_actual["nom"]
                     jugadors[nom_jugador]["diners"] += 200
-                    retirar_diners_banca(200)
                     afegir_jugada(f"+$ \"{jugador_actual["icona"]}\" guanya 200€ al passar per \"Sortida\"")
 
                     #Actualizamos la impresión por pantalla y damos 1 segundo para que el usuario vea que ha ocurrido:
+                    clearScreen()
                     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                     time.sleep(1)
                     contador_jugador += 1
@@ -2318,7 +2316,6 @@ def main():
                     gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
                     time.sleep(1)
                     contador_jugador += 1
-                    continue
 
                 elif nom_casella == "Caixa":
                     gestiona_caixa(jugador_actual, tauler, jugadors, banca)

@@ -559,28 +559,23 @@ def hi_ha_guanyador(ordre_jugadors:list) -> bool:
 #endregion ConsultarDatos
 
 #region GestioBanca
-def afegir_diners_banca(banca):
-    '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
+def afegir_diners_banca(quantitat:int):
+    '''Añadimos una cantidad definida de dinero a la banca.
     
     Inputs: No tiene
     
-    Retorna: No retorna ningún valor. Modifica el valor de la varialbe "banca"'''
-    banca += 500000
-    return banca
+    Retorna: No retorna ningún valor. Modifica el valor de la variable "banca"'''
+    global banca
+    banca += quantitat
 
 def retirar_diners_banca(quantitat:int) -> None:
     global banca
     banca -= quantitat
 
-def gestiona_diners_banca(banca:int):
-    '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()
-    
-    Input:
-        -banca (int): Cantidad de dinero que tiene la banca
-        
-    Retorna: No retorna nada'''
-    if banca < MIN_DINERS_BANCA:
-        afegir_diners_banca()
+    #Si la banca tiene menos de 500.000€, se le suman 1.000.000€
+    if banca < 500000:
+        afegir_diners_banca(1000000)
+
 #endregion GestioBanca
 
 #region ImpresionTablero
@@ -900,122 +895,10 @@ def genera_partida() -> tuple:
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
     preus = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
-    gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
     return tauler, jugadors, ordre_jugadors, preus
-
-def mateixa_posicio(posicio_1: list, posicio_2: list) -> bool:
-    '''Validamos si una posición es igual a otra
-
-    Input:
-        -posicio_1(list): Lista con 2 posiciones con el valor de X,Y
-        -posicio_2(list): Lista con 2 posiciones con el valor de X,Y
-
-    Retorna: bool'''
-    return posicio_1[0] == posicio_2[0] and posicio_1[1] == posicio_2[1]
-
-def jugador_a_la_preso(tauler:list, jugador: dict) -> bool:
-    '''Validamos si un jugador se encuentra en la prisión
-
-    Input:
-        -tauler(list): Lista de diccionarios con la información de las casillas.
-        -jugador(dict): Diccionario con la información de un jugador.
-
-    Retorna: bool'''
-    posicio_jugador = jugador["posicio"]
-    posicio_preso = list(map(lambda casella: casella["posicio"], filter(lambda casella: casella["nom_complet"] == "Presó", tauler)))
-    
-    return jugador["es_preso"] and mateixa_posicio(posicio_jugador, posicio_preso[0])
-
-def actualitzar_jugador_preso(jugador:dict):
-    '''Actualizamos el estado del jugador que se encuentra en prisión
-
-    Input:
-        -jugador(dict): Diccionario con la información de un jugador.
-
-    Retorna: No retorna nada'''
-    jugador["torns_preso"] += 1
-
-    if jugador["torns_preso"] == 3:
-        jugador["torns_preso"] = 0
-        jugador["es_preso"] = False
-
-def tirar_daus() -> tuple:
-    '''Realizamos la tiradas de los datos y realizamos la suma de ellos.
-
-    Retorna: tuple(dau_1(int), dau_2(int), total(int))'''
-    dau_1 = random.randint(1, 6)
-    dau_2 = random.randint(1, 6)
-    total = dau_1 + dau_2
-
-    return dau_1, dau_2, total
-
-def surt_preso_daus(dau_1:int, dau_2:int) -> bool:
-    '''Revismos si los dados son del mismo número para así salir de la prisión.
-
-    Input:
-        -dau_1(int): Valor del primer dado.
-        -dau_2(int): Valor del segundo dado.
-
-    Retorna: bool'''
-    return dau_1 == dau_2
-
-def gestiona_caixa_i_sort_afegir_numero(nom_casella: str, posicio_jugador: list) -> str:
-    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos añadirle el número correspondiente para poderlo enviar a la posición que le corresponda.
-
-    Input:
-        -nom_casella(str): Nom que aparece en terminal de la casilla.
-        -posicio_jugador(list): Lista de 2 items con los valores X,Y de la posición del jugador.
-
-    Retorna: str'''
-    caselles = list(filter(lambda casella: "Sort" in casella[0] or "Caixa" in casella[0], caselles_posicions))
-
-    for casella in caselles:
-        if mateixa_posicio(casella[1], posicio_jugador):
-            return casella[0]
-    
-    return nom_casella
-
-def gestiona_caixa_i_sort_retirar_numero(nom_casella:str) -> tuple:
-    '''Revismos la casilla en la que se encuentra el jugador. Si es 'Sort' o 'Caixa' deberemos retirarle el número correspondiente para poderlo enviar a la posición que le corresponda.
-
-    Input:
-        -nom_casella(str): Nom que aparece en terminal de la casilla.
-
-    Retorna: tuple(nom_casella(str), posicio(list))'''
-    index = caselles_ordenades.index(nom_casella)
-    posicio = caselles_posicions[index][1]
-    if "Sort" in nom_casella or "Caixa" in nom_casella:
-        return re.sub(r'\d+', '', nom_casella), posicio
-
-    return nom_casella, posicio
-
-def actualitza_posicio(tauler: list, jugador: dict, suma_daus: int) -> str:
-    '''Actualizamos la posición del jugador en el tablero.
-
-    Input:
-        -tauler(list): Lista de diccionarios con la información de las casillas.
-        -jugador(dict): Diccionario con la información de un jugador.
-        -suma_daus(int): Número de casillas que deberemos avanzar en el tablero.
-
-    Retorna: nom_casllea(srt)'''
-    casella = list(map(lambda casella: casella, filter(lambda casella: mateixa_posicio(casella["posicio"], jugador["posicio"]), tauler)))
-    nom_casella = gestiona_caixa_i_sort_afegir_numero(casella[0]["nom_complet"], jugador["posicio"])
-    index = caselles_ordenades.index(nom_casella)
-    casella[0]["jugadors"].remove(jugador["icona"])
-
-    nou_index = (index + suma_daus) % MAX_CASELLES
-    nom_casella = caselles_ordenades[nou_index]
-    nom_casella, posicio = gestiona_caixa_i_sort_retirar_numero(nom_casella)
-    casella = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] == nom_casella and mateixa_posicio(casella["posicio"], posicio), tauler)))
-    casella[0]["jugadors"].append(jugador["icona"])
-    jugador["posicio"] = posicio
-
-    afegir_jugada(f"\"{jugador["icona"]}\" avança fins \"{nom_casella}\"")
-
-    return nom_casella
 
 def afegir_jugada(accio: str) -> None:
     '''Añadimos la jugada realizada e imprimimos la lista.
@@ -1660,15 +1543,18 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     jugadors[nom_jugador]["ha_perdut"] = ha_perdut
     return ha_perdut
 
-def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, tauler:list) -> None:
-    '''Actualizada de jugadores que siguen en la partida, eliminando de la lista previa
-    al jugador actual. También libera sus propiedades para que los demás jugadores la puedan llegar a comprar.
+def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, jugadors:dict, tauler:list) -> list:
+    '''Modifica la lista de jugadores que siguen en la partida, eliminando de la lista previa
+    al jugador actual. También elimina al jugador del tablero, libera todas sus propiedades y cambia su dinero a 0.
     
     Input:
         -ordre_jugadors(list): Lista de jugadores que participan en la partida.
         -jugador_actual(dict): Diccionario con información del jugador actual de la partida.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
         
     Retorna: None'''
+    #Eliminamos al jugador de la lista de jugadores:
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
     afegir_jugada(f"\"{nom_jugador[0]}\" queda eliminat.")
@@ -1681,6 +1567,29 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, tauler:list
     for propietat in propietats:
         propietat["propietari"] = "banca"
     jugador_actual["propietats"] = []
+
+    #Eliminamos jugador del tablero:
+    icona = nom_jugador[0]
+    for dict_casella in tauler:
+        #Si el jugador está en la casilla...
+        if icona in dict_casella["jugadors"][0]:
+            nou_str_jugador = ""
+            for char in dict_casella["jugadors"][0]:
+                if char != icona:
+                    nou_str_jugador += char
+            dict_casella["jugadors"][0] = nou_str_jugador
+            break #El jugador sólo está en una casilla, no necesitamos seguir iterando
+
+    #Liberamos todas sus propiedades:
+    for nom_propietat in jugadors[nom_jugador]["propietats"]:
+        n_cases = num_cases(nom_propietat, tauler)
+        retirar_cases(nom_propietat, n_cases, tauler)
+        n_hotels = num_hotels(nom_propietat, tauler)
+        retirar_hotels(nom_propietat, n_cases, tauler)
+    traspassar_totes_les_propietats(nom_jugador, "banca", tauler)
+
+    #Declaramos que el jugador no tiene dinero:
+    jugadors[nom_jugador["diners"]] = 0
 
 def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
@@ -1857,7 +1766,7 @@ def traspassar_totes_les_propietats(nom_anterior_propietari:str, nom_nou_propiet
 
 def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
-    por parte de un jugador.
+    por parte de un jugador. Entrega dinero a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
@@ -1875,6 +1784,8 @@ def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugador
     jugadors[nom_jugador]["propietats"].append(nom_casella)
     #Hacemos que el jugador sea propietario de la casilla en el tablero:
     cambiar_propietari(nom_casella, nom_jugador, tauler)
+    #Hacemos el pago a la banca:
+    afegir_diners_banca(preu_comprar_terreny)
 
 def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
     '''Añade un número de casas a una casilla del tablero.
@@ -1904,9 +1815,23 @@ def retirar_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
             dict_casella["cases"] -= num_cases
             break
 
+def retirar_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
+    '''Retira un número de hoteles a una casilla del tablero.
+    
+    Inputs:
+        -nom_casella(str): String que representa el nombre de la casilla en la que se eliminará el número de casas.
+        -num_hotels(int): Integer que representa el número de hoteles a quitar.
+        -tauler(list): Lista de diccionarios que contiene toda la información necesaria de todas las casillas del tablero.
+        
+    Retorna: None'''
+    for dict_casella in tauler:
+        if dict_casella["nom_complet"] == nom_casella:
+            dict_casella["hotels"] -= num_hotels
+            break
+
 def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de una casa
-    por parte de un jugador.
+    por parte de un jugador. Se realiza el pago a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar la casa.
@@ -1920,8 +1845,10 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
 
     #Retiramos dinero de la compra al jugador:
     jugadors[nom_jugador]["diners"] -= preu_compra_casa
-    #HAñadimos una casa a la casilla en el tablero:
+    #Añadimos una casa a la casilla en el tablero:
     afegir_cases(nom_casella, 1, tauler)
+    #Realizamos el pago a la banca:
+    afegir_diners_banca(preu_compra_casa)
 
 def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
     '''Añade un número de choteles a una casilla del tablero.
@@ -1939,7 +1866,7 @@ def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
 
 def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
-    por parte de un jugador.
+    por parte de un jugador. Realizamos el pago a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar el hotel.
@@ -1957,6 +1884,8 @@ def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:
     afegir_hotels(nom_casella, 1, tauler)
     #Retiramos 2 casas en la casilla de compra del hotel:
     retirar_cases(nom_casella, 2, tauler)
+    #Realizamos el pago a la banca:
+    afegir_diners_banca(preu_compra_hotel)
 
 def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Realiza un transpaso de todas las propiedades del jugador actual a la banca, otorgando al 
@@ -2348,14 +2277,17 @@ def main():
 
                 #Si el jugador no ha tenido que pagar un alquiler o no ha podido hacerlo, le pedimos que elija jugada:
                 if not ha_pagat_lloguer:
-                #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
+                    #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
                     while True:
                         #Actualizamos la información del juego:
                         imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                         #Imprimimos las posibles jugadas que puede hacer el jugador:
                         imprimeix_possibles_jugades(str_jugades)
 
-                        possibles_jugades.append("truc")
+                        #Si el jugador está en su casilla, y sólo puede pasar turno, entonces pasa el turno directamente sin pedir el input:
+                        if (possibles_jugades is ['passar']) and jugador_es_propietari(nom_jugador, nom_casella, tauler):
+                            afegir_jugada(f'"{nom_jugador[0]}" només pot passar el torn. Ho passa')
+
                         jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
                         
                         #Gestionar Trucos
@@ -2431,7 +2363,8 @@ def main():
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Eliminamos al jugador de la lista de jugadores:
-            borrar_jugador_partida(ordre_jugadors, jugador_actual, tauler)
+
+            borrar_jugador_partida(ordre_jugadors, jugador_actual, jugadors, tauler)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

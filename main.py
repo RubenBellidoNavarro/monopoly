@@ -2032,7 +2032,7 @@ def truc_diners_banca(diners:int) -> None:
     Retorna: No retorna nada'''
     compte = max(diners, 0)
     afegir_diners_banca(compte)
-    afegir_jugada(f"TRUC: Compte de la banca actualizat: {compte}€.")
+    afegir_jugada(f"TRUC: S'afegeix al compte de la banca: {compte}€.")
 
 def truc_diners_jugador(diners:int, nom_jugador:str, jugadors:dict) -> None:
     '''Modificamos la cantidad de dinero que dispone el jugador indicado

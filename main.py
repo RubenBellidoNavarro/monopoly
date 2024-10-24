@@ -1112,14 +1112,6 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
     carta = random.choice(cartes_caixa)
     afegir_jugada(f"+ Sort: \"{carta}\"")
 
-    "Sortir presó",
-    "Anar presó",
-    "",
-    "",
-    "Despeses escolars",
-    "",
-    ""
-
     if carta == "Sortir presó":
         # Jugador és a la presó
             # SI: Surt de la presó
@@ -1156,7 +1148,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         banca += cost
         jugador["diners"] -= cost
         afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
-    elif carta == "Despeses esacolars":
+    elif carta == "Despeses escolars":
         cost = 50
         banca += cost
         jugador["diners"] -= cost

@@ -1410,7 +1410,7 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
         banca += cost
         jugador["diners"] -= cost
         afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
-    elif carta == "Despeses esacolars":
+    elif carta == "Despeses escolars":
         cost = 50
         banca += cost
         jugador["diners"] -= cost
@@ -2199,6 +2199,17 @@ def gestiona_truc(jugador: dict, tauler: list, banca: int, ordre:list, jugadors:
 
     return contador
 
+def mostrar_guanyador(ordre_jugadors: list) -> None:
+    '''Imprimimos el resultado del ganador.
+        
+        Input:
+            -ordre_jugadors(list): Listado con el orden de juego de los jugadores.
+
+        Retorna: No retorna nada'''
+    
+    mou_cursor(0, 24)
+    print(f"Guanyador de la partida: \"{ordre_jugadors[0]}\"")
+    
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -2425,7 +2436,7 @@ def main():
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):
             #Realizamos la impresión final por pantalla de la partida, y rompemos el bucle de juego:
-            '''mostrar_ganador(ordre_jugadors)'''
+            mostrar_guanyador(ordre_jugadors)
             break
 
 #endregion Joc

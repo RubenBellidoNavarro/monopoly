@@ -1354,7 +1354,7 @@ def traspassar_totes_les_propietats(nom_anterior_propietari:str, nom_nou_propiet
 
 def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un terreno
-    por parte de un jugador.
+    por parte de un jugador. Entrega dinero a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar el terreno.
@@ -1372,6 +1372,9 @@ def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugador
     jugadors[nom_jugador]["propietats"].append(nom_casella)
     #Hacemos que el jugador sea propietario de la casilla en el tablero:
     cambiar_propietari(nom_casella, nom_jugador, tauler)
+    #Hacemos el pago a la banca:
+    global banca
+    banca += preu_comprar_terreny
 
 def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
     '''Añade un número de casas a una casilla del tablero.
@@ -1417,7 +1420,7 @@ def retirar_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
 
 def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de una casa
-    por parte de un jugador.
+    por parte de un jugador. Se realiza el pago a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar la casa.
@@ -1431,8 +1434,11 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
 
     #Retiramos dinero de la compra al jugador:
     jugadors[nom_jugador]["diners"] -= preu_compra_casa
-    #HAñadimos una casa a la casilla en el tablero:
+    #Añadimos una casa a la casilla en el tablero:
     afegir_cases(nom_casella, 1, tauler)
+    #Realizamos el pago a la banca:
+    global banca
+    banca += preu_compra_casa
 
 def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
     '''Añade un número de choteles a una casilla del tablero.
@@ -1450,7 +1456,7 @@ def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
 
 def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores necesarios en 'jugadors' y 'tauler' para reconocer la compra de un hotel
-    por parte de un jugador.
+    por parte de un jugador. Realizamos el pago a la banca.
     
     Input:
         -nom_jugador(str): String que representa el nombre del jugador que va a comprar el hotel.
@@ -1468,6 +1474,9 @@ def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:
     afegir_hotels(nom_casella, 1, tauler)
     #Retiramos 2 casas en la casilla de compra del hotel:
     retirar_cases(nom_casella, 2, tauler)
+    #Realizamos el pago a la banca:
+    global banca
+    banca += preu_compra_hotel
 
 def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Realiza un transpaso de todas las propiedades del jugador actual a la banca, otorgando al 

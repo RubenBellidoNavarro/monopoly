@@ -2022,7 +2022,7 @@ def truc_afegeix_hotels(num_hotels: int, jugador:dict, tauler:list) -> bool:
 
     return True
 
-def truc_diners_banca(diners:int, banca:int) -> None:
+def truc_diners_banca(diners:int) -> None:
     '''Modificamos la cantidad de dinero que dispone la banca. No puede tener menos de 0€ 
     
     Input:
@@ -2031,7 +2031,7 @@ def truc_diners_banca(diners:int, banca:int) -> None:
 
     Retorna: No retorna nada'''
     compte = max(diners, 0)
-    banca = compte
+    afegir_diners_banca(compte)
     afegir_jugada(f"TRUC: Compte de la banca actualizat: {compte}€.")
 
 def truc_diners_jugador(diners:int, nom_jugador:str, jugadors:dict) -> None:
@@ -2110,9 +2110,10 @@ def gestiona_truc(jugador: dict, tauler: list, banca: int, ordre:list, jugadors:
                 print("Jugador indicat no existeix.")
         elif "diners" in truc:
             if "banca" in truc:
-                num = int(truc[7])
-                truc_diners_banca(num, banca)
+                num = int(truc.split()[1])
+                truc_diners_banca(num)
                 imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                input_invalid = False
             else:
                 for jug_ordenat in ordre:
                     if truc[7] == jug_ordenat[0]:

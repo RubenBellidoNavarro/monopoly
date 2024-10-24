@@ -2252,6 +2252,7 @@ def main():
                 #actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
                 afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", {dau_1} i {dau_2}. Continua a presó")
                 jugador_actual["torns_preso"] += 1
+                afegir_jugada(f"\"{jugador_actual["icona"]}\" porta {jugador_actual["torns_preso"]} torns a la presó")
                 clearScreen()
                 imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                 time.sleep(2)

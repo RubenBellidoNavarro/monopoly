@@ -1657,12 +1657,12 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     nom_jugador = jugador_actual["nom"]
     diners_jugador = jugadors[nom_jugador]["diners"]
     ha_perdut = (diners_jugador <= 0)
-    jugadors[nom_jugador]["ha_perdut"] = True
+    jugadors[nom_jugador]["ha_perdut"] = ha_perdut
     return ha_perdut
 
-def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
-    '''Retorna la lista actualizada de jugadores que siguen en la partida, eliminando de la lista previa
-    al jugador actual.
+def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, tauler:list) -> None:
+    '''Actualizada de jugadores que siguen en la partida, eliminando de la lista previa
+    al jugador actual. También libera sus propiedades para que los demás jugadores la puedan llegar a comprar.
     
     Input:
         -ordre_jugadors(list): Lista de jugadores que participan en la partida.
@@ -1672,6 +1672,15 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
     afegir_jugada(f"\"{nom_jugador[0]}\" queda eliminat.")
+
+    # Borramos al jugador de la posición actual del tablero
+    casella_actual = list(map(lambda casella: casella, filter(lambda casella: casella["posicio"] == jugador_actual["posicio"], tauler)))
+    casella_actual[0]["jugadors"].remove(jugador_actual["icona"])
+    # Borramos sus propiedades.
+    propietats = list(map(lambda casella: casella, filter(lambda casella: casella["nom_complet"] in jugador_actual["propietats"], tauler)))
+    for propietat in propietats:
+        propietat["propietari"] = "banca"
+    jugador_actual["propietats"] = []
 
 def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
@@ -2170,7 +2179,7 @@ def gestiona_truc(jugador: dict, tauler: list, banca: int, ordre:list, jugadors:
                 print("Jugador indicat no existeix.")
         elif "diners" in truc:
             if "banca" in truc:
-                num = int(truc[6])
+                num = int(truc[7])
                 truc_diners_banca(num)
                 imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
             else:
@@ -2411,7 +2420,7 @@ def main():
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Eliminamos al jugador de la lista de jugadores:
-            borrar_jugador_partida(ordre_jugadors, jugador_actual)
+            borrar_jugador_partida(ordre_jugadors, jugador_actual, tauler)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

@@ -1661,17 +1661,43 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     ha_perdut = (diners_jugador <= 0)
     return ha_perdut
 
-def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
-    '''Retorna la lista actualizada de jugadores que siguen en la partida, eliminando de la lista previa
-    al jugador actual.
+def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, jugadors:dict, tauler:list) -> list:
+    '''Modifica la lista de jugadores que siguen en la partida, eliminando de la lista previa
+    al jugador actual. También elimina al jugador del tablero, libera todas sus propiedades y cambia su dinero a 0.
     
     Input:
         -ordre_jugadors(list): Lista de jugadores que participan en la partida.
         -jugador_actual(dict): Diccionario con información del jugador actual de la partida.
+        -jugadors(dict): Diccionario que contiene la información de todos los jugadores.
+        -tauler(list): Lista de diccionarios que contiene la información de todas las casillas del tablero.
         
     Retorna: None'''
+    #Eliminamos al jugador de la lista de jugadores:
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
+
+    #Eliminamos jugador del tablero:
+    icona = nom_jugador[0]
+    for dict_casella in tauler:
+        #Si el jugador está en la casilla...
+        if icona in dict_casella["jugadors"][0]:
+            nou_str_jugador = ""
+            for char in dict_casella["jugadors"][0]:
+                if char != icona:
+                    nou_str_jugador += char
+            dict_casella["jugadors"][0] = nou_str_jugador
+            break #El jugador sólo está en una casilla, no necesitamos seguir iterando
+
+    #Liberamos todas sus propiedades:
+    for nom_propietat in jugadors[nom_jugador]["propietats"]:
+        n_cases = num_cases(nom_propietat, tauler)
+        retirar_cases(nom_propietat, n_cases, tauler)
+        n_hotels = num_hotels(nom_propietat, tauler)
+        retirar_hotels(nom_propietat, n_cases, tauler)
+    traspassar_totes_les_propietats(nom_jugador, "banca", tauler)
+
+    #Declaramos que el jugador no tiene dinero:
+    jugadors[nom_jugador["diners"]] = 0
 
 def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
@@ -2225,7 +2251,7 @@ def main():
         #Comprobamos si el jugador ha perdido (no tiene dinero), retornando un 'bool':
         if jugador_perd(jugador_actual, jugadors): 
             #Eliminamos al jugador de la lista de jugadores:
-            borrar_jugador_partida(ordre_jugadors, jugador_actual)
+            borrar_jugador_partida(ordre_jugadors, jugador_actual, jugadors, tauler)
     
         #Si solo queda un jugador en la partida después del turno:
         if hi_ha_guanyador(ordre_jugadors):

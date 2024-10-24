@@ -240,7 +240,8 @@ def genera_jugadors(noms_jugadors:list) -> dict:
                                         "propietats":[],
                                         "es_preso":False,
                                         "torns_preso":0,
-                                        "cartes":[]
+                                        "cartes":[],
+                                        "ha_perdut": False
                                         }
     return dict_jugadors
 
@@ -773,7 +774,12 @@ def imprimeix_informacio_jugador(index: int, jugador: dict) -> None:
     #   Diners: 1838734
     #   Especial: (res) "Nombre de las cartas especiales"
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1])
-    print(f"Jugador {jugador["nom"]}: ")
+    print(f"Jugador {jugador["nom"]}: ", end="")
+
+    if jugador["ha_perdut"]:
+        print("Eliminat")
+    else:
+        print()
 
     mou_cursor(posicions_informacio[index][0], posicions_informacio[index][1] + 1)
     print(f"Carrers: ", end="")
@@ -1651,6 +1657,7 @@ def jugador_perd(jugador_actual:dict, jugadors:dict) -> bool:
     nom_jugador = jugador_actual["nom"]
     diners_jugador = jugadors[nom_jugador]["diners"]
     ha_perdut = (diners_jugador <= 0)
+    jugadors[nom_jugador]["ha_perdut"] = True
     return ha_perdut
 
 def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
@@ -1664,6 +1671,7 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict) -> list:
     Retorna: None'''
     nom_jugador = jugador_actual["nom"]
     ordre_jugadors.remove(nom_jugador)
+    afegir_jugada(f"\"{nom_jugador[0]}\" queda eliminat.")
 
 def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,

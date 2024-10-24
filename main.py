@@ -558,14 +558,14 @@ def hi_ha_guanyador(ordre_jugadors:list) -> bool:
 #endregion ConsultarDatos
 
 #region GestioBanca
-def afegir_diners_banca(banca):
-    '''Añadimos dinero a la banca cuando esta no disponga de suficiente dinero (< 500.000€).
+def afegir_diners_banca(quantitat:int):
+    '''Añadimos una cantidad definida de dinero a la banca.
     
     Inputs: No tiene
     
-    Retorna: No retorna ningún valor. Modifica el valor de la varialbe "banca"'''
-    banca += 500000
-    return banca
+    Retorna: No retorna ningún valor. Modifica el valor de la variable "banca"'''
+    global banca
+    banca += quantitat
 
 def retirar_diners_banca(quantitat:int) -> None:
     global banca

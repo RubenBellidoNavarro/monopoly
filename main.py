@@ -1670,12 +1670,16 @@ def main():
 
                 #Si el jugador no ha tenido que pagar un alquiler o no ha podido hacerlo, le pedimos que elija jugada:
                 if not ha_pagat_lloguer:
-                #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
+                    #Demandamos el input del usuario (pedirlo hasta que la jugada sea válida) y gestionamos la realización del mismo:
                     while True:
                         #Actualizamos la información del juego:
                         imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                         #Imprimimos las posibles jugadas que puede hacer el jugador:
                         imprimeix_possibles_jugades(str_jugades)
+
+                        #Si el jugador está en su casilla, y sólo puede pasar turno, entonces pasa el turno directamente sin pedir el input:
+                        if (possibles_jugades is ['passar']) and jugador_es_propietari(nom_jugador, nom_casella, tauler):
+                            afegir_jugada(f'"{nom_jugador[0]}" només pot passar el torn. Ho passa')
 
                         jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
                         

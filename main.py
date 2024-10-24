@@ -1029,28 +1029,28 @@ def gestiona_caixa(jugador:dict, tauler:list, jugadors:dict, banca: int) -> None
             afegir_jugada(f"\"{jugador["icona"]}\" es troba a la presó. Carta no té efecte")
     elif carta == "Error de la banca al teu favor":
         cost = 150
-        banca -= cost
+        retirar_diners_banca(cost)
         jugador["diners"] += cost
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     elif carta == "Despeses mèdiques":
         cost = 50
-        banca += cost
+        afegir_diners_banca(cost)
         jugador["diners"] -= cost
         afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
     elif carta == "Despeses escolars":
         cost = 50
-        banca += cost
+        afegir_diners_banca(cost)
         jugador["diners"] -= cost
         afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
     elif carta == "Reparacions al carrer":
         cost = 40
-        banca += cost
+        afegir_diners_banca(cost)
         jugador["diners"] -= cost
         afegir_jugada(f"-$ \"{jugador["icona"]}\" paga {cost}€")
     elif carta == "Concurs de bellesa":
         cost = 10
         banca -= cost
-        jugador["diners"] += cost
+        retirar_diners_banca(cost)
         afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya {cost}€")
     
     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
@@ -1211,6 +1211,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
     elif carta == "Anar sortida":
         afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
         jugador["diners"] += 200
+        retirar_diners_banca(200)
         afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 200€")
         casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
         index_actual = caselles_ordenades.index(casella_actual[0])
@@ -1446,6 +1447,7 @@ def gestiona_sort(jugador:dict, tauler:list, ordre:list, jugadors:dict, banca: i
     elif carta == "Anar sortida":
         afegir_jugada(f"\"{jugador["icona"]}\" va a la Sortida")
         jugador["diners"] += 200
+        retirar_diners_banca(200)
         afegir_jugada(f"+$ \"{jugador["icona"]}\" rep 200€")
         casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
         index_actual = caselles_ordenades.index(casella_actual[0])
@@ -2181,6 +2183,7 @@ def main():
                 #actualitzar_jugador_preso(jugador_actual) #actualiza el contador de turnos que lleva el jugador en la prision. Si el contador == 3, pone el contador a 0 y cambia la variable 'es_preso' a False
                 afegir_jugada(f"Juga \"{jugador_actual["icona"]}\", {dau_1} i {dau_2}. Continua a presó")
                 jugador_actual["torns_preso"] += 1
+                afegir_jugada(f"\"{jugador_actual["icona"]}\" porta {jugador_actual["torns_preso"]} torns a la presó")
                 clearScreen()
                 imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                 time.sleep(2)
@@ -2242,7 +2245,6 @@ def main():
                     gestiona_sort(jugador_actual, tauler, ordre_jugadors, jugadors, banca)
                     time.sleep(1)
                     contador_jugador += 1
-                    continue
 
                 elif nom_casella == "Caixa":
                     gestiona_caixa(jugador_actual, tauler, jugadors, banca)

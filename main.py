@@ -571,15 +571,10 @@ def retirar_diners_banca(quantitat:int) -> None:
     global banca
     banca -= quantitat
 
-def gestiona_diners_banca(banca:int):
-    '''Miramos la cantidad de dinero de la banca, si es menor a 500.000€, llamaremos a afegir_diners_banca()
-    
-    Input:
-        -banca (int): Cantidad de dinero que tiene la banca
-        
-    Retorna: No retorna nada'''
-    if banca < MIN_DINERS_BANCA:
-        afegir_diners_banca()
+    #Si la banca tiene menos de 500.000€, se le suman 1.000.000€
+    if banca < 500000:
+        afegir_diners_banca(1000000)
+
 #endregion GestioBanca
 
 #region ImpresionTablero

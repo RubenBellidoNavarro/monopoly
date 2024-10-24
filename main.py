@@ -2321,7 +2321,6 @@ def main():
                     gestiona_caixa(jugador_actual, tauler, jugadors, banca)
                     time.sleep(1)
                     contador_jugador += 1
-                    continue
                 
             else:
                 contador_jugador += 1

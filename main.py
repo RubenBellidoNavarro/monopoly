@@ -2111,7 +2111,7 @@ def gestiona_truc(jugador: dict, tauler: list, banca: int, ordre:list, jugadors:
         elif "diners" in truc:
             if "banca" in truc:
                 num = int(truc[7])
-                truc_diners_banca(num)
+                truc_diners_banca(num, banca)
                 imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
             else:
                 for jug_ordenat in ordre:

@@ -2288,6 +2288,7 @@ def main():
                         if (possibles_jugades is ['passar']) and jugador_es_propietari(nom_jugador, nom_casella, tauler):
                             afegir_jugada(f'"{nom_jugador[0]}" només pot passar el torn. Ho passa')
 
+                        possibles_jugades.append("truc")
                         jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
                         
                         #Gestionar Trucos

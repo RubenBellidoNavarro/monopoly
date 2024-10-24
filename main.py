@@ -2005,6 +2005,191 @@ def paga_lloguer(nom_jugador:str, nom_propietari:str, preu_lloguer:int, jugadors
     #Añadimos dinero al jugador que alquila su casilla:
     jugadors[nom_propietari]["diners"] += preu_lloguer
 
+def truc_anar_a(nom_casella:str, jugador: dict, tauler: list) -> bool:
+    '''Nos movemos a la casilla indicada por el usuario
+    
+    Input:
+        -nom_casella(str): Nombre de la casilla a movernos.
+        -jugador(dict): Diccionario con toda la información del jugador.
+        -tauler(list): Lista de diccionarios con la información de todas las casillas.
+
+    Retorna: bool si si ha realizado el truco'''
+    afegir_jugada(f"TRUC: \"{jugador["icona"]}\" va a \"{nom_casella}\"")
+    #jugador["diners"] += 200
+    casella_actual = list(map(lambda casella: casella[0], filter(lambda casella: casella[1] == jugador["posicio"], caselles_posicions)))
+    casella_truc = list(map(lambda casella: casella["nom_complet"], filter(lambda casella: casella["nom_acortat"] == nom_casella, tauler)))
+
+    if len(casella_truc) == 0:
+        return False
+
+    index_actual = caselles_ordenades.index(casella_actual[0])
+    index_truc = caselles_ordenades.index(casella_truc[0])
+
+    if index_actual > index_truc:
+        jugador["diners"] += 200
+        afegir_jugada(f"+$ \"{jugador["icona"]}\" guanya 200€ al passar per \"Sortida\"")
+        tirada = 24 - index_actual + index_truc
+    else:
+        tirada = index_truc - index_actual
+
+    actualitza_posicio(tauler, jugador, tirada)
+
+    return True
+
+def truc_afegeix_cases(num_cases: int, jugador:dict, tauler:list) -> bool:
+    '''Añadimos casas a la casilla. Sólo podemos añadir hasta 4 casas. Si se pueden añadir, añadiremos hasta 4,. si ya está completa devolveremos error.
+    
+    Input:
+        -num_cases(int): Número de casas a añadir.
+        -jugador(dict): Diccionario con toda la información del jugador.
+        -tauler(list): Lista de diccionarios con la información de todas las casillas.
+
+    Retorna: bool si si ha realizado el truco'''
+    if num_cases < 1 or num_cases > 4:
+        return False
+    casella_actual = list(filter(lambda casella: casella["posicio"] == jugador["posicio"], tauler))
+
+    if casella_actual[0]["cases"] >= 4:
+        return False
+
+    cases_totals = min(casella_actual[0]["cases"] + num_cases, 4 - casella_actual[0]["cases"])
+    afegir_cases(casella_actual[0]["nom_complet"], cases_totals, tauler)
+
+    afegir_jugada(f"TRUC: {cases_totals} cases afegides a \"{casella_actual[0]["nom_complet"]}\"")
+
+    return True
+
+def truc_afegeix_hotels(num_hotels: int, jugador:dict, tauler:list) -> bool:
+    '''Añadimos hoteles a la casilla. Sólo podemos añadir hasta 4 casas. Si se pueden añadir, añadiremos hasta 4,. si ya está completa devolveremos error.
+    
+    Input:
+        -num_hotels(int): Número de casas a añadir.
+        -jugador(dict): Diccionario con toda la información del jugador.
+        -tauler(list): Lista de diccionarios con la información de todas las casillas.
+
+    Retorna: bool si si ha realizado el truco'''
+    if num_hotels < 1 or num_hotels > 2:
+        return False
+    casella_actual = list(filter(lambda casella: casella["posicio"] == jugador["posicio"], tauler))
+
+    if casella_actual[0]["hotels"] >= 2:
+        return False
+
+    hotels_totals = min(casella_actual[0]["hotels"] + num_hotels, 2 - casella_actual[0]["hotels"])
+    afegir_hotels(casella_actual[0]["nom_complet"], hotels_totals, tauler)
+
+    afegir_jugada(f"TRUC: {hotels_totals} hotels afegits a \"{casella_actual[0]["nom_complet"]}\"")
+
+    return True
+
+def truc_diners_banca(diners:int, banca:int) -> None:
+    '''Modificamos la cantidad de dinero que dispone la banca. No puede tener menos de 0€ 
+    
+    Input:
+        -diners(int): Cantidad de dinero que debemos asignar a la banca.
+        -banca(int): Cantidad de dinero del que dispone la banca. 
+
+    Retorna: No retorna nada'''
+    compte = max(diners, 0)
+    banca = compte
+    afegir_jugada(f"TRUC: Compte de la banca actualizat: {compte}€.")
+
+def truc_diners_jugador(diners:int, nom_jugador:str, jugadors:dict) -> None:
+    '''Modificamos la cantidad de dinero que dispone el jugador indicado
+    
+    Input:
+        -diners(int): Cantidad de dinero que debemos asignar al jugador.
+        -nom_jugador(str): Nombre del jugador a modificar.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+
+    Retorna: No retorna nada'''
+    jugadors[nom_jugador]["diners"] = diners
+ 
+    afegir_jugada(f"TRUC: Compte del jugador \"{jugadors[nom_jugador]["icona"]}\": {diners}€.")
+
+def truc_seguent_jugador(icona:str, ordre: list, contador: int) -> tuple:
+    '''Cambiamos el orden de jugada al jugador indicado
+    
+    Input:
+        -icona(str): Primera letra del jugador.
+        -ordre(list): Listado con el orden de juego de los jugadores.
+        -contador(int): Jugador que ahora se encuentra jugando.
+
+    Retorna: tuple con el nuevo índice y si la acción ha sido válida'''
+    for index, nom_jugador in enumerate(ordre):
+        if nom_jugador[0] == icona:
+            contador = index
+            afegir_jugada(f"TRUC: Canvi ordre: \"{icona}\" és el següent.")
+            return (contador, True)
+    
+    return (contador, False)
+
+def gestiona_truc(jugador: dict, tauler: list, banca: int, ordre:list, jugadors:dict, contador: int) -> int:
+    '''Gestionamos el input del jugador para realizar el truco. Pedimos truco al usuario hasta que alguno sea necesario.
+    
+    Input:
+        -jugador(dict): Diccionario con toda la información del jugador.
+        -tauler(list): Lista de diccionarios con la información de todas las casillas.
+        -banca(int): Cantidad de dinero del que dispone la banca. 
+        -ordre(list): Listado con el orden de juego de los jugadores.
+        -jugadors(dict): Diccionario con la información de todos los jugadores.
+        -contador(int): Jugador que ahora se encuentra jugando.
+
+    Retorna: Devolvemos el nuevo contador de jugador'''
+    #Pedimus un input hasta que este sea válido:
+    print("Trucs: anar a \"Nom carrer\", afegir X cases, afegir X hotels, seguent X(jugador), diners X YY (X jugador YY diners que tindrà), diners X banca")
+    while True:
+        truc = input("Escull una opció del llistat: ")
+        #Si el input se corresponde con alguna de las posibles jugadas, declaramos el input como válido:
+        input_invalid = True
+        
+        if "anar a" in truc:
+            casella = truc[7:].replace("\"", "")
+            if not truc_anar_a(casella, jugador, tauler):
+                print("Nom de casella inexistent.")
+            else:
+                input_invalid = False
+        elif "afegir" in truc:
+            if "cases" in truc:
+                num = int(truc[7])
+                if truc_afegeix_cases(num, jugador, tauler):
+                    input_invalid = False
+                else:
+                    print("Numero de cases incorrecte. Poden haver-hi fins a 4 cases.")
+            elif "hotels" in truc:
+                num = int(truc[7])
+                if truc_afegeix_hotels(num, jugador, tauler):
+                    input_invalid = False
+                else:
+                    print("Numero de cases incorrecte. Poden haver-hi fins a 2 hotels.")
+        elif "seguent" in truc:
+            contador, valid = truc_seguent_jugador(truc[8], ordre, contador)
+            if valid:
+                input_invalid = False
+            else:
+                print("Jugador indicat no existeix.")
+        elif "diners" in truc:
+            if "banca" in truc:
+                num = int(truc[6])
+                truc_diners_banca(num)
+                imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+            else:
+                for jug_ordenat in ordre:
+                    if truc[7] == jug_ordenat[0]:
+                        num = int(truc[9:])
+                        truc_diners_jugador(num, jug_ordenat, jugadors)
+                        imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
+                        input_invalid = False
+                        break
+
+        #Si no hemos declarado el input como válido, este permanece inválido, y volvemos a pedir un input:
+        if input_invalid:
+            print("Opció invàlida, torneu a provar.")
+            continue
+        break
+
+    return contador
+
 def main():
     # Generar la partida
     #   - Generamos el tablero
@@ -2076,7 +2261,6 @@ def main():
             if nom_casella in caselles_especials:
             
                 if nom_casella == "Parking": #en esta casilla, el jugador sólo puede pasar
-                    clearScreen()
                     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)
                     time.sleep(1)
                     contador_jugador += 1
@@ -2151,13 +2335,15 @@ def main():
                         #Imprimimos las posibles jugadas que puede hacer el jugador:
                         imprimeix_possibles_jugades(str_jugades)
 
+                        possibles_jugades.append("truc")
                         jugada_escollida = input_jugador(jugador_actual, possibles_jugades, jugadors, tauler)
                         
                         #Gestionar Trucos
                         if jugada_escollida == "truc":
                             #Truco que otorgue todas las propiedades (con 4C4H) a un jugador, y los demás jugadors con 10€, para comprobar que funciona correctamente las funcionalidades de vender todas las propiedades, de 'possibles_jugades'
                             #Truco que otorgue a un jugador todas las propiedades con 4C y ningún hotel. Todos los jugadores tienen 1.000.000€ o similar. Para comprobar que el jugador con las propiedades, al hacer hoteles, pierde las casas correctamente.
-                            pass
+                            contador_jugador = gestiona_truc(jugador_actual, tauler, banca, ordre_jugadors, jugadors, contador_jugador)
+                            
 
                         elif jugada_escollida == 'passar':
                             afegir_jugada(f'"{nom_jugador[0]}" ha passat el torn')

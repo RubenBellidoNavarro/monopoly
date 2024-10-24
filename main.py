@@ -1373,8 +1373,7 @@ def jugador_compra_terreny(nom_jugador:str, nom_casella:str, preus:dict, jugador
     #Hacemos que el jugador sea propietario de la casilla en el tablero:
     cambiar_propietari(nom_casella, nom_jugador, tauler)
     #Hacemos el pago a la banca:
-    global banca
-    banca += preu_comprar_terreny
+    afegir_diners_banca(preu_comprar_terreny)
 
 def afegir_cases(nom_casella:str, num_cases:int, tauler:list) -> None:
     '''Añade un número de casas a una casilla del tablero.
@@ -1437,8 +1436,7 @@ def jugador_compra_casa(nom_jugador:str, nom_casella:str, preus:dict, jugadors:d
     #Añadimos una casa a la casilla en el tablero:
     afegir_cases(nom_casella, 1, tauler)
     #Realizamos el pago a la banca:
-    global banca
-    banca += preu_compra_casa
+    afegir_diners_banca(preu_compra_casa)
 
 def afegir_hotels(nom_casella:str, num_hotels:int, tauler:list) -> None:
     '''Añade un número de choteles a una casilla del tablero.
@@ -1475,8 +1473,7 @@ def jugador_compra_hotel(nom_jugador:str, nom_casella:str, preus:dict, jugadors:
     #Retiramos 2 casas en la casilla de compra del hotel:
     retirar_cases(nom_casella, 2, tauler)
     #Realizamos el pago a la banca:
-    global banca
-    banca += preu_compra_hotel
+    afegir_diners_banca(preu_compra_hotel)
 
 def jugador_actual_ven_tot_al_banc(nom_jugador:str, preus:dict, jugadors:dict, tauler:list) -> None:
     '''Realiza un transpaso de todas las propiedades del jugador actual a la banca, otorgando al 

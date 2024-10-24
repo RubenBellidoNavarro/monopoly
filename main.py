@@ -889,7 +889,6 @@ def genera_partida() -> tuple:
     jugadors = genera_jugadors(noms_jugadors)
     ordre_jugadors = ordre_tirada(jugadors)
     preus = genera_preus_caselles(caselles_ordenades, preus_caselles, etiquetes_preus_caselles)
-    gestiona_diners_banca(banca)
     primer_pagament(jugadors)
     afegeix_jugadors_sortida(jugadors, ordre_jugadors, tauler)
     imprimeix_per_pantalla(tauler, banca, jugadors, jugades)

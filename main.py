@@ -1591,7 +1591,7 @@ def borrar_jugador_partida(ordre_jugadors:list, jugador_actual:dict, jugadors:di
     traspassar_totes_les_propietats(nom_jugador, "banca", tauler)
 
     #Declaramos que el jugador no tiene dinero:
-    jugadors[nom_jugador["diners"]] = 0
+    jugadors[nom_jugador]["diners"] = 0
 
 def enviar_jugador_preso(jugador_actual:dict, jugadors:dict, tauler:list) -> None:
     '''Modifica los valores de posicion de 'tauler' y 'jugadors' poniendo el jugador en la prision,
